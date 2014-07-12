@@ -1,0 +1,518 @@
+$background-color: #000;
+$foreground-color: #fff;
+$red-color: #dc3912;
+$amber-color: #f90;
+$green-color: #109618;
+$blue-color: #0088cc;
+$dark-grey-color: #111;
+$mid-grey-color: #222;
+$light-grey-color: #333;
+$story-card-color: #fff;
+$story-text-color: #000;
+$task-be-color: #fd9;
+$task-bug-color: #f99;
+$task-card-color: #fff;
+$task-fe-color :#fea;
+$task-text-color: #000;
+$task-qa-color: #cfc;
+$overallocated-color: #003;
+$underallocated-color: #030;
+$wip-exceeded-color: #300;
+$invalid-color: #FEE;
+$invalid-border-color: #f00;
+
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+  border-radius: $radius;
+}
+
+@mixin rotate($degrees) {
+  -moz-transform: rotate($degrees);
+  -ms-transform: rotate($degrees);
+  -o-transform: rotate($degrees);
+  -webkit-transform: rotate($degrees);
+  transform: rotate($degrees);
+}
+
+body {
+  background-color: $background-color;
+  color: $foreground-color;
+  cursor: default;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 125%;
+  overflow: hidden;
+  .popover-content, .popover-title {
+    color: $background-color;
+    font-size: small;
+    padding: 2px 5px;
+  }
+  .popover-title {
+    font-weight: bold;
+  }
+  .wrapper {
+    margin: 0 auto;
+    width: 800px;
+  }
+}
+
+#configurations, #configurator {
+  header {
+    height: 110px;
+    h1 {
+      margin-top: 10px;
+    }
+  }
+  section {
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-right: 10px;
+  }
+  footer {
+    height: 20px;
+  }
+}
+
+#configurations {
+  thead {
+    font-weight: bold;
+  }
+  tbody tr:hover {
+    color: $background-color;
+    overflow: auto;
+  }
+}
+
+#configurator {
+  .form-control.ng-dirty.ng-invalid {
+    background-color: $invalid-color;
+    border: solid 1px $invalid-border-color;
+  }
+}
+
+#teamboard {
+  section {
+    padding: {
+      left: 0;
+      right: 0;
+    }
+  }
+  aside {
+    padding-right: 0;
+    h3 {
+      background-color: $foreground-color;
+      color: $background-color;
+      letter-spacing: 4px;
+      margin: 0 0 8px;
+      padding: 0 0 2px 0;
+      text-transform: lowercase;
+    }
+    nav {
+      margin: 16px 0;
+      text-align: center;
+      ul {
+        display: inline-block;
+        white-space: nowrap;
+        li {
+          a {
+            padding: 5px 10px 3px 10px;
+            font-size: 140%;
+          }
+        }
+      }
+    }
+  }
+  .container-fluid > .row {
+    > div {
+      &:first-of-type {
+        padding-left: 0;
+      }
+      &:last-of-type {
+        padding-right: 0;
+      }
+    }
+  }
+  .loader {
+    background: {
+      color: rgba(0, 0, 0, 0.50);
+      image: url('/img/loader.gif');
+      position: center;
+      repeat: no-repeat;
+    }
+    position: absolute;
+    height: 100%;
+    vertical-align: middle;
+    width: 100%;
+    z-index: 99999;
+  }
+}
+
+#help-timer, #timer {
+  margin: 8px 0;
+  > div:first-of-type {
+    > div:first-of-type {
+      font: {
+        size: 128px;
+        weight: bold;
+      }
+      letter-spacing: -12px;
+      line-height: 96px;
+      margin-bottom: 8px;
+      padding: 0;
+    }
+    > div:last-of-type {
+      font-size: 24px;
+      line-height: 24px;
+      margin: 24px 0;
+    }
+  }
+  > div:last-of-type {
+    color: $blue-color;
+    font: {
+      size: 48px;
+      weight: bold;
+    }
+    letter-spacing: -2px;
+    line-height: 48px;
+  }
+}
+
+#help-builds, #builds {
+  list-style-type: none;
+  padding: 0;
+  .build {
+    > div {
+      position: relative;
+      padding: 12px 0;
+      &:before, > div {
+        background-color: #999;
+      }
+      &:before {
+        border: 5px solid #000000;
+        border-radius: 32px;
+        content: "?";
+        font-size: 32px;
+        height: 56px;
+        line-height: 48px;
+        position: absolute;
+        text-align: center;
+        top: 0;
+        width: 56px;
+      }
+      &.successful {
+        &:before, > div {
+          background-color: $green-color;
+        }
+        &:before {
+          content: "\2714";
+        }
+      }
+      &.failed {
+        &:before, > div {
+          background-color: $red-color;
+        }
+        &:before {
+          content: "\2716";
+        }
+      }
+      > div {
+        margin-left: 48px;
+        padding: 0 8px;
+        > div {
+          font-size: 12px;
+          line-height: 16px;
+          overflow: hidden;
+          white-space: nowrap;
+          &:first-of-type {
+            font-weight: bold;
+          }
+        }
+      }
+    }
+  }
+}
+
+#cycleboard, #releaseboard, #taskboard {
+  &::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track-piece {
+    background-color: $dark-grey-color;
+  }
+  &::-webkit-scrollbar-button {
+    background-color: $mid-grey-color;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: $light-grey-color;
+  }
+}
+
+#dashboard, #chartboard {
+  .project-burn, .sprint-burn, .task-burn, .task-flow, .task-work {
+    background-color: $dark-grey-color;
+  }
+  .emoticon {
+    @include border-radius(128px);
+    @include rotate(90deg);
+    background-color: $amber-color;
+    border: 5px solid $background-color;
+    color: $background-color;
+    font: {
+      size: 96px;
+      weight: bold;
+    }
+    height: 128px;
+    left: 50%;
+    line-height: 104px;
+    margin-left: -64px;
+    position: relative;
+    text-align: center;
+    width: 128px;
+    &.happy:before {
+      content: ':)';
+    }
+    &.sad:before {
+      content: ':(';
+    }
+  }
+  .google-visualization-tooltip {
+    .task-tooltip {
+      color: #000;
+      font-size: 100%;
+      padding: 4px;
+      white-space: nowrap;
+      hr {
+        margin: 2px 0;
+      }
+      tr {
+        border-bottom: dotted 1px #ccc;
+      }
+      td {
+        padding-right: 4px;
+        vertical-align: top;
+      }
+      td:last-of-type {
+        max-width: 350px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+
+#chartboard {
+  .project-burn, .sprint-burn, .task-burn, .task-flow, .task-work {
+    height: 1020px;
+    .emoticon {
+      top: 400px;
+    }
+  }
+}
+
+#dashboard {
+  .project-burn, .sprint-burn, .task-burn, .task-flow, .task-work {
+    height: 500px;
+    .emoticon {
+      top: 175px;
+    }
+  }
+}
+
+#cycleboard, #releaseboard, #taskboard {
+  overflow: auto;
+  td {
+    background-color: $dark-grey-color;
+    border: 1px solid $light-grey-color;
+    padding: 5px;
+    vertical-align: top;
+  }
+}
+
+#cycleboard {
+  table {
+    width: 100%;
+    td:first-of-type {
+        width: 13%;
+    }
+    td:last-of-type {
+      .in-progress .closed {
+        opacity: 0.5;
+      }
+    }
+  }
+  .story {
+    width: 100%;
+  }
+  .task {
+    margin: 2px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+#releaseboard {
+  .overallocated {
+    background-color: $overallocated-color;
+  }
+  .underallocated {
+    background-color: $underallocated-color;
+  }
+  .story {
+    margin-bottom: 10px;
+    width: 186px;
+  }
+}
+
+#taskboard {
+  table {
+    width: 100%;
+    td {
+      width: 29%;
+      &:first-of-type {
+        width: 13%;
+      }
+      &.wip-exceeded {
+        background-color: $wip-exceeded-color;
+      }
+    }
+  }
+  .story {
+    width: 100%;
+  }
+  .task {
+    height: 108px;
+    position: relative;
+    width: 33.33%;
+    word-wrap: break-word;
+    > div:first-of-type {
+      line-height: 12px;
+    }
+    > div:last-of-type {
+      bottom: 0;
+      left: 0;
+      padding: 2px;
+      position: absolute;
+      width: 100%;
+    }
+  }
+}
+
+.story, .task {
+  padding: 3px 5px;
+  &.block {
+    background-color: $background-color !important;
+    border: solid 1px $foreground-color !important;;
+    color: $foreground-color !important;;
+  }
+  &.be {
+    background-color: $task-be-color;
+  }
+  &.bug {
+    background-color: $task-bug-color;
+  }
+  &.fe {
+    background-color: $task-fe-color;
+  }
+  &.qa {
+    background-color: $task-qa-color;
+  }
+  &.descoped {
+    opacity: 0.5;
+    z-index: 0 !important;
+  }
+}
+
+.story {
+  background-color: $story-card-color;
+  color: $story-text-color;
+  height: 108px;
+  position: relative;
+  word-wrap: break-word;
+  &.descoped {
+    opacity: 0.5;
+  }
+  > div:first-of-type {
+    line-height: 16px;
+  }
+  > div:last-of-type {
+    border-top: dotted 1px;
+    bottom: 0;
+    left: 0;
+    padding: 0 5px;
+    position: absolute;
+    width: 100%;
+  }
+}
+
+.task {
+  background-color: $task-card-color;
+  box-shadow: rgba(0, 0, 0, 0.75) 1px 1px 2px;
+  color: $task-text-color;
+  .badge {
+    background-color: rgba(0, 0, 0, 0.25);
+    margin: 0 1px;
+  }
+  .polaroid {
+    @include rotate(-5deg);
+    background-color: #fff;
+    border: 1px solid #999;
+    bottom: -8px;
+    box-shadow: 1px -1px 1px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    left: -8px;
+    padding: 3px 3px 0 3px;
+    position: absolute;
+    img {
+      border: 1px solid #ccc;
+      height: 40px;
+      width: 40px;
+    }
+    span {
+      color: #333;
+      display: block;
+      font-size: 8px;
+      line-height: 12px;
+      position: relative;
+      text: {
+        align: center;
+        transform: uppercase;
+      }
+    }
+  }
+}
+
+#modal-help {
+  overflow: hidden;
+  #help-nav {
+    overflow: hidden;
+  }
+  #help-content {
+    color: $background-color;
+    overflow: auto;
+    i {
+      vertical-align: text-top;
+    }
+    img {
+      @include border-radius(8px);
+      background-color: $background-color;
+      margin-bottom: 5px;
+      padding: 10px;
+      width: 100%;
+    }
+    #help-builds {
+      color:$foreground-color;
+      margin-left: 10px;
+      width: 250px;
+      .build > div:before {
+        border-color: $foreground-color;
+      }
+    }
+    #help-sprint {
+      margin-left: 10px;
+    }
+    .task {
+      line-height: 32px;
+    }
+  }
+}

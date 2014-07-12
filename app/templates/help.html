@@ -1,0 +1,155 @@
+<div id="help" class="row" data-ng-controller="helpController">
+    <nav id="help-nav" class="col-sm-3">
+        <ul class="nav nav-pills nav-stacked text-center">
+            <li><a href="#" data-ng-click="scrollTo('#help-overview')">Overview</a></li>
+            <li><a href="#" data-ng-click="scrollTo('#help-basic-usage')">Basic Usage</a></li>
+            <li><a href="#" data-ng-click="scrollTo('#help-extended-usage')">Extended Usage</a></li>
+            <li><a href="#" data-ng-click="scrollTo('#help-conventions')">Conventions</a></li>
+            <li><a href="#" data-ng-click="scrollTo('#help-sprint-timer')">Sprint Timer</a></li>
+            <li><a href="#" data-ng-click="scrollTo('#help-build-monitor')">Build Monitor</a></li>
+            <li><a href="#" data-ng-click="scrollTo('#help-dashboard')">Dashboard</a></li>
+            <li><a href="#" data-ng-click="scrollTo('#help-taskboard')">Sprintboard</a></li>
+            <li><a href="#" data-ng-click="scrollTo('#help-cycleboard')">Cycleboard</a></li>
+            <li><a href="#" data-ng-click="scrollTo('#help-releaseboard')">Releaseboard</a></li>
+            <li><a href="#" data-ng-click="scrollTo('#help-slideshow')">Slideshow</a></li>
+            <li><a href="#" data-ng-click="scrollTo('#help-configuration')">Configuration</a></li>
+        </ul>
+    </nav>
+    <div id="help-content" class="col-sm-9">
+        <h1>JIRA Teamboard Help</h1>
+        <div id="help-overview">
+            <h3>Overview</h3>
+            <p>The JIRA Teamboard is an electronic information radiator that displays vital data about the progress of a development team. Traditional agile wallboards use index cards or sticky notes on a wall and the information can become stale very quickly however the JIRA Teamboard is continually updated with in real-time ensuring that the team are always aware of the current state of play.</p>
+            <p>It's similar to a scoreboard at a sporting event - it's been designed to be highly visible and easy to understand for anyone walking and it can complement or entirely replace a traditional agile wallboard. To continue with the sports analogy it's also a useful tool for "post-match analysis" during team retrospectives to identify areas for improvement.</p>
+        </div>
+        <div id="help-basic-usage">
+            <h3>Basic Usage</h3>
+            <p>To load the JIRA Teamboard:</p>
+            <pre>{{baseUrl}}</pre>
+            <p>To add, edit, delete or view teamboards:</p>
+            <pre>{{baseUrl}}/configurations</pre>
+            <p>To configure a teamboard:
+            <pre>{{baseUrl}}/configuration/[teamboard]</pre>
+            <p>To view a teamboard:</p>
+            <pre>{{baseUrl}}/[teamboard]</pre>
+        </div>
+        <div id="help-extended-usage">
+            <h3>Extended Usage</h3>
+            <p>By passing query parameters to the teamboard you can jump to specific boards when the application loads. Used in conjunction with a browser tab rotation plug-in (such as Revolver-Tabs for Chrome) you can customise the sequence and timing of the JIRA Teamboard to suit the needs of your environment and team.</p>
+            <p>To view a specific board:</p>
+            <pre>{{baseUrl}}/[teamboard]<br/>?view=[chartboard|cycleboard|dashboard|releaseboard|taskboard]</pre>
+            <p>To view a specific chartboard:</p>
+            <pre>{{baseUrl}}/[teamboard]<br/>?view=chartboard<br/>&chart=[releaseburn|sprintburn|taskburn|taskflow|taskwork]</pre>
+            <div class="well">The chartboard displays any of the dashboard charts in full screen and is provided as an alternative to the consolidated dashboard view.</div>
+            <p>The JIRA Teamboard was designed to be run in full screen on a HDTV at 1920x1080 resolution. The recommended browser is Google Chrome, but it should work in most CSS3/HTML5 compliant browsers.</p>
+            <p>To automatically launch the JIRA Teamboard in full screen mode at system start up use:</p>
+            <pre>chrome --kiosk {{baseUrl}}/[teamboard]</pre>
+        </div>
+        <div id="help-label">
+            <h3>Labels</h3>
+            <p>The JIRA Teamboard uses labels for categorisation of stories and tasks by their type.</p>
+            <p>The labels are used for the category breakdown in the Task Work chart and to display colour coding for story and task cards when the following labels are used:</p>
+            <ul>
+                <li><span class="task be">BE</span></li>
+                <li><span class="task fe">FE</span></li>
+                <li><span class="task qa">QA</span</li>
+            </ul>
+            <p>Additional colour coding is applied to bugs and tasks which are blocked (flaggedin JIRA):</p>
+            <ul>
+                <li><span class="task bug">BUG</span></li>
+                <li><span class="task block">BLOCK</span></li>
+            </ul>
+
+        </div>
+        <div id="help-sprint-timer">
+            <h3>Sprint Timer</h3>
+            <div id="help-timer">
+                <div class="row">
+                    <div class="col-lg-6 text-right">5</div>
+                    <div class="col-lg-6 text-left">days left<br>in sprint</div>
+                </div>
+                <div class="text-center">04:32:12:34</div>
+            </div>
+            <p>The sprint timer displays the time left until the end of the sprint. This is split into two parts - the number of working days and a real-time countdown of the days, hours, minutes & seconds that remain.</p>
+        </div>
+        <div id="help-build-monitor">
+            <h3>Build Monitor</h3>
+            <ul id="help-builds" class="pull-right">
+                <li class="build" title="A.Developer" data-ng-repeat="build in builds">
+                    <build/>
+                </li>
+            </ul>
+            <p>The build monitor can be configured to monitor the key builds for your team and provides a visual call-to-action when code breaks. You can monitor as many builds as you like but only the most recent builds will be displayed. As new builds are triggered they will appear at the top of the build list.</p>
+            <p>Build are colour coded and given an icon to indicate their current state. Place your mouse cursor over the build to see who triggered it.</p>
+        </div>
+        <div id="help-dashboard">
+            <h3><i class="glyphicon glyphicon-fire"></i> Dashboard</h3>
+            <img src="/img/dashboard.png"/>
+            <h4>Sprint Burn</h4>
+            <p>This chart provides a real-time view of progress and trend against towards sprint completion. It allows teams to see if they are on track to meet their commitments and adjust their delivery plan as necessary.</p>
+            <div class="well">Depending on your configuration the sprint burn will either show a burn down of work or a burn up of tasks when the No Estimates setting is applied. </div>
+            <h4>Project Burn</h4>
+            <p>This chart provides a real-time view of progress and trend against the project backlog. It allows teams to see if they are on track to meet their commitments and adjust their delivery plan as necessary.</p>
+            <div class="well">This chart displays project progress for the last 90 days.</div>
+            <h4>Team Burn</h4>
+            <p>This chart shows a breakdown of completed tasks by person by day and provide a useful view on individual productivity or behavioural smells such as large numbers of tasks completing at the same time. It can also be useful during stand-up when someone says "I can't remember what I did yesterday..."</p>
+            <div class="well">Place your mouse cursor over the chart to see a detailed task breakdown.</div>
+            <h4>Task Flow</h4>
+            <p>This chart enables teams to monitor the flow of work during the sprint and also see any increases in scope. Ideally a team's work in progress should be reasonably steady (the height of the yellow area) throughout the sprint. Any obvious deviations from the norm are often good discussion points during retrospectives.</p>
+            <h4>Task Work</h4>
+            <p>This chart provides a breakdown of the sprint work remaining by category. The categorisation of stories and tasks in described in the <a href="#" data-ng-click="scrollTo('#help-labels')">labels</a> section.</p>
+        </div>
+        <div id="help-taskboard">
+            <h3><i class="glyphicon glyphicon-th"></i> Taskboard</h3>
+            <img src="/img/taskboard.png"/>
+            <p>The taskboard displays a standard wallboard view with stories on the left-hand side and tasks ordered by state (either Not Started, In Progress or Done) on the right. If a WIP (Work In Progress) limit has been configured and exceeded then the In Progress column will be highlighted in red.</p>
+            <h4>Story Cards</h4>
+            <p>Stories display the story title, the current state and the number of story points.</p>
+            <div class="well">When stories are Done they jump to the bottom of the taskboard.</div>
+            <h4>Task Cards</h4>
+            <p>Tasks display the task title and the remaining effort, together with an avatar of the owner of the task. If a user doesn't have an avatar on the server then a default image is served.</p>
+        </div>
+        <div id="help-cycleboard">
+            <h3><i class="glyphicon glyphicon-tasks"></i> Cycleboard</h3>
+            <img src="/img/cycleboard.png"/>
+            <p>The cycleboard displays a Gantt-style view of the stories and tasks in the current sprint which are either "In Progress or "Done".</p>
+            <h4>Story Cards</h4>
+            <p>Stories display the current state of the story and the number of story points.</p>
+            <div class="well">Place your mouse cursor over the story to see the cycle time for that story.</div>
+            <h4>Task Cards</h4>
+            <p>Tasks display the owner, the remaining effort and the current state.</p>
+            <div class="well">Place your mouse cursor over the task to see the description for that task.</div>
+        </div>
+        <div id="help-releaseboard">
+            <h3><i class="glyphicon glyphicon-road"></i> Releasboard</h3>
+            <img src="/img/releaseboard.png"/>
+            <p>The releaseboard displays a projected release schedule based upon your team's velocity against an estimated backlog of stories. Futures sprints are calculated based upon the dates and duration of the current sprint and. The sprint will be highlighted in green if it's under allocated or blue if it's over allocated - this is a trigger to either change the order the stories or to split them if they are too large.</p>
+            <div class="well">If you don't specify a velocity for your team then the releaseboard is hidden.</div>
+        </div>
+        <div id="help-slideshow">
+            <h3><i class="glyphicon glyphicon-play"></i> Slideshow</h3>
+            <p>Activating the slideshow will automatically rotate through the views every two-and-a-half minutes. Views that have more content than can fit on a single screen will automatically pan during the slideshow to display all information. You can also configure the teamboard to enter slideshow mode by default.</p>
+        </div>
+        <div id="help-configuration">
+            <h3><i class="glyphicon glyphicon-wrench"></i> Configuration</h3>
+            <img src="/img/configuration.png"/>
+            <p></p>
+            <ul>
+                <li><strong>Name</strong> - the unique identifier for this teamboard configuration</li>
+                <li><strong>Project</strong> - the project where the backlog is held</li>
+                <li><strong>Board</strong> - the name of the board which holds the sprint</li>
+                <li><strong>Sprint</strong> - the name of the sprint to monitor</li>
+                <li><strong>Velocity</strong> - the estimated velocity of the team</li>
+                <li><strong>WIP</strong> - the number of concurrent tasks that team should have in progress</li>
+                <li><strong>Slideshow</strong> - start the slideshow automatically when the application loads</li>
+            </ul>
+            <div class="well">You can duplicate a configuration by editing it and changing the name.</div>
+        </div>
+    </div>
+    <script>
+        $(window).resize(function () {
+            $('#help').height(window.innerHeight - 110);
+            $('#help-nav,#help-content').height($('#help').height());
+        }).trigger('resize');
+    </script>
+</div>

@@ -1,0 +1,16 @@
+<div id="releaseboard" data-ng-controller="releaseboardController">
+    <table>
+        <tbody>
+        <tr>
+            <td data-ng-class="{'overallocated':sprint.overallocated, 'underallocated':sprint.underallocated}" data-ng-repeat="sprint in releaseboard">
+                <div><strong>Sprint +{{$index + 1}}</strong></div>
+                <div>
+                    <small>{{sprint.startDate}} to {{sprint.endDate}} ({{sprint.points}}sp)
+                    </small>
+                </div>
+                <story data-ng-repeat="story in sprint.stories"></story>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

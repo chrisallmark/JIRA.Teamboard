@@ -1,0 +1,26 @@
+<div id="chartboard" data-ng-controller="chartboardController">
+    <div data-ng-show="chart === 'sprintburn'">
+        <h4>Sprint Burn</h4>
+        <div class="sprint-burn"></div>
+    </div>
+    <div data-ng-show="chart === 'releaseburn'">
+        <h4>Release Burn</h4>
+        <div class="project-burn"></div>
+    </div>
+    <div data-ng-show="chart === 'taskburn'">
+        <h4>Task Burn</h4>
+        <div class="task-burn">
+            <div class="emoticon sad"></div>
+        </div>
+    </div>
+    <div data-ng-show="chart === 'taskflow'">
+        <h4>Task Flow</h4>
+        <div class="task-flow"></div>
+    </div>
+    <div data-ng-show="chart === 'taskwork'">
+        <h4>Task Work</h4>
+        <div class="task-work">
+            <div class="emoticon happy"></div>
+        </div>
+    </div>
+</div>

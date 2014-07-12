@@ -1,0 +1,69 @@
+<div id="teamboard" class="container-fluid" data-ng-controller="teamboardController">
+    <div data-ng-if="teamboard.view === teamboard.loaded">
+        <script>
+            $(window).resize(function () {
+                $('section > div > div').height(window.innerHeight);
+            }).trigger('resize');
+        </script>
+    </div>
+    <div class="loader row" data-ng-show="teamboard.view !== teamboard.loaded"></div>
+    <div class="row">
+        <section class="col-lg-10">
+            <div data-ng-include="'/templates/chartboard.html'" data-ng-show="teamboard.loaded === 'chartboard'"></div>
+            <div data-ng-include="'/templates/cycleboard.html'" data-ng-show="teamboard.loaded === 'cycleboard'"></div>
+            <div data-ng-include="'/templates/dashboard.html'" data-ng-show="teamboard.loaded === 'dashboard'"></div>
+            <div data-ng-include="'/templates/releaseboard.html'" data-ng-show="teamboard.loaded === 'releaseboard'"></div>
+            <div data-ng-include="'/templates/taskboard.html'" data-ng-show="teamboard.loaded === 'taskboard'"></div>
+        </section>
+        <aside class="col-lg-2" data-ng-if="teamboard">
+            <header>
+                <img src="/img/logo.png" width="100%"/>
+                <h3 class="text-center" data-ng-bind="teamboard.name"</h3>
+            </header>
+            <nav>
+                <ul class="nav nav-pills">
+                    <li accesskey="1" data-ng-class="{active:teamboard.view === 'dashboard'}" data-ng-click="load('dashboard');">
+                        <a title="Dashboard (Alt-1)"><i class="glyphicon glyphicon-fire"></i></a>
+                    </li>
+                    <li accesskey="2" data-ng-class="{active:teamboard.view === 'taskboard'}" data-ng-click="load('taskboard')">
+                        <a title="Taskboard (Alt-2)"><i class="glyphicon glyphicon-th"></i></a>
+                    </li>
+                    <li accesskey="3" data-ng-class="{active:teamboard.view === 'cycleboard'}" data-ng-click="load('cycleboard')">
+                        <a title="Cycleboard (Alt-3)"><i class="glyphicon glyphicon-tasks"></i></a>
+                    </li>
+                    <li accesskey="4" data-ng-class="{active:teamboard.view === 'releaseboard'}" data-ng-click="load('releaseboard')" data-ng-show="teamboard.velocity">
+                        <a title="Releaseboard (Alt-4)"><i class="glyphicon glyphicon-road"></i></a>
+                    </li>
+                    <li accesskey="8" data-ng-class="{active:teamboard.slideshow}" data-ng-click="toggleSlideshow()"><s></s>
+                        <a title="Slideshow (Alt-8)"><i class="glyphicon" data-ng-class="teamboard.slideshow ? 'glyphicon-pause' : 'glyphicon-play'"></i></a>
+                    </li>
+                    <li accesskey="0" data-ng-click="configure()">
+                        <a title="Configure (Alt-0)"><i class="glyphicon glyphicon-wrench"></i></a>
+                    </li>
+                    <li accesskey="?" data-toggle="modal" data-target="#modal-help">
+                        <a title="Help (Alt-?)"><i class="glyphicon glyphicon-book"></i></a>
+                    </li>
+                </ul>
+            </nav>
+            <div id="timer" class="container-fluid" data-ng-controller="timerController">
+                <div class="row">
+                    <div class="col-lg-6 text-right" data-ng-bind="timer.remainingDays"></div>
+                    <div class="col-lg-6 text-left">days left<br/>in sprint</div>
+                </div>
+                <div class="text-center" data-ng-bind="timer.countdown"></div>
+            </div>
+            <ul id="builds" data-ng-controller="buildController">
+                <li class="build" data-ng-repeat="build in builds | limitTo:13" data-ng-repeat-done="popover()">
+                    <build></build>
+                </li>
+            </ul>
+        </aside>
+    </div>
+    <div id="modal-help" class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-body" data-ng-include="'/templates/help.html'"></div>
+            </div>
+        </div>
+    </div>
+</div>

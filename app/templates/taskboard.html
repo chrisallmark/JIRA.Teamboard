@@ -1,0 +1,62 @@
+<div id="taskboard" data-ng-controller="taskboardController">
+    <table>
+        <thead>
+            <tr>
+                <td class="text-center">
+                    <div><strong>{{taskboard.startDate}} to {{taskboard.endDate}}</strong></div>
+                    <div>
+                        <small>({{taskboard.storiesDone}}sp of {{taskboard.storiesToDo + taskboard.storiesDone}}sp  done)</small>
+                    </div>
+                </td>
+                <td class="text-center">
+                    <div><strong>Not Started</strong></div>
+                    <div>
+                        <small>({{taskboard.tasksToDo}})</small>
+                    </div>
+                </td>
+                <td class="text-center" data-ng-class="{'wip-exceeded':taskboard.wipExceeded}">
+                    <div><strong>In Progress</strong></div>
+                    <div>
+                        <small>({{taskboard.tasksInProgress}})</small>
+                    </div>
+                </td>
+                <td class="text-center">
+                    <div><strong>Done</strong></div>
+                    <div>
+                        <small>({{taskboard.tasksDone}})</small>
+                    </div>
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr data-ng-repeat="story in taskboard.stories | stateFilter:{'exclude': ['Closed']}">
+                <td>
+                    <story></story>
+                </td>
+                <td>
+                    <task data-ng-repeat="task in story.tasks | stateFilter:{'include': ['Open']}"></task>
+                </td>
+                <td data-ng-class="{'wip-exceeded':taskboard.wipExceeded}">
+                    <task data-ng-repeat="task in story.tasks | stateFilter:{'exclude': ['Open', 'Closed']}"></task>
+                </td>
+                <td>
+                    <task data-ng-repeat="task in story.tasks | stateFilter:{'include': ['Closed']}"></task>
+                </td>
+            </tr>
+            <tr data-ng-repeat="story in taskboard.stories | stateFilter:{'include': ['Closed']}">
+                <td>
+                    <story></story>
+                </td>
+                <td>
+                    <task data-ng-repeat="task in story.tasks | stateFilter:{'include': ['Open']}"></task>
+                </td>
+                <td data-ng-class="{'wip-exceeded':taskboard.wipExceeded}">
+                    <task data-ng-repeat="task in story.tasks | stateFilter:{'exclude': ['Open', 'Closed']}"></task>
+                </td>
+                <td>
+                    <task data-ng-repeat="task in story.tasks | stateFilter:{'include': ['Closed']}"></task>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+ </div>

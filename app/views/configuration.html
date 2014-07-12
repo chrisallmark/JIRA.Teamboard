@@ -1,0 +1,62 @@
+<div id="configuration" class="wrapper" data-ng-controller="configurationController">
+    <header class="clearfix">
+        <div class="pull-left"><h1>JIRA Teamboard<br/>Configuration</h1></div>
+        <div class="pull-right"><img src="/img/logo.png"/></div>
+    </header>
+    <section>
+        <form name="configurationForm" novalidate>
+            <div class="row">
+                <div class="col-sm-12 form-group">
+                    <label class="control-label" for="name">Name:</label>
+                    <input id="name" class="form-control" placeholder="Name" required type="text" data-ng-model="configuration.name" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6 form-group">
+                    <label class="control-label" for="project">Project:</label>
+                    <select id="project" class="form-control" data-ng-disabled="!form.projects" required data-ng-model="form.project" data-ng-options="project.name for project in form.projects">
+                        <option value=""></option>
+                    </select>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label class="control-label" for="board">Board:</label>
+                    <select id="board" class="form-control" data-ng-disabled="!form.boards" required data-ng-model="form.board" data-ng-options="board.name for board in form.boards">
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6 form-group">
+                    <label class="control-label" for="sprint">Sprint:</label>
+                    <select id="sprint" class="form-control" required data-ng-disabled="!form.sprints" data-ng-model="form.sprint" data-ng-options="sprint.name for sprint in form.sprints">
+                        <option value=""></option>
+                    </select>
+                </div>
+                <div class="col-sm-2 form-group">
+                    <label class="control-label" for="velocity">Velocity:</label>
+                    <input id="velocity" class="form-control" type="text" data-ng-model="configuration.velocity" />
+                </div>
+                <div class="col-sm-2 form-group">
+                    <label class="control-label" for="wip">WIP:</label>
+                    <input id="wip" class="form-control" type="text" data-ng-model="configuration.wip" />
+                </div>
+                <div class="col-sm-2 form-group">
+                    <label class="control-label" for="slideshow">Slideshow:</label>
+                    <input id="slideshow" class="checkbox" type="checkbox" data-ng-model="configuration.slideshow"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group text-right">
+                    <button class="btn btn-default" data-ng-click="ok()" data-ng-disabled="configurationForm.$invalid">Ok</button>
+                    <button class="btn btn-default" data-ng-click="back()">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </section>
+    <footer class="text-center">designed & developed by <a href="http://linkedin.com/in/chrisallmark">chris allmark</a></footer>
+    <script>
+        $(window).resize(function () {
+            $('section').height(window.innerHeight - $('header').height() - $('footer').height());
+        }).trigger('resize');
+    </script>
+</div>

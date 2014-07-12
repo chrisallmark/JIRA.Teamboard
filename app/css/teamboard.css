@@ -1,0 +1,345 @@
+body {
+  background-color: black;
+  color: white;
+  cursor: default;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 125%;
+  overflow: hidden; }
+  body .popover-content, body .popover-title {
+    color: black;
+    font-size: small;
+    padding: 2px 5px; }
+  body .popover-title {
+    font-weight: bold; }
+  body .wrapper {
+    margin: 0 auto;
+    width: 800px; }
+
+#configurations header, #configurator header {
+  height: 110px; }
+  #configurations header h1, #configurator header h1 {
+    margin-top: 10px; }
+#configurations section, #configurator section {
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 10px; }
+#configurations footer, #configurator footer {
+  height: 20px; }
+
+#configurations thead {
+  font-weight: bold; }
+#configurations tbody tr:hover {
+  color: black;
+  overflow: auto; }
+
+#configurator .form-control.ng-dirty.ng-invalid {
+  background-color: #ffeeee;
+  border: solid 1px red; }
+
+#teamboard section {
+  padding-left: 0;
+  padding-right: 0; }
+#teamboard aside {
+  padding-right: 0; }
+  #teamboard aside h3 {
+    background-color: white;
+    color: black;
+    letter-spacing: 4px;
+    margin: 0 0 8px;
+    padding: 0 0 2px 0;
+    text-transform: lowercase; }
+  #teamboard aside nav {
+    margin: 16px 0;
+    text-align: center; }
+    #teamboard aside nav ul {
+      display: inline-block;
+      white-space: nowrap; }
+      #teamboard aside nav ul li a {
+        padding: 5px 10px 3px 10px;
+        font-size: 140%; }
+#teamboard .container-fluid > .row > div:first-of-type {
+  padding-left: 0; }
+#teamboard .container-fluid > .row > div:last-of-type {
+  padding-right: 0; }
+#teamboard .loader {
+  background-color: rgba(0, 0, 0, 0.5);
+  background-image: url("/img/loader.gif");
+  background-position: center;
+  background-repeat: no-repeat;
+  position: absolute;
+  height: 100%;
+  vertical-align: middle;
+  width: 100%;
+  z-index: 99999; }
+
+#help-timer, #timer {
+  margin: 8px 0; }
+  #help-timer > div:first-of-type > div:first-of-type, #timer > div:first-of-type > div:first-of-type {
+    font-size: 128px;
+    font-weight: bold;
+    letter-spacing: -12px;
+    line-height: 96px;
+    margin-bottom: 8px;
+    padding: 0; }
+  #help-timer > div:first-of-type > div:last-of-type, #timer > div:first-of-type > div:last-of-type {
+    font-size: 24px;
+    line-height: 24px;
+    margin: 24px 0; }
+  #help-timer > div:last-of-type, #timer > div:last-of-type {
+    color: #0088cc;
+    font-size: 48px;
+    font-weight: bold;
+    letter-spacing: -2px;
+    line-height: 48px; }
+
+#help-builds, #builds {
+  list-style-type: none;
+  padding: 0; }
+  #help-builds .build > div, #builds .build > div {
+    position: relative;
+    padding: 12px 0; }
+    #help-builds .build > div:before, #help-builds .build > div > div, #builds .build > div:before, #builds .build > div > div {
+      background-color: #999; }
+    #help-builds .build > div:before, #builds .build > div:before {
+      border: 5px solid #000000;
+      border-radius: 32px;
+      content: "?";
+      font-size: 32px;
+      height: 56px;
+      line-height: 48px;
+      position: absolute;
+      text-align: center;
+      top: 0;
+      width: 56px; }
+    #help-builds .build > div.successful:before, #help-builds .build > div.successful > div, #builds .build > div.successful:before, #builds .build > div.successful > div {
+      background-color: #109618; }
+    #help-builds .build > div.successful:before, #builds .build > div.successful:before {
+      content: "\2714"; }
+    #help-builds .build > div.failed:before, #help-builds .build > div.failed > div, #builds .build > div.failed:before, #builds .build > div.failed > div {
+      background-color: #dc3912; }
+    #help-builds .build > div.failed:before, #builds .build > div.failed:before {
+      content: "\2716"; }
+    #help-builds .build > div > div, #builds .build > div > div {
+      margin-left: 48px;
+      padding: 0 8px; }
+      #help-builds .build > div > div > div, #builds .build > div > div > div {
+        font-size: 12px;
+        line-height: 16px;
+        overflow: hidden;
+        white-space: nowrap; }
+        #help-builds .build > div > div > div:first-of-type, #builds .build > div > div > div:first-of-type {
+          font-weight: bold; }
+
+#cycleboard::-webkit-scrollbar, #releaseboard::-webkit-scrollbar, #taskboard::-webkit-scrollbar {
+  height: 8px;
+  width: 8px; }
+#cycleboard::-webkit-scrollbar-track-piece, #releaseboard::-webkit-scrollbar-track-piece, #taskboard::-webkit-scrollbar-track-piece {
+  background-color: #111111; }
+#cycleboard::-webkit-scrollbar-button, #releaseboard::-webkit-scrollbar-button, #taskboard::-webkit-scrollbar-button {
+  background-color: #222222; }
+#cycleboard::-webkit-scrollbar-thumb, #releaseboard::-webkit-scrollbar-thumb, #taskboard::-webkit-scrollbar-thumb {
+  background-color: #333333; }
+
+#dashboard .project-burn, #dashboard .sprint-burn, #dashboard .task-burn, #dashboard .task-flow, #dashboard .task-work, #chartboard .project-burn, #chartboard .sprint-burn, #chartboard .task-burn, #chartboard .task-flow, #chartboard .task-work {
+  background-color: #111111; }
+#dashboard .emoticon, #chartboard .emoticon {
+  -webkit-border-radius: 128px;
+  border-radius: 128px;
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -webkit-transform: rotate(90deg);
+  transform: rotate(90deg);
+  background-color: #ff9900;
+  border: 5px solid black;
+  color: black;
+  font-size: 96px;
+  font-weight: bold;
+  height: 128px;
+  left: 50%;
+  line-height: 104px;
+  margin-left: -64px;
+  position: relative;
+  text-align: center;
+  width: 128px; }
+  #dashboard .emoticon.happy:before, #chartboard .emoticon.happy:before {
+    content: ':)'; }
+  #dashboard .emoticon.sad:before, #chartboard .emoticon.sad:before {
+    content: ':('; }
+#dashboard .google-visualization-tooltip .task-tooltip, #chartboard .google-visualization-tooltip .task-tooltip {
+  color: #000;
+  font-size: 100%;
+  padding: 4px;
+  white-space: nowrap; }
+  #dashboard .google-visualization-tooltip .task-tooltip hr, #chartboard .google-visualization-tooltip .task-tooltip hr {
+    margin: 2px 0; }
+  #dashboard .google-visualization-tooltip .task-tooltip tr, #chartboard .google-visualization-tooltip .task-tooltip tr {
+    border-bottom: dotted 1px #ccc; }
+  #dashboard .google-visualization-tooltip .task-tooltip td, #chartboard .google-visualization-tooltip .task-tooltip td {
+    padding-right: 4px;
+    vertical-align: top; }
+  #dashboard .google-visualization-tooltip .task-tooltip td:last-of-type, #chartboard .google-visualization-tooltip .task-tooltip td:last-of-type {
+    max-width: 350px;
+    overflow: hidden;
+    text-overflow: ellipsis; }
+
+#chartboard .project-burn, #chartboard .sprint-burn, #chartboard .task-burn, #chartboard .task-flow, #chartboard .task-work {
+  height: 1020px; }
+  #chartboard .project-burn .emoticon, #chartboard .sprint-burn .emoticon, #chartboard .task-burn .emoticon, #chartboard .task-flow .emoticon, #chartboard .task-work .emoticon {
+    top: 400px; }
+
+#dashboard .project-burn, #dashboard .sprint-burn, #dashboard .task-burn, #dashboard .task-flow, #dashboard .task-work {
+  height: 500px; }
+  #dashboard .project-burn .emoticon, #dashboard .sprint-burn .emoticon, #dashboard .task-burn .emoticon, #dashboard .task-flow .emoticon, #dashboard .task-work .emoticon {
+    top: 175px; }
+
+#cycleboard, #releaseboard, #taskboard {
+  overflow: auto; }
+  #cycleboard td, #releaseboard td, #taskboard td {
+    background-color: #111111;
+    border: 1px solid #333333;
+    padding: 5px;
+    vertical-align: top; }
+
+#cycleboard table {
+  width: 100%; }
+  #cycleboard table td:first-of-type {
+    width: 13%; }
+  #cycleboard table td:last-of-type .in-progress .closed {
+    opacity: 0.5; }
+#cycleboard .story {
+  width: 100%; }
+#cycleboard .task {
+  margin: 2px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
+
+#releaseboard .overallocated {
+  background-color: #000033; }
+#releaseboard .underallocated {
+  background-color: #003300; }
+#releaseboard .story {
+  margin-bottom: 10px;
+  width: 186px; }
+
+#taskboard table {
+  width: 100%; }
+  #taskboard table td {
+    width: 29%; }
+    #taskboard table td:first-of-type {
+      width: 13%; }
+    #taskboard table td.wip-exceeded {
+      background-color: #330000; }
+#taskboard .story {
+  width: 100%; }
+#taskboard .task {
+  height: 108px;
+  position: relative;
+  width: 33.33%;
+  word-wrap: break-word; }
+  #taskboard .task > div:first-of-type {
+    line-height: 12px; }
+  #taskboard .task > div:last-of-type {
+    bottom: 0;
+    left: 0;
+    padding: 2px;
+    position: absolute;
+    width: 100%; }
+
+.story, .task {
+  padding: 3px 5px; }
+  .story.block, .task.block {
+    background-color: black !important;
+    border: solid 1px white !important;
+    color: white !important; }
+  .story.be, .task.be {
+    background-color: #ffdd99; }
+  .story.bug, .task.bug {
+    background-color: #ff9999; }
+  .story.fe, .task.fe {
+    background-color: #ffeeaa; }
+  .story.qa, .task.qa {
+    background-color: #ccffcc; }
+  .story.descoped, .task.descoped {
+    opacity: 0.5;
+    z-index: 0 !important; }
+
+.story {
+  background-color: white;
+  color: black;
+  height: 108px;
+  position: relative;
+  word-wrap: break-word; }
+  .story.descoped {
+    opacity: 0.5; }
+  .story > div:first-of-type {
+    line-height: 16px; }
+  .story > div:last-of-type {
+    border-top: dotted 1px;
+    bottom: 0;
+    left: 0;
+    padding: 0 5px;
+    position: absolute;
+    width: 100%; }
+
+.task {
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.75) 1px 1px 2px;
+  color: black; }
+  .task .badge {
+    background-color: rgba(0, 0, 0, 0.25);
+    margin: 0 1px; }
+  .task .polaroid {
+    -moz-transform: rotate(-5deg);
+    -ms-transform: rotate(-5deg);
+    -o-transform: rotate(-5deg);
+    -webkit-transform: rotate(-5deg);
+    transform: rotate(-5deg);
+    background-color: #fff;
+    border: 1px solid #999;
+    bottom: -8px;
+    box-shadow: 1px -1px 1px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    left: -8px;
+    padding: 3px 3px 0 3px;
+    position: absolute; }
+    .task .polaroid img {
+      border: 1px solid #ccc;
+      height: 40px;
+      width: 40px; }
+    .task .polaroid span {
+      color: #333;
+      display: block;
+      font-size: 8px;
+      line-height: 12px;
+      position: relative;
+      text-align: center;
+      text-transform: uppercase; }
+
+#modal-help {
+  overflow: hidden; }
+  #modal-help #help-nav {
+    overflow: hidden; }
+  #modal-help #help-content {
+    color: black;
+    overflow: auto; }
+    #modal-help #help-content i {
+      vertical-align: text-top; }
+    #modal-help #help-content img {
+      -webkit-border-radius: 8px;
+      border-radius: 8px;
+      background-color: black;
+      margin-bottom: 5px;
+      padding: 10px;
+      width: 100%; }
+    #modal-help #help-content #help-builds {
+      color: white;
+      margin-left: 10px;
+      width: 250px; }
+      #modal-help #help-content #help-builds .build > div:before {
+        border-color: white; }
+    #modal-help #help-content #help-sprint {
+      margin-left: 10px; }
+    #modal-help #help-content .task {
+      line-height: 32px; }

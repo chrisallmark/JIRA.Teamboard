@@ -1,0 +1,12 @@
+<div id="{{task.id}}" class="pull-left task" title="{{task.key}}" data-ng-class="task.classification" data-ng-style="{'z-index':999-$index}">
+    <div>
+        <small>{{task.name}}</small>
+    </div>
+    <div>
+        <span class="badge pull-right">{{task.state}}</span>
+        <div class="polaroid" title="{{task.owner}}" data-ng-if="task.assignee">
+            <img onerror="this.src='/img/avatars/default.png'" data-ng-src="{{task.avatar}}"/>
+            <span>{{task.tag}}</span>
+        </div>
+    </div>
+</div>
