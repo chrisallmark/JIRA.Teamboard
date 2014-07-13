@@ -1,9 +1,7 @@
 'use strict';
 
-var byName = function (a, b) {
-        return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0);
-    },
-    extend = require('extend'),
+var extend = require('extend'),
+    fs = require('fs'),
     moment = require('moment'),
     q = require('q'),
     request = require('request');
@@ -19,6 +17,10 @@ function bamboo(endpoint) {
         },
         uri: global.bambooHost + endpoint
     });
+}
+
+function cfg(name) {
+    return './cfg/' + name.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.json';
 }
 
 function getSprint(board, sprint) {
@@ -51,6 +53,18 @@ function jql(query, fields, expand, maxResults) {
     return jira(search);
 }
 
+function qReadFile(file) {
+    var deferred = q.defer();
+    fs.readFile(file, function(err, data) {
+        if (err) {
+            deferred.reject(err);
+        } else {
+            deferred.resolve(JSON.parse(data));
+        }
+    });
+    return deferred.promise;
+}
+
 function qRequest(options) {
     var deferred = q.defer();
     request(options, function (err, res, body) {
@@ -71,63 +85,92 @@ function qRequest(options) {
     return deferred.promise;
 }
 
+function sortBy(property, reverse) {
+    return function (a, b) {
+        if (moment.isMoment(a[property]) && moment.isMoment(b[property])) {
+            return a[property].isBefore(b[property]) ? -1 : (a[property].isAfter(b[property]) ? 1 : 0) * (reverse ? -1 : 1);
+        } else {
+            return a[property] < b[property] ? -1 : (a[property] > b[property] ? 1 : 0) * (reverse ? -1 : 1);
+        }
+    };
+}
+
+function statusFilter(a) {
+    return a.field === 'status' && a.fromString !== a.toString;
+}
+
 module.exports = function (app) {
     app.get('/api/configurations', function (req, res) {
-        global.db.collection('configuration').find({}, { fields: { _id: 0 } }).toArray(function (err, configurations) {
+        fs.readdir('./cfg', function(err, files) {
             if (err) {
-                res.send(500, err);
-            } else {
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(configurations.sort(byName)));
+                res.send(500);
+            }
+            else
+            {
+                var qConfigurations = [];
+                for (var i = 0; i < files.length; i++) {
+                    if (files[i].indexOf('.json', files[i].length - 5) !== -1) {
+                        qConfigurations.push(qReadFile('./cfg/' + files[i]));
+                    }
+                }
+                q.all(qConfigurations)
+                    .then(function (configurations) {
+                        return configurations.sort(sortBy("name"));
+                    })
+                    .done(function (configurations) {
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify(configurations));
+                    }, function (err) {
+                        res.send(500, err);
+                    });
             }
         });
     });
 
     app.post('/api/configurations', function (req, res) {
-        var id = req.body.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-        global.db.collection('configuration')
-            .update({
-                _id: id
-            }, {
-                _id: id,
-                board: req.body.board,
-                name: req.body.name,
-                project: req.body.project,
-                slideshow: req.body.slideshow || false,
-                sprint: req.body.sprint,
-                velocity: req.body.velocity,
-                wip: req.body.wip
-            }, {
-                upsert: true
-            }, function (err) {
-                if (err) {
-                    res.send(500, err);
-                } else {
-                    res.send(200);
-                }
-            });
+        var configuration = {
+            board: req.body.board,
+            name: req.body.name,
+            project: req.body.project,
+            slideshow: req.body.slideshow || false,
+            sprint: req.body.sprint,
+            velocity: req.body.velocity,
+            wip: req.body.wip
+        };
+        fs.writeFile(cfg(req.body.name), JSON.stringify(configuration));
+        res.send(configuration);
     });
 
     app.delete('/api/configurations/:configurationName', function (req, res) {
-        global.db.collection('configuration').remove({
-            _id: req.param('configurationName')
-        }, function (err, result) {
+        fs.stat(cfg(req.params.configurationName), function(err, stat) {
             if (err) {
-                res.send(500, err);
-            } else {
-                res.send(200);
+                res.send(404);
+            }
+            else
+            {
+                fs.unlink(cfg(req.params.configurationName), function(err) {
+                    if (err) {
+                        res.send(500);
+                    }
+                    else
+                    {
+                        res.send(200);
+                    }
+                });
             }
         });
     });
 
     app.get('/api/configurations/:configurationName', function (req, res) {
-        var id = req.param('configurationName').replace(/[^a-z0-9]/gi, '_').toLowerCase();
-        global.db.collection('configuration').findOne({ _id: id }, { fields: { _id: 0 } }, function (err, configuration) {
+        fs.stat(cfg(req.params.configurationName), function(err, stat) {
             if (err) {
-                res.send(500, err);
-            } else {
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(configuration));
+                res.send(404);
+            }
+            else
+            {
+                res.writeHead(200, {"Content-Type": "application/json"});
+                var readStream = fs.createReadStream(cfg(req.params.configurationName));
+                readStream.pipe(res);
             }
         });
     });
@@ -145,7 +188,7 @@ module.exports = function (app) {
                         });
                     }
                 }
-                return boards.sort(byName);
+                return boards.sort(sortBy("name"));
             })
             .done(function (boards) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -156,33 +199,32 @@ module.exports = function (app) {
     });
 
     app.get('/api/builds', function (req, res) {
+        var build = function (data) {
+            return {
+                endDate: moment.utc(data.buildCompletedTime),
+                key: data.key,
+                name: data.planName,
+                startDate: moment.utc(data.buildStartedTime),
+                reason: data.buildReason,
+                status: data.state,
+                tests: {
+                    passed: data.successfulTestCount,
+                    failed: data.failedTestCount
+                }
+            };
+        };
         bamboo('/bamboo/rest/api/latest/result')
             .then(function (data) {
                 var qBuild = [];
                 for (var i = 0; i < data.results.result.length; i++) {
                     var result = data.results.result[i];
                     qBuild.push(bamboo('/bamboo/rest/api/latest/result/' + result.key)
-                        .then(function (data) {
-                            return {
-                                endDate: moment.utc(data.buildCompletedTime),
-                                key: data.key,
-                                name: data.planName,
-                                startDate: moment.utc(data.buildStartedTime),
-                                reason: data.buildReason,
-                                status: data.state,
-                                tests: {
-                                    passed: data.successfulTestCount,
-                                    failed: data.failedTestCount
-                                }
-                            };
-                        }));
+                        .then(build));
                 }
                 return q.all(qBuild);
             })
             .then(function (builds) {
-                return builds.sort(function (a, b) {
-                    return a.startDate.isAfter(b.startDate) ? -1 : (a.startDate.isBefore(b.startDate) ? 1 : 0);
-                });
+                return builds.sort(sortBy("startDate", true));
             })
             .done(function (builds) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -203,7 +245,7 @@ module.exports = function (app) {
                         name: project.name
                     });
                 }
-                return projects.sort(byName);
+                return projects.sort(sortBy("name"));
             })
             .done(function (projects) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -225,7 +267,7 @@ module.exports = function (app) {
                         state: sprint.state
                     });
                 }
-                return sprints.sort(byName);
+                return sprints.sort(sortBy("name"));
             })
             .done(function (sprints) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -260,9 +302,7 @@ module.exports = function (app) {
                                 for (var j = 0; j < issue.changelog.histories.length; j++) {
                                     var history = issue.changelog.histories[j];
                                     history.created = moment.max(moment.utc(history.created), sprint.startDate.add(-1, "millisecond"));
-                                    history.items = history.items.filter(function (a) {
-                                        return a.field === 'status' && a.fromString !== a.toString;
-                                    });
+                                    history.items = history.items.filter(statusFilter);
                                     for (var k = 0; k < history.items.length; k++) {
                                         var item = history.items[k];
                                         if (item.toString === 'Closed') {
@@ -326,9 +366,7 @@ module.exports = function (app) {
                                 for (var j = 0; j < issue.changelog.histories.length; j++) {
                                     var history = issue.changelog.histories[j];
                                     history.created = moment.max(moment.utc(history.created), sprint.startDate);
-                                    history.items = history.items.filter(function (a) {
-                                        return a.field === 'status' && a.fromString !== a.toString;
-                                    });
+                                    history.items = history.items.filter(statusFilter);
                                     for (var k = 0; k < history.items.length; k++) {
                                         var item = history.items[k];
                                         if (item.fromString === 'Open') {
@@ -348,7 +386,7 @@ module.exports = function (app) {
                             if (issue.fields.issuetype.subtask) {
                                 var task = {
                                     assignee: issue.fields.assignee ? issue.fields.assignee.displayName : null,
-                                    avatar: issue.fields.assignee ? global.jiraHost + '/secure/useravatar?ownerId=' + issue.fields.assignee.name : null,
+                                    avatar: issue.fields.assignee ? issue.fields.assignee.avatarUrls["48x48"] : null,
                                     endDate: moment.utc(),
                                     flagged: issue.fields[global.jiraFlagged] && issue.fields[global.jiraFlagged][0].value === 'Yes',
                                     key: issue.key,
@@ -361,9 +399,7 @@ module.exports = function (app) {
                                 for (var j = 0; j < issue.changelog.histories.length; j++) {
                                     var history = issue.changelog.histories[j];
                                     history.created = moment.max(moment.utc(history.created), sprint.startDate);
-                                    history.items = history.items.filter(function (a) {
-                                        return a.field === 'status' && a.fromString !== a.toString;
-                                    });
+                                    history.items = history.items.filter(statusFilter);
                                     for (var k = 0; k < history.items.length; k++) {
                                         var item = history.items[k];
                                         if (item.fromString === 'Open') {
@@ -374,12 +410,14 @@ module.exports = function (app) {
                                         }
                                     }
                                 }
-                                stories[issue.fields.parent.key].endDate = moment.min(stories[issue.fields.parent.key].endDate, task.endDate);
-                                stories[issue.fields.parent.key].startDate = moment.min(stories[issue.fields.parent.key].startDate, task.startDate);
-                                stories[issue.fields.parent.key].tasks.push(task);
-                                taskboard.tasksDone += (issue.fields.status.name === 'Closed' ? 1 : 0);
-                                taskboard.tasksInProgress += (issue.fields.status.name !=='Open' && issue.fields.status.name !== 'Closed' ? 1 : 0);
-                                taskboard.tasksToDo += (issue.fields.status.name === 'Open' ? 1 : 0);
+                                if (task.state !== "Open") {
+                                    stories[issue.fields.parent.key].endDate = moment.min(stories[issue.fields.parent.key].endDate, task.endDate);
+                                    stories[issue.fields.parent.key].startDate = moment.min(stories[issue.fields.parent.key].startDate, task.startDate);
+                                    stories[issue.fields.parent.key].tasks.push(task);
+                                }
+                                taskboard.tasksDone += (task.state === 'Closed' ? 1 : 0);
+                                taskboard.tasksInProgress += (task.state !=='Open' && task.state !== 'Closed' ? 1 : 0);
+                                taskboard.tasksToDo += (task.state === 'Open' ? 1 : 0);
                             }
                         }
                         for (var key in stories) {
@@ -435,7 +473,7 @@ module.exports = function (app) {
                             if (issue.fields.issuetype.subtask) {
                                 stories[issue.fields.parent.key].tasks.push({
                                     assignee: issue.fields.assignee ? issue.fields.assignee.displayName : null,
-                                    avatar: issue.fields.assignee ? global.jiraHost + '/secure/useravatar?ownerId=' + issue.fields.assignee.name : null,
+                                    avatar: issue.fields.assignee ? issue.fields.assignee.avatarUrls["48x48"] : null,
                                     flagged: issue.fields[global.jiraFlagged] && issue.fields[global.jiraFlagged][0].value === 'Yes',
                                     key: issue.key,
                                     labels: issue.fields.labels.sort(),
@@ -505,9 +543,7 @@ module.exports = function (app) {
                                 var days = [];
                                 for (var date in pool[name]) {
                                     if (pool[name].hasOwnProperty(date)) {
-                                        pool[name][date].sort(function (a, b) {
-                                            return a.key < b.key ? -1 : (a.key > b.key ? 1 : 0);
-                                        });
+                                        pool[name][date].sort(sortBy("key"));
                                         days.push({
                                             date: date,
                                             tasks: pool[name][date]
@@ -523,7 +559,7 @@ module.exports = function (app) {
                         return {
                             startDate: sprint.startDate,
                             endDate: sprint.endDate,
-                            burners: burners.sort(byName)
+                            burners: burners.sort(sortBy("name"))
                         };
                     });
             })
@@ -562,9 +598,7 @@ module.exports = function (app) {
                                 for (var j = 0; j < issue.changelog.histories.length; j++) {
                                     var history = issue.changelog.histories[j];
                                     history.created = moment.max(moment.utc(history.created), sprint.startDate.add(-1, "millisecond"));
-                                    history.items = history.items.filter(function (a) {
-                                        return a.field === 'status' && a.fromString !== a.toString;
-                                    });
+                                    history.items = history.items.filter(statusFilter);
                                     for (var k = 0; k < history.items.length; k++) {
                                         var item = history.items[k];
                                         if (item.fromString === 'Open') {
@@ -625,9 +659,7 @@ module.exports = function (app) {
                                 });
                             }
                         }
-                        return work.sort(function (a, b) {
-                            return a.category < b.category ? -1 : (a.category > b.category ? 1 : 0);
-                        });
+                        return work.sort(sortBy("category"));
                     });
             })
             .done(function (work) {
@@ -691,9 +723,7 @@ module.exports = function (app) {
                     for (var j = 0; j < issue.changelog.histories.length; j++) {
                         var history = issue.changelog.histories[j];
                         history.created = moment.max(moment.utc(history.created), startDate.add(-1, "millisecond"));
-                        history.items = history.items.filter(function (a) {
-                            return a.field === 'status' && a.fromString !== a.toString;
-                        });
+                        history.items = history.items.filter(statusFilter);
                         for (var k = 0; k < history.items.length; k++) {
                             var item = history.items[k];
                             if (item.toString === 'Closed') {

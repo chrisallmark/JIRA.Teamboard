@@ -31,7 +31,7 @@ angular.module('AgileTeamboard')
             } else {
                 throw "Not Moment";
             }
-            return cycleTime;
+            return Math.max(cycleTime, 1);
         }
         function days(days, unit) {
             return days + ' day' + (days === 1 ? '' : 's') + (angular.isDefined(unit) ? '/' + unit : '');
@@ -42,7 +42,7 @@ angular.module('AgileTeamboard')
             angular.forEach(names, function(name, i) {
                 initials += name.charAt(0) + (i < names.length - 1 ? '.' : '');
             });
-            return names[0].length > 8 ? initials : names[0];
+            return names[0].length > 7 ? initials : names[0];
         }
         $scope.$watch('teamboard.view', function() {
             if (angular.isDefined($scope.teamboard) && $scope.teamboard.view === 'cycleboard') {
