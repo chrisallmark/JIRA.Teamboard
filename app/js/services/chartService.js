@@ -150,17 +150,12 @@ angular.module('AgileTeamboard')
                                 }
                                 if (day && day.date.isSame(date, 'day')) {
                                     data.setCell(row, (index * 2) + 1, day.tasks.length);
-                                    var key ='',
-                                        tooltip = '<div class="task-tooltip"><strong>' + day.date.format('dddd Do') + '</strong> / ' + day.tasks.length + ' Transitions / <strong>' + burner.name + ' </strong><hr/><table>';
+                                    var tooltip = '<div class="task-tooltip"><strong>' + day.date.format('dddd Do') + '</strong> / ' + day.tasks.length + ' Tasks / <strong>' + burner.name + ' </strong><hr/><table>';
                                     angular.forEach(day.tasks, function(task, index) {
-                                        if (task.key !== key) {
-                                            if (index !== 0) {
-                                                tooltip += '</td></tr>'
-                                            }
-                                            tooltip += '<tr><td>' + task.key + '</td><td><strong>' + task.name + '</strong><br/>';
-                                        }
-                                        tooltip+= (index === 0 || task.key !== key || day.tasks[index - 1].to !== task.from ? task.from : '') + ' &rarr; ' + task.to;
-                                        key = task.key;
+                                        tooltip += '<tr><td>' + task.key + '</td><td><strong>' + task.name + '</strong><br/>';
+                                        angular.forEach(task.transitions, function(transition, index) {
+                                            tooltip += (index === 0 || task.transitions[index - 1].toState !== transition.fromState ? (index === 0 ? '' : ', ') + transition.fromState : '') + ' &rarr; ' + transition.toState;
+                                        });
                                     });
                                     tooltip += '</td></tr></table></div>';
                                     data.setCell(row, (index * 2) + 2, tooltip);

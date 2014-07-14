@@ -36,6 +36,18 @@ angular.module('AgileTeamboard')
         function days(days, unit) {
             return days + ' day' + (days === 1 ? '' : 's') + (angular.isDefined(unit) ? '/' + unit : '');
         }
+        function popover(task) {
+            var popover = '';
+            if (task) {
+                popover += '<strong>' + task.key + '</strong> / ' + task.name + ' Transitions / <strong>' + task.assignee + ' </strong><hr/><table>';
+                angular.forEach(task.transitions, function(transition, index) {
+                    popover += '<tr><td>' + moment.utc(transition.date).format('YYYY-MM-DD @ HH:mm') + '</td><td>' + transition.fromState + ' &rarr; ' + transition.toState + '</td></tr>';
+                });
+                popover += '</table>';
+                console.log(popover);
+            }
+            return popover;
+        }
         function tag(assignee) {
             var names = assignee.split(/[\s-]+/);
             var initials = '';
@@ -71,6 +83,7 @@ angular.module('AgileTeamboard')
                             task.classification = classification(task.flagged,task.labels, task.state, task.type);
                             var taskCycleTime = cycleTime(task.startDate, task.endDate);
                             task.cycleTime = taskCycleTime;
+                            task.popover = popover(task);
                             task.style = {
                                 'margin-left': (cycleTime(story.startDate, task.startDate) - 1) * (100 / storyCycleTime) + '%',
                                 'width': taskCycleTime * (100 / storyCycleTime) + '%'

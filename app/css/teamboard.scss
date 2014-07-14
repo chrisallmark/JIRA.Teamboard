@@ -41,10 +41,27 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 125%;
   overflow: hidden;
-  .popover-content, .popover-title {
+  .popover {
     color: $background-color;
+    max-width: 350px;
+    width: auto;
+  }
+  .popover-content, .popover-title {
     font-size: small;
     padding: 2px 5px;
+    hr {
+      margin: 2px 0;
+    }
+    table {
+      width: 100%;
+    }
+    tr {
+      border-bottom: dotted 1px #ccc;
+    }
+    td {
+      padding: 0 2px;
+      white-space: nowrap;
+    }
   }
   .popover-title {
     font-weight: bold;

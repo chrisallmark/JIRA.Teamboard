@@ -394,20 +394,26 @@ module.exports = function (app) {
                                     name: issue.fields.summary,
                                     startDate: moment.utc(),
                                     state: issue.fields.status.name,
+                                    transitions: [],
                                     type: issue.fields.issuetype.name
                                 };
                                 for (var j = 0; j < issue.changelog.histories.length; j++) {
                                     var history = issue.changelog.histories[j];
-                                    history.created = moment.max(moment.utc(history.created), sprint.startDate);
+                                    history.created = moment.utc(history.created);
                                     history.items = history.items.filter(statusFilter);
                                     for (var k = 0; k < history.items.length; k++) {
                                         var item = history.items[k];
                                         if (item.fromString === 'Open') {
-                                            task.startDate = history.created;
+                                            task.startDate = moment.max(history.created, sprint.startDate);
                                         }
                                         if (item.toString === 'Closed') {
-                                            task.endDate = history.created;
+                                            task.endDate = moment.max(history.created, sprint.startDate);
                                         }
+                                        task.transitions.push({
+                                            date: history.created,
+                                            fromState: item.fromString,
+                                            toState: item.toString
+                                        })
                                     }
                                 }
                                 if (task.state !== "Open") {
@@ -524,11 +530,15 @@ module.exports = function (app) {
                                                     if (!pool[history.author.displayName][date]) {
                                                         pool[history.author.displayName][date] = [];
                                                     }
-                                                    pool[history.author.displayName][date].push({
-                                                        key: issue.key,
-                                                        name: issue.fields.summary,
-                                                        from: item.fromString,
-                                                        to: item.toString
+                                                    if (!pool[history.author.displayName][date][issue.key]) {
+                                                        pool[history.author.displayName][date][issue.key] = {
+                                                            name: issue.fields.summary,
+                                                            transitions: []
+                                                        }
+                                                    }
+                                                    pool[history.author.displayName][date][issue.key].transitions.push({
+                                                        fromState: item.fromString,
+                                                        toState: item.toString
                                                     });
                                                 }
                                             }
@@ -542,11 +552,17 @@ module.exports = function (app) {
                             if (pool.hasOwnProperty(name)) {
                                 var days = [];
                                 for (var date in pool[name]) {
+                                    var tasks = [];
+                                    for (var key in pool[name][date]) {
+                                        if (pool[name][date].hasOwnProperty(key)) {
+                                            tasks.push(extend({ key: key }, pool[name][date][key]));
+                                        }
+                                    }
+                                    tasks.sort(sortBy("key"));
                                     if (pool[name].hasOwnProperty(date)) {
-                                        pool[name][date].sort(sortBy("key"));
                                         days.push({
                                             date: date,
-                                            tasks: pool[name][date]
+                                            tasks: tasks
                                         });
                                     }
                                 }
