@@ -1,5 +1,5 @@
 'use strict';
-module.exports = function(app) {
+module.exports = function(app, cfg) {
     var api = require('./api');
-    api(app);
+    api(app, cfg);
 }

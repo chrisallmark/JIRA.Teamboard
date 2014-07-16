@@ -9,14 +9,14 @@ angular.module('AgileTeamboard')
         (function load() {
             apiService.builds.query().$promise.then(function (builds) {
                 angular.forEach(builds, function(build) {
+                    build.start = moment(build.start).calendar();
+                    build.end = moment(build.end).calendar();
                     build.classification = classification(build.status);
-                    build.endDate = moment(build.endDate).calendar();
                     if (build.tests.failed === 0 && build.tests.passed === 0) {
                         build.rating = 'N/A';
                     } else {
                         build.rating = Math.floor((build.tests.passed / (build.tests.passed + build.tests.failed)) * 100) + '%';
                     }
-                    build.startDate = moment(build.startDate).calendar();
                 });
                 $scope.builds = builds;
             }).finally(function () {

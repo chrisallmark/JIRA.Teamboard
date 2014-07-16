@@ -7,8 +7,8 @@ $blue-color: #0088cc;
 $dark-grey-color: #111;
 $mid-grey-color: #222;
 $light-grey-color: #333;
-$story-card-color: #fff;
-$story-text-color: #000;
+$issue-card-color: #fff;
+$issue-text-color: #000;
 $task-be-color: #fd9;
 $task-bug-color: #f99;
 $task-card-color: #fff;
@@ -357,7 +357,7 @@ body {
       }
     }
   }
-  .story {
+  .issue {
     width: 100%;
   }
   .task {
@@ -375,7 +375,7 @@ body {
   .underallocated {
     background-color: $underallocated-color;
   }
-  .story {
+  .issue {
     margin-bottom: 10px;
     width: 186px;
   }
@@ -394,7 +394,7 @@ body {
       }
     }
   }
-  .story {
+  .issue {
     width: 100%;
   }
   .task {
@@ -415,7 +415,7 @@ body {
   }
 }
 
-.story, .task {
+.issue, .task {
   padding: 3px 5px;
   &.block {
     background-color: $background-color !important;
@@ -425,8 +425,8 @@ body {
   &.be {
     background-color: $task-be-color;
   }
-  &.bug {
-    background-color: $task-bug-color;
+  &.bug, &.defect {
+    background-color: $task-bug-color !important;
   }
   &.fe {
     background-color: $task-fe-color;
@@ -434,21 +434,14 @@ body {
   &.qa {
     background-color: $task-qa-color;
   }
-  &.descoped {
-    opacity: 0.5;
-    z-index: 0 !important;
-  }
 }
 
-.story {
-  background-color: $story-card-color;
-  color: $story-text-color;
+.issue {
+  background-color: $issue-card-color;
+  color: $issue-text-color;
   height: 108px;
   position: relative;
   word-wrap: break-word;
-  &.descoped {
-    opacity: 0.5;
-  }
   > div:first-of-type {
     line-height: 16px;
   }

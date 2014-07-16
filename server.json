@@ -1,0 +1,9 @@
+{
+    "bambooHost": "https://bamboo.host.com",
+    "crowdUser": "username",
+    "crowdPass": "password",
+    "jiraFlagged": "customfield_10200",
+    "jiraHost": "https://jira.host.com",
+    "jiraPoints": "customfield_11700",
+    "jiraPointsDefault": 5
+}

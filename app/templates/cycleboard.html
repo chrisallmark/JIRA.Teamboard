@@ -11,13 +11,13 @@
             </tr>
         </thead>
         <tbody>
-            <tr data-ng-repeat="story in cycleboard.stories | stateFilter:{'exclude': ['Closed']}" data-ng-repeat-done="popover()">
+            <tr data-ng-repeat="issue in cycleboard.issues | stateFilter:{'exclude': ['Closed']}" data-ng-repeat-done="popover()">
                 <td>
-                    <story data-content="{{story.cycleTime}} ({{story.cycleTimeAverage}})"></story>
+                    <issue data-content="{{issue.cycleTime}} ({{issue.cycleTimeAverage}})"></issue>
                 </td>
                 <td>
-                    <div data-ng-class="story.classification" data-ng-style="story.style">
-                        <div class="task text-center" data-content="{{task.popover}}" data-ng-class="task.classification" data-ng-repeat="task in story.tasks" data-ng-style="task.style">
+                    <div data-ng-class="issue.classification" data-ng-style="issue.style">
+                        <div class="task text-center" data-content="{{task.popover}}" data-ng-class="task.classification" data-ng-repeat="task in issue.subtasks" data-ng-style="task.style">
                             <small>
                                 <span class="badge">{{task.state}}</span>
                             </small>
@@ -25,13 +25,13 @@
                     </div>
                 </td>
             </tr>
-            <tr data-ng-repeat="story in cycleboard.stories | stateFilter:{'include': ['Closed']}" data-ng-repeat-done="popover()">
+            <tr data-ng-repeat="issue in cycleboard.issues | stateFilter:{'include': ['Closed']}" data-ng-repeat-done="popover()">
                 <td>
-                    <story data-content="{{story.cycleTime}} ({{story.cycleTimeAverage}})"></story>
+                    <issue data-content="{{issue.cycleTime}} ({{issue.cycleTimeAverage}})"></issue>
                 </td>
                 <td>
-                    <div data-ng-style="story.style">
-                        <div class="task text-center" data-content="{{task.popover}}" data-ng-class="task.classification" data-ng-repeat="task in story.tasks" data-ng-style="task.style">
+                    <div data-ng-style="issue.style">
+                        <div class="task text-center" data-content="{{task.popover}}" data-ng-class="task.classification" data-ng-repeat="task in issue.subtasks" data-ng-style="task.style">
                             <small>
                                 <span class="badge">{{task.state}}</span>
                             </small>

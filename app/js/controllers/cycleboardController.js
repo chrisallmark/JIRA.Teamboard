@@ -3,33 +3,29 @@
 angular.module('AgileTeamboard')
     .controller('cycleboardController', ['$scope', 'apiService', function ($scope, apiService) {
         function classification(flagged, labels, state, type) {
-            return angular.lowercase((flagged ? 'block ' : '') + (labels ? labels.join('-') + ' ' : '') + state.replace(/[^a-z0-9]/gi, '-') + (type ? ' ' + type.replace(/[^a-z0-9]/gi, '-') : ''));
+            return angular.lowercase((flagged ? 'block ' : '') + (labels ? labels.join('-') + ' ' : '') + state.replace(/[^a-z0-9]/gi, '-') + ' ' + type.replace(/[^a-z0-9]/gi, '-'));
         }
-        function cycleDates(startDate, endDate) {
+        function cycleDates(start, end) {
             var cycleDates = [];
-            if (moment.isMoment(startDate) && moment.isMoment(endDate)) {
-                var date = startDate.clone();
-                while (date.isBefore(endDate, 'day') || date.isSame(endDate, 'day')) {
+            if (moment.isMoment(start) && moment.isMoment(end)) {
+                var date = start.clone();
+                while (date.isBefore(end, 'day') || date.isSame(end, 'day')) {
                     if (date.isoWeekday() !== 6 && date.isoWeekday() !== 7) {
                         cycleDates.push(date.clone());
                     }
                     date.add(1, 'day');
                 }
-            } else {
-                throw "Not Moment";
             }
             return cycleDates;
         }
-        function cycleTime(startDate, endDate) {
+        function cycleTime(start, end) {
             var cycleTime = 0;
-            if (moment.isMoment(startDate) && moment.isMoment(endDate)) {
-                var date = startDate.clone();
-                while (date.isBefore(endDate, 'day') || date.isSame(endDate, 'day')) {
+            if (moment.isMoment(start) && moment.isMoment(end)) {
+                var date = start.clone();
+                while (date.isBefore(end, 'day') || date.isSame(end, 'day')) {
                     cycleTime += (date.isoWeekday() === 6 || date.isoWeekday() === 7 ? 0 : 1);
                     date.add(1, 'day');
                 }
-            } else {
-                throw "Not Moment";
             }
             return Math.max(cycleTime, 1);
         }
@@ -39,22 +35,13 @@ angular.module('AgileTeamboard')
         function popover(task) {
             var popover = '';
             if (task) {
-                popover += '<strong>' + task.key + '</strong> / ' + task.name + ' Transitions / <strong>' + task.assignee + ' </strong><hr/><table>';
-                angular.forEach(task.transitions, function(transition, index) {
+                popover += '<strong>' + subtask.key + '</strong> / ' + subtask.name + ' Transitions / <strong>' + subtask.assignee + ' </strong><hr/><table>';
+                angular.forEach(subtask.transitions, function(transition, index) {
                     popover += '<tr><td>' + moment.utc(transition.date).format('YYYY-MM-DD @ HH:mm') + '</td><td>' + transition.fromState + ' &rarr; ' + transition.toState + '</td></tr>';
                 });
                 popover += '</table>';
-                console.log(popover);
             }
             return popover;
-        }
-        function tag(assignee) {
-            var names = assignee.split(/[\s-]+/);
-            var initials = '';
-            angular.forEach(names, function(name, i) {
-                initials += name.charAt(0) + (i < names.length - 1 ? '.' : '');
-            });
-            return names[0].length > 7 ? initials : names[0];
         }
         $scope.$watch('teamboard.view', function() {
             if (angular.isDefined($scope.teamboard) && $scope.teamboard.view === 'cycleboard') {
@@ -62,42 +49,39 @@ angular.module('AgileTeamboard')
                     'board': $scope.teamboard.board,
                     'sprint': $scope.teamboard.sprint
                 }).$promise.then(function (cycleboard) {
-                    cycleboard.endDate = moment.utc(cycleboard.endDate);
-                    cycleboard.startDate = moment.utc(cycleboard.startDate);
-                    cycleboard.cycleDates = cycleDates(cycleboard.startDate, cycleboard.endDate);
-                    var cycleboardTime = cycleTime(cycleboard.startDate, cycleboard.endDate);
+                    cycleboard.start = moment.utc(cycleboard.start);
+                    cycleboard.end = moment.utc(cycleboard.end);
+                    cycleboard.cycleDates = cycleDates(cycleboard.start, cycleboard.end);
+                    var cycleboardTime = cycleTime(cycleboard.start, cycleboard.end);
                     var cycleboardTimeTotal = 0;
-                    angular.forEach(cycleboard.stories, function(story) {
-                        story.classification = classification(story.flagged, story.labels, story.state);
-                        story.endDate = moment.utc(story.endDate);
-                        story.startDate = moment.utc(story.startDate);
-                        var storyCycleTime = cycleTime(story.startDate, story.endDate);
-                        story.style = {
-                            'margin-left': (cycleTime(cycleboard.startDate, story.startDate) - 1) * (100 / cycleboardTime) + '%',
-                            'width': storyCycleTime * (100 / cycleboardTime) + '%'
+                    angular.forEach(cycleboard.issues, function(issue) {
+                        issue.start = moment.utc(issue.start);
+                        issue.end = moment.utc(issue.end);
+                        issue.classification = classification(issue.flagged, issue.labels, issue.state, issue.type);
+                        var issueCycleTime = cycleTime(issue.start, issue.end);
+                        issue.style = {
+                            'margin-left': (cycleTime(cycleboard.start, issue.start) - 1) * (100 / cycleboardTime) + '%',
+                            'width': issueCycleTime * (100 / cycleboardTime) + '%'
                         };
-                        var storyCycleTotal = 0;
-                        angular.forEach(story.tasks, function(task) {
-                            task.endDate = moment.utc(task.endDate);
-                            task.startDate = moment.utc(task.startDate);
-                            task.classification = classification(task.flagged,task.labels, task.state, task.type);
-                            var taskCycleTime = cycleTime(task.startDate, task.endDate);
-                            task.cycleTime = taskCycleTime;
-                            task.popover = popover(task);
-                            task.style = {
-                                'margin-left': (cycleTime(story.startDate, task.startDate) - 1) * (100 / storyCycleTime) + '%',
-                                'width': taskCycleTime * (100 / storyCycleTime) + '%'
+                        var issueCycleTotal = 0;
+                        angular.forEach(issue.subtasks, function(task) {
+                            subtask.start = moment.utc(subtask.start);
+                            subtask.end = moment.utc(subtask.end);
+                            subtask.classification = classification(subtask.flagged,subtask.labels, subtask.state, subtask.type);
+                            var subtaskCycleTime = cycleTime(subtask.start, subtask.end);
+                            subtask.cycleTime = subtaskCycleTime;
+                            subtask.popover = popover(task);
+                            subtask.style = {
+                                'margin-left': (cycleTime(issue.start, subtask.start) - 1) * (100 / issueCycleTime) + '%',
+                                'width': subtaskCycleTime * (100 / issueCycleTime) + '%'
                             };
-                            if (task.assignee) {
-                                task.tag = tag(task.assignee);
-                            }
-                            storyCycleTotal += taskCycleTime;
+                            issueCycleTotal += subtaskCycleTime;
                         });
-                        story.cycleTimeAverage = days(story.tasks.length === 0 ? 0 : (storyCycleTotal / story.tasks.length).toFixed(2), 'task');
-                        story.cycleTime = days(storyCycleTime);
-                        cycleboardTimeTotal += storyCycleTime;
+                        issue.cycleTimeAverage = days(issue.subtasks.length === 0 ? 0 : (issueCycleTotal / issue.subtasks.length).toFixed(2), 'task');
+                        issue.cycleTime = days(issueCycleTime);
+                        cycleboardTimeTotal += issueCycleTime;
                     });
-                    cycleboard.cycleTimeAverage = days(cycleboard.stories.length === 0 ? 0 : (cycleboardTimeTotal / cycleboard.stories.length).toFixed(2), 'story');
+                    cycleboard.cycleTimeAverage = days(cycleboard.issues.length === 0 ? 0 : (cycleboardTimeTotal / cycleboard.issues.length).toFixed(2), 'issue');
                     cycleboard.cycleTime = days(cycleboardTime);
                     cycleboard.style = {
                         'width': (100 / cycleboardTime) + '%'
@@ -109,7 +93,7 @@ angular.module('AgileTeamboard')
             }
         });
         $scope.popover = function () {
-            $('#cycleboard .story, #cycleboard .task').popover({
+            $('#cycleboard .issue, #cycleboard .task').popover({
                 'container': 'body',
                 'html': true,
                 'toggle': 'popover',

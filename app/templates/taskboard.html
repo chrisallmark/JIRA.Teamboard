@@ -3,58 +3,58 @@
         <thead>
             <tr>
                 <td class="text-center">
-                    <div><strong>{{taskboard.startDate}} to {{taskboard.endDate}}</strong></div>
+                    <div><strong>{{taskboard.start}} to {{taskboard.end}}</strong></div>
                     <div>
-                        <small>({{taskboard.storiesDone}}sp of {{taskboard.storiesToDo + taskboard.storiesDone}}sp  done)</small>
+                        <small>({{taskboard.issuesDone}}sp of {{taskboard.issuesToDo + taskboard.issuesDone}}sp  done)</small>
                     </div>
                 </td>
                 <td class="text-center">
                     <div><strong>Not Started</strong></div>
                     <div>
-                        <small>({{taskboard.tasksToDo}})</small>
+                        <small>({{taskboard.subtasksToDo}})</small>
                     </div>
                 </td>
                 <td class="text-center" data-ng-class="{'wip-exceeded':taskboard.wipExceeded}">
                     <div><strong>In Progress</strong></div>
                     <div>
-                        <small>({{taskboard.tasksInProgress}})</small>
+                        <small>({{taskboard.subtasksInProgress}})</small>
                     </div>
                 </td>
                 <td class="text-center">
                     <div><strong>Done</strong></div>
                     <div>
-                        <small>({{taskboard.tasksDone}})</small>
+                        <small>({{taskboard.subtasksDone}})</small>
                     </div>
                 </td>
             </tr>
         </thead>
         <tbody>
-            <tr data-ng-repeat="story in taskboard.stories | stateFilter:{'exclude': ['Closed']}">
+            <tr data-ng-repeat="issue in taskboard.issues | stateFilter:{'exclude': ['Closed']}">
                 <td>
-                    <story></story>
+                    <issue></issue>
                 </td>
                 <td>
-                    <task data-ng-repeat="task in story.tasks | stateFilter:{'include': ['Open']}"></task>
+                    <subtask data-ng-repeat="task in issue.subtasks | stateFilter:{'include': ['Open']}"></subtask>
                 </td>
                 <td data-ng-class="{'wip-exceeded':taskboard.wipExceeded}">
-                    <task data-ng-repeat="task in story.tasks | stateFilter:{'exclude': ['Open', 'Closed']}"></task>
+                    <subtask data-ng-repeat="task in issue.subtasks | stateFilter:{'exclude': ['Open', 'Closed']}"></subtask>
                 </td>
                 <td>
-                    <task data-ng-repeat="task in story.tasks | stateFilter:{'include': ['Closed']}"></task>
+                    <subtask data-ng-repeat="task in issue.subtasks | stateFilter:{'include': ['Closed']}"></subtask>
                 </td>
             </tr>
-            <tr data-ng-repeat="story in taskboard.stories | stateFilter:{'include': ['Closed']}">
+            <tr data-ng-repeat="issue in taskboard.issues | stateFilter:{'include': ['Closed']}">
                 <td>
-                    <story></story>
+                    <issue></issue>
                 </td>
                 <td>
-                    <task data-ng-repeat="task in story.tasks | stateFilter:{'include': ['Open']}"></task>
+                    <subtask data-ng-repeat="task in issue.subtasks | stateFilter:{'include': ['Open']}"></subtask>
                 </td>
                 <td data-ng-class="{'wip-exceeded':taskboard.wipExceeded}">
-                    <task data-ng-repeat="task in story.tasks | stateFilter:{'exclude': ['Open', 'Closed']}"></task>
+                    <subtask data-ng-repeat="task in issue.subtasks | stateFilter:{'exclude': ['Open', 'Closed']}"></subtask>
                 </td>
                 <td>
-                    <task data-ng-repeat="task in story.tasks | stateFilter:{'include': ['Closed']}"></task>
+                    <subtask data-ng-repeat="task in issue.subtasks | stateFilter:{'include': ['Closed']}"></subtask>
                 </td>
             </tr>
         </tbody>

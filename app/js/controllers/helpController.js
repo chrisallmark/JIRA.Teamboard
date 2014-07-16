@@ -5,19 +5,24 @@ angular.module('AgileTeamboard')
         $scope.baseUrl = $location.protocol() + '://' + $location.host() + ($location.port() === 80 ? '' : ':' + $location.port());
         $scope.builds = [
             {
-                'classification': "inprogress",
-                'name': "Buld #3",
-                'startDate': moment().calendar()
+                classification: "successful",
+                name: "Buld #2",
+                rating: '100%',
+                start: moment().add(-1, 'days').calendar(),
+                tests: {
+                    failed: 0,
+                    passed: 1
+                }
             },
             {
-                'classification': "successful",
-                'name': "Buld #2",
-                'startDate': moment().add(-1, 'days').calendar()
-            },
-            {
-                'classification': "failed",
-                'name': "Buld #1",
-                'startDate': moment().add(-2, 'days').calendar()
+                classification: "failed",
+                name: "Buld #1",
+                rating: '0%',
+                start: moment().add(-2, 'days').calendar(),
+                tests: {
+                    failed: 1,
+                    passed: 0
+                }
             }
         ];
         $scope.scrollTo = function(id) {

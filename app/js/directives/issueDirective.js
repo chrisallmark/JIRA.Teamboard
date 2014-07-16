@@ -1,9 +1,9 @@
 'use strict';
 angular.module('AgileTeamboard')
-    .directive('task', function () {
+    .directive('issue', function () {
         return {
             'replace': true,
             'restrict': 'E',
-            'templateUrl': '/templates/task.html'
+            'templateUrl': '/templates/issue.html'
         };
     });

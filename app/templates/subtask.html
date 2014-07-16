@@ -1,0 +1,12 @@
+<div id="{{subtask.id}}" class="pull-left task" title="{{subtask.key}}" data-ng-class="subtask.classification" data-ng-style="{'z-index':999-$index}">
+    <div>
+        <small>{{subtask.name}}</small>
+    </div>
+    <div>
+        <span class="badge pull-right">{{subtask.state}}</span>
+        <div class="polaroid" title="{{subtask.owner}}" data-ng-if="subtask.assignee">
+            <img onerror="this.src='/img/avatars/default.png'" data-ng-src="{{subtask.avatar}}"/>
+            <span>{{subtask.tag}}</span>
+        </div>
+    </div>
+</div>

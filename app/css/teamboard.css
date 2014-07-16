@@ -219,7 +219,7 @@ body {
     width: 13%; }
   #cycleboard table td:last-of-type .in-progress .closed {
     opacity: 0.5; }
-#cycleboard .story {
+#cycleboard .issue {
   width: 100%; }
 #cycleboard .task {
   margin: 2px 0;
@@ -231,7 +231,7 @@ body {
   background-color: #000033; }
 #releaseboard .underallocated {
   background-color: #003300; }
-#releaseboard .story {
+#releaseboard .issue {
   margin-bottom: 10px;
   width: 186px; }
 
@@ -243,7 +243,7 @@ body {
       width: 13%; }
     #taskboard table td.wip-exceeded {
       background-color: #330000; }
-#taskboard .story {
+#taskboard .issue {
   width: 100%; }
 #taskboard .task {
   height: 108px;
@@ -259,35 +259,30 @@ body {
     position: absolute;
     width: 100%; }
 
-.story, .task {
+.issue, .task {
   padding: 3px 5px; }
-  .story.block, .task.block {
+  .issue.block, .task.block {
     background-color: black !important;
     border: solid 1px white !important;
     color: white !important; }
-  .story.be, .task.be {
+  .issue.be, .task.be {
     background-color: #ffdd99; }
-  .story.bug, .task.bug {
-    background-color: #ff9999; }
-  .story.fe, .task.fe {
+  .issue.bug, .issue.defect, .task.bug, .task.defect {
+    background-color: #ff9999 !important; }
+  .issue.fe, .task.fe {
     background-color: #ffeeaa; }
-  .story.qa, .task.qa {
+  .issue.qa, .task.qa {
     background-color: #ccffcc; }
-  .story.descoped, .task.descoped {
-    opacity: 0.5;
-    z-index: 0 !important; }
 
-.story {
+.issue {
   background-color: white;
   color: black;
   height: 108px;
   position: relative;
   word-wrap: break-word; }
-  .story.descoped {
-    opacity: 0.5; }
-  .story > div:first-of-type {
+  .issue > div:first-of-type {
     line-height: 16px; }
-  .story > div:last-of-type {
+  .issue > div:last-of-type {
     border-top: dotted 1px;
     bottom: 0;
     left: 0;

@@ -124,16 +124,16 @@ angular.module('AgileTeamboard')
                     sprint: configuration.sprint
                 });
                 taskburn.$promise.then(function (taskburn) {
-                    taskburn.startDate = moment.utc(taskburn.startDate);
-                    taskburn.endDate = moment.utc(taskburn.endDate);
+                    taskburn.start = moment.utc(taskburn.start);
+                    taskburn.end = moment.utc(taskburn.end);
                     var data = new google.visualization.DataTable();
                     data.addColumn('string', 'Day');
                     angular.forEach(taskburn.burners, function(burner, index) {
                         data.addColumn('number', burner.name === '' ? '?' : burner.name.split(' ')[0]);
                         data.addColumn({'type': 'string', 'role': 'tooltip', p: {'html': true}});
                         var row = 0;
-                        var date = moment.utc(taskburn.startDate.endOf('day'));
-                        while (date.isBefore(taskburn.endDate, 'day') || date.isSame(taskburn.endDate, 'day')) {
+                        var date = moment.utc(taskburn.start.endOf('day'));
+                        while (date.isBefore(taskburn.end, 'day') || date.isSame(taskburn.end, 'day')) {
                             if (date.isoWeekday() <= 5) {
                                 if (index === 0) {
                                     data.setCell(data.addRow(), 0, date.format('dddd Do'));
@@ -149,12 +149,12 @@ angular.module('AgileTeamboard')
                                     }
                                 }
                                 if (day && day.date.isSame(date, 'day')) {
-                                    data.setCell(row, (index * 2) + 1, day.tasks.length);
-                                    var tooltip = '<div class="task-tooltip"><strong>' + day.date.format('dddd Do') + '</strong> / ' + day.tasks.length + ' Tasks / <strong>' + burner.name + ' </strong><hr/><table>';
-                                    angular.forEach(day.tasks, function(task, index) {
-                                        tooltip += '<tr><td>' + task.key + '</td><td><strong>' + task.name + '</strong><br/>';
-                                        angular.forEach(task.transitions, function(transition, index) {
-                                            tooltip += (index === 0 || task.transitions[index - 1].toState !== transition.fromState ? (index === 0 ? '' : ', ') + transition.fromState : '') + ' &rarr; ' + transition.toState;
+                                    data.setCell(row, (index * 2) + 1, day.subtasks.length);
+                                    var tooltip = '<div class="task-tooltip"><strong>' + day.date.format('dddd Do') + '</strong> / ' + day.subtasks.length + ' Tasks / <strong>' + burner.name + ' </strong><hr/><table>';
+                                    angular.forEach(day.subtasks, function(task, index) {
+                                        tooltip += '<tr><td>' + subtask.key + '</td><td><strong>' + subtask.name + '</strong><br/>';
+                                        angular.forEach(subtask.transitions, function(transition, index) {
+                                            tooltip += (index === 0 || subtask.transitions[index - 1].toState !== transition.fromState ? (index === 0 ? '' : ', ') + transition.fromState : '') + ' &rarr; ' + transition.toState;
                                         });
                                     });
                                     tooltip += '</td></tr></table></div>';
