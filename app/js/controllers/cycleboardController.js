@@ -32,9 +32,9 @@ angular.module('AgileTeamboard')
         function days(days, unit) {
             return days + ' day' + (days === 1 ? '' : 's') + (angular.isDefined(unit) ? '/' + unit : '');
         }
-        function popover(task) {
+        function popover(subtask) {
             var popover = '';
-            if (task) {
+            if (subtask) {
                 popover += '<strong>' + subtask.key + '</strong> / ' + subtask.name + ' Transitions / <strong>' + subtask.assignee + ' </strong><hr/><table>';
                 angular.forEach(subtask.transitions, function(transition, index) {
                     popover += '<tr><td>' + moment.utc(transition.date).format('YYYY-MM-DD @ HH:mm') + '</td><td>' + transition.fromState + ' &rarr; ' + transition.toState + '</td></tr>';
@@ -64,13 +64,13 @@ angular.module('AgileTeamboard')
                             'width': issueCycleTime * (100 / cycleboardTime) + '%'
                         };
                         var issueCycleTotal = 0;
-                        angular.forEach(issue.subtasks, function(task) {
+                        angular.forEach(issue.subtasks, function(subtask) {
                             subtask.start = moment.utc(subtask.start);
                             subtask.end = moment.utc(subtask.end);
                             subtask.classification = classification(subtask.flagged,subtask.labels, subtask.state, subtask.type);
                             var subtaskCycleTime = cycleTime(subtask.start, subtask.end);
                             subtask.cycleTime = subtaskCycleTime;
-                            subtask.popover = popover(task);
+                            subtask.popover = popover(subtask);
                             subtask.style = {
                                 'margin-left': (cycleTime(issue.start, subtask.start) - 1) * (100 / issueCycleTime) + '%',
                                 'width': subtaskCycleTime * (100 / issueCycleTime) + '%'

@@ -34,13 +34,13 @@
                     <issue></issue>
                 </td>
                 <td>
-                    <subtask data-ng-repeat="task in issue.subtasks | stateFilter:{'include': ['Open']}"></subtask>
+                    <subtask data-ng-repeat="subtask in issue.subtasks | stateFilter:{'include': ['Open']}"></subtask>
                 </td>
                 <td data-ng-class="{'wip-exceeded':taskboard.wipExceeded}">
-                    <subtask data-ng-repeat="task in issue.subtasks | stateFilter:{'exclude': ['Open', 'Closed']}"></subtask>
+                    <subtask data-ng-repeat="subtask in issue.subtasks | stateFilter:{'exclude': ['Open', 'Closed']}"></subtask>
                 </td>
                 <td>
-                    <subtask data-ng-repeat="task in issue.subtasks | stateFilter:{'include': ['Closed']}"></subtask>
+                    <subtask data-ng-repeat="subtask in issue.subtasks | stateFilter:{'include': ['Closed']}"></subtask>
                 </td>
             </tr>
             <tr data-ng-repeat="issue in taskboard.issues | stateFilter:{'include': ['Closed']}">
@@ -48,13 +48,13 @@
                     <issue></issue>
                 </td>
                 <td>
-                    <subtask data-ng-repeat="task in issue.subtasks | stateFilter:{'include': ['Open']}"></subtask>
+                    <subtask data-ng-repeat="subtask in issue.subtasks | stateFilter:{'include': ['Open']}"></subtask>
                 </td>
                 <td data-ng-class="{'wip-exceeded':taskboard.wipExceeded}">
-                    <subtask data-ng-repeat="task in issue.subtasks | stateFilter:{'exclude': ['Open', 'Closed']}"></subtask>
+                    <subtask data-ng-repeat="subtask in issue.subtasks | stateFilter:{'exclude': ['Open', 'Closed']}"></subtask>
                 </td>
                 <td>
-                    <subtask data-ng-repeat="task in issue.subtasks | stateFilter:{'include': ['Closed']}"></subtask>
+                    <subtask data-ng-repeat="subtask in issue.subtasks | stateFilter:{'include': ['Closed']}"></subtask>
                 </td>
             </tr>
         </tbody>

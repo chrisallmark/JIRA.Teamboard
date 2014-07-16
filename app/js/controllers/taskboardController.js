@@ -26,7 +26,7 @@ angular.module('AgileTeamboard')
                     var wip = 0;
                     angular.forEach(taskboard.issues, function(issue) {
                         issue.classification = classification(issue.flagged, issue.labels, issue.state, issue.type);
-                        angular.forEach(issue.subtasks, function(task) {
+                        angular.forEach(issue.subtasks, function(subtask) {
                             subtask.classification = classification(subtask.flagged, subtask.labels, subtask.state, subtask.type);
                             subtask.tag = tag(subtask.assignee);
                             wip += (subtask.state !== "Open" && subtask.state !== "Closed");

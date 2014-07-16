@@ -151,7 +151,7 @@ angular.module('AgileTeamboard')
                                 if (day && day.date.isSame(date, 'day')) {
                                     data.setCell(row, (index * 2) + 1, day.subtasks.length);
                                     var tooltip = '<div class="task-tooltip"><strong>' + day.date.format('dddd Do') + '</strong> / ' + day.subtasks.length + ' Tasks / <strong>' + burner.name + ' </strong><hr/><table>';
-                                    angular.forEach(day.subtasks, function(task, index) {
+                                    angular.forEach(day.subtasks, function(subtask, index) {
                                         tooltip += '<tr><td>' + subtask.key + '</td><td><strong>' + subtask.name + '</strong><br/>';
                                         angular.forEach(subtask.transitions, function(transition, index) {
                                             tooltip += (index === 0 || subtask.transitions[index - 1].toState !== transition.fromState ? (index === 0 ? '' : ', ') + transition.fromState : '') + ' &rarr; ' + transition.toState;

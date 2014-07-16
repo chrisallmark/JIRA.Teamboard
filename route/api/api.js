@@ -447,7 +447,7 @@ module.exports = function (app, cfg) {
             });
     });
 
-    app.get('/api/:board/:sprint/subtask/board', function (req, res) {
+    app.get('/api/:board/:sprint/task/board', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
                 return jql(cfg, 'sprint=' + req.param('sprint') + ' ORDER BY Rank', ['assignee', 'issuetype', cfg.jiraFlagged, 'labels', 'parent', cfg.jiraPoints, 'status', 'summary'])
@@ -514,7 +514,7 @@ module.exports = function (app, cfg) {
             });
     });
 
-    app.get('/api/:board/:sprint/subtask/burn', function (req, res) {
+    app.get('/api/:board/:sprint/task/burn', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
                 var pool = [];
@@ -591,7 +591,7 @@ module.exports = function (app, cfg) {
             });
     });
 
-    app.get('/api/:board/:sprint/subtask/flow', function (req, res) {
+    app.get('/api/:board/:sprint/task/flow', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
                 var flow = [],
@@ -667,7 +667,7 @@ module.exports = function (app, cfg) {
             });
     });
 
-    app.get('/api/:board/:sprint/subtask/work', function (req, res) {
+    app.get('/api/:board/:sprint/task/work', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
                 return jql(cfg, 'sprint=' + req.param('sprint') + ' AND status was not \'Closed\' ON \'' + moment.min(moment.utc(), timebox.end).format('YYYY-MM-DD') + '\'', ['issuetype','labels'])

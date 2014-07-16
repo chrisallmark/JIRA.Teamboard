@@ -1,6 +1,6 @@
 'use strict';
 angular.module('AgileTeamboard')
-    .directive('task', function () {
+    .directive('subtask', function () {
         return {
             'replace': true,
             'restrict': 'E',
