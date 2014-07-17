@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('AgileTeamboard')
+angular.module('JIRA.Teamboard')
     .factory('chartService', ['$q', 'apiService', function ($q, apiService) {
         function defaultOptions() {
             return {

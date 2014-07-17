@@ -1,5 +1,5 @@
 'use strict';
-angular.module('AgileTeamboard')
+angular.module('JIRA.Teamboard')
     .directive('ngRepeatDone', function () {
         return {
             'link': function (scope, element, attrs) {

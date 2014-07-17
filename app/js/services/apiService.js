@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('AgileTeamboard')
+angular.module('JIRA.Teamboard')
     .factory('apiService', ['$resource', function ($resource) {
         return {
             'boards': $resource('/api/boards'),

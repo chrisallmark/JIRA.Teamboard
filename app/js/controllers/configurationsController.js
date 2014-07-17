@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('AgileTeamboard')
+angular.module('JIRA.Teamboard')
     .controller('configurationsController', ['$scope', '$location', 'apiService', function ($scope, $location, apiService) {
         $scope.add = function () {
             $location.path('/configuration/');

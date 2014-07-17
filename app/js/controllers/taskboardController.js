@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('AgileTeamboard')
+angular.module('JIRA.Teamboard')
     .controller('taskboardController', ['$scope', 'apiService', function ($scope, apiService) {
         function classification(flagged, labels, state, type) {
             return angular.lowercase((flagged ? 'block ' : '') + (labels ? labels.join('-') + ' ' : '') + state.replace(/[^a-z0-9]/gi, '-') + ' ' + type.replace(/[^a-z0-9]/gi, '-'));
@@ -32,6 +32,7 @@ angular.module('AgileTeamboard')
                             wip += (subtask.state !== "Open" && subtask.state !== "Closed");
                         });
                     });
+                    taskboard.state = null;
                     taskboard.wipExceeded = Number($scope.teamboard.wip) > 0 ? wip > Number($scope.teamboard.wip) : false;
                     $scope.taskboard = taskboard;
                 }).finally(function () {
@@ -39,4 +40,14 @@ angular.module('AgileTeamboard')
                 });
             }
         });
+        $scope.toggleState = function(state) {
+            state = angular.lowercase(state.replace(/[^a-z0-9]/gi, '-'));
+            if ($scope.taskboard.state === null) {
+                $('#taskboard .subtask').not('.' + state).addClass('mute');
+                $scope.taskboard.state = state;
+            } else {
+                $('#taskboard .subtask').not('.' + state).removeClass('mute');
+                $scope.taskboard.state = null;
+            }
+        };
     }]);

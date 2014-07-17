@@ -9,10 +9,10 @@ $mid-grey-color: #222;
 $light-grey-color: #333;
 $issue-card-color: #fff;
 $issue-text-color: #000;
-$task-be-color: #fd9;
+$task-be-color: #fc9;
 $task-bug-color: #f99;
 $task-card-color: #fff;
-$task-fe-color :#fea;
+$task-fe-color :#ffc;
 $task-text-color: #000;
 $task-qa-color: #cfc;
 $overallocated-color: #003;
@@ -127,12 +127,11 @@ body {
       margin: 16px 0;
       text-align: center;
       ul {
-        display: inline-block;
-        white-space: nowrap;
         li {
+          width: 13.5%;
           a {
-            padding: 5px 10px 3px 10px;
-            font-size: 140%;
+            font-size: 150%;
+            padding: 4px 6px 2px 6px;
           }
         }
       }
@@ -360,7 +359,7 @@ body {
   .issue {
     width: 100%;
   }
-  .task {
+  .subtask {
     margin: 2px 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -397,7 +396,7 @@ body {
   .issue {
     width: 100%;
   }
-  .task {
+  .subtask {
     height: 108px;
     position: relative;
     width: 33.33%;
@@ -415,7 +414,7 @@ body {
   }
 }
 
-.issue, .task {
+.issue, .subtask {
   padding: 3px 5px;
   &.block {
     background-color: $background-color !important;
@@ -430,6 +429,9 @@ body {
   }
   &.fe {
     background-color: $task-fe-color;
+  }
+  &.mute {
+    opacity: 0.5;
   }
   &.qa {
     background-color: $task-qa-color;
@@ -455,7 +457,7 @@ body {
   }
 }
 
-.task {
+.subtask {
   background-color: $task-card-color;
   box-shadow: rgba(0, 0, 0, 0.75) 1px 1px 2px;
   color: $task-text-color;
@@ -521,7 +523,7 @@ body {
     #help-sprint {
       margin-left: 10px;
     }
-    .task {
+    .subtask {
       line-height: 32px;
     }
   }

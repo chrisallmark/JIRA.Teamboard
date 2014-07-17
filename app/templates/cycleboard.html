@@ -17,9 +17,9 @@
                 </td>
                 <td>
                     <div data-ng-class="issue.classification" data-ng-style="issue.style">
-                        <div class="task text-center" data-content="{{task.popover}}" data-ng-class="task.classification" data-ng-repeat="task in issue.subtasks" data-ng-style="task.style">
+                        <div class="subtask text-center" data-content="{{subtask.popover}}" data-ng-class="subtask.classification" data-ng-repeat="subtask in issue.subtasks" data-ng-style="subtask.style">
                             <small>
-                                <span class="badge">{{task.state}}</span>
+                                <span class="badge" data-ng-click="toggleState(subtask.state)">{{subtask.state}}</span>
                             </small>
                         </div>
                     </div>
@@ -31,9 +31,9 @@
                 </td>
                 <td>
                     <div data-ng-style="issue.style">
-                        <div class="task text-center" data-content="{{task.popover}}" data-ng-class="task.classification" data-ng-repeat="task in issue.subtasks" data-ng-style="task.style">
+                        <div class="subtask text-center" data-content="{{subtask.popover}}" data-ng-class="subtask.classification" data-ng-repeat="subtask in issue.subtasks" data-ng-style="subtask.style">
                             <small>
-                                <span class="badge">{{task.state}}</span>
+                                <span class="badge" data-ng-click="toggleState(subtask.state)">{{subtask.state}}</span>
                             </small>
                         </div>
                     </div>

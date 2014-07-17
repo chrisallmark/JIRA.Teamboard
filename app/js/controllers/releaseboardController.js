@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('AgileTeamboard')
+angular.module('JIRA.Teamboard')
     .controller('releaseboardController', ['$scope', 'apiService', function ($scope, apiService) {
         function classification(flagged, labels, state, type) {
             return angular.lowercase((flagged ? 'block ' : '') + (labels ? labels.join('-') + ' ' : '') + state.replace(/[^a-z0-9]/gi, '-') + ' ' + type.replace(/[^a-z0-9]/gi, '-'));

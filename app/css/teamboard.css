@@ -63,12 +63,11 @@ body {
   #teamboard aside nav {
     margin: 16px 0;
     text-align: center; }
-    #teamboard aside nav ul {
-      display: inline-block;
-      white-space: nowrap; }
+    #teamboard aside nav ul li {
+      width: 13.5%; }
       #teamboard aside nav ul li a {
-        padding: 5px 10px 3px 10px;
-        font-size: 140%; }
+        font-size: 150%;
+        padding: 4px 6px 2px 6px; }
 #teamboard .container-fluid > .row > div:first-of-type {
   padding-left: 0; }
 #teamboard .container-fluid > .row > div:last-of-type {
@@ -221,7 +220,7 @@ body {
     opacity: 0.5; }
 #cycleboard .issue {
   width: 100%; }
-#cycleboard .task {
+#cycleboard .subtask {
   margin: 2px 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -245,33 +244,35 @@ body {
       background-color: #330000; }
 #taskboard .issue {
   width: 100%; }
-#taskboard .task {
+#taskboard .subtask {
   height: 108px;
   position: relative;
   width: 33.33%;
   word-wrap: break-word; }
-  #taskboard .task > div:first-of-type {
+  #taskboard .subtask > div:first-of-type {
     line-height: 12px; }
-  #taskboard .task > div:last-of-type {
+  #taskboard .subtask > div:last-of-type {
     bottom: 0;
     left: 0;
     padding: 2px;
     position: absolute;
     width: 100%; }
 
-.issue, .task {
+.issue, .subtask {
   padding: 3px 5px; }
-  .issue.block, .task.block {
+  .issue.block, .subtask.block {
     background-color: black !important;
     border: solid 1px white !important;
     color: white !important; }
-  .issue.be, .task.be {
-    background-color: #ffdd99; }
-  .issue.bug, .issue.defect, .task.bug, .task.defect {
+  .issue.be, .subtask.be {
+    background-color: #ffcc99; }
+  .issue.bug, .issue.defect, .subtask.bug, .subtask.defect {
     background-color: #ff9999 !important; }
-  .issue.fe, .task.fe {
-    background-color: #ffeeaa; }
-  .issue.qa, .task.qa {
+  .issue.fe, .subtask.fe {
+    background-color: #ffffcc; }
+  .issue.mute, .subtask.mute {
+    opacity: 0.5; }
+  .issue.qa, .subtask.qa {
     background-color: #ccffcc; }
 
 .issue {
@@ -290,14 +291,14 @@ body {
     position: absolute;
     width: 100%; }
 
-.task {
+.subtask {
   background-color: white;
   box-shadow: rgba(0, 0, 0, 0.75) 1px 1px 2px;
   color: black; }
-  .task .badge {
+  .subtask .badge {
     background-color: rgba(0, 0, 0, 0.25);
     margin: 0 1px; }
-  .task .polaroid {
+  .subtask .polaroid {
     -moz-transform: rotate(-5deg);
     -ms-transform: rotate(-5deg);
     -o-transform: rotate(-5deg);
@@ -311,11 +312,11 @@ body {
     left: -8px;
     padding: 3px 3px 0 3px;
     position: absolute; }
-    .task .polaroid img {
+    .subtask .polaroid img {
       border: 1px solid #ccc;
       height: 40px;
       width: 40px; }
-    .task .polaroid span {
+    .subtask .polaroid span {
       color: #333;
       display: block;
       font-size: 8px;
@@ -348,5 +349,5 @@ body {
         border-color: white; }
     #modal-help #help-content #help-sprint {
       margin-left: 10px; }
-    #modal-help #help-content .task {
+    #modal-help #help-content .subtask {
       line-height: 32px; }

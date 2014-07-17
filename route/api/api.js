@@ -37,18 +37,25 @@ function jira(cfg, endpoint) {
 }
 
 function jql(cfg, query, fields, expand, maxResults) {
-    var search = '/rest/api/latest/search?jql=' + encodeURIComponent(query) + '&maxResults=' + (maxResults ? maxResults : 999) + (fields ? '&fields=' + fields.join() : '') + (expand ? '&expand=' + expand.join() : '');
-    console.log(search);
-    return jira(cfg, search);
+    return jira(cfg, '/rest/api/latest/search?jql=' +
+        encodeURIComponent(query) +
+        '&maxResults=' + (maxResults ? maxResults : 999) +
+        (fields ? '&fields=' + fields.join() : '') +
+        (expand ? '&expand=' + expand.join() : ''));
 }
 
 function qReadFile(file) {
     var deferred = q.defer();
     fs.readFile(file, function(err, data) {
         if (err) {
+            console.log(err);
             deferred.reject(err);
         } else {
-            deferred.resolve(JSON.parse(data));
+            try {
+                deferred.resolve(JSON.parse(data));
+            } catch (e) {
+                deferred.reject(e.message);
+            }
         }
     });
     return deferred.promise;
@@ -56,10 +63,13 @@ function qReadFile(file) {
 
 function qRequest(options) {
     var deferred = q.defer();
+    var timestamp = moment.utc();
     request(options, function (err, res, body) {
         if (err) {
+            console.log(err);
             deferred.reject(err);
         } else {
+            console.log('qRequest took ' + moment.utc().diff(timestamp) + 'ms for ' + options.uri);
             if (res.statusCode === 200) {
                 try {
                     deferred.resolve(JSON.parse(body));
@@ -102,6 +112,7 @@ module.exports = function (app, cfg) {
     app.get('/api/configurations', function (req, res) {
         fs.readdir('./cfg', function(err, files) {
             if (err) {
+                console.log(err);
                 res.send(500);
             }
             else
@@ -737,7 +748,7 @@ module.exports = function (app, cfg) {
                 toDo: 0
             },
             burnStates = [],
-            start = moment.utc().add(-90, 'days').startOf('day'),
+            start = moment.utc().add(-60, 'days').startOf('day'),
             end = moment.utc().endOf('day');
         for (var date = start.clone().add(-1, 'millisecond'); date.isBefore(end) || date.isSame(end); date.add(1, 'day')) {
             burnStates[date] = {
@@ -786,16 +797,20 @@ module.exports = function (app, cfg) {
     app.get('/api/:project/:board/:sprint/release/board/:velocity', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
+                var totalDays = timebox.end.diff(timebox.start, 'days') + 1;
+                while (timebox.start.isBefore(moment.utc())) {
+                    timebox.start.add(totalDays, 'days');
+                    timebox.end.add(totalDays, 'days');
+                }
                 return jql(cfg, 'project=' + req.param('project') + ' AND type in standardIssueTypes() AND status = \'Open\' AND (sprint not in openSprints() OR sprint is EMPTY) ORDER BY Rank', [cfg.jiraFlagged, 'issuetype', cfg.jiraPoints, 'labels', 'summary', 'status'], [], 999)
                     .then(function (data) {
-                        var releaseboard =  [],
-                            totalDays = timebox.end.diff(timebox.start, 'days') + 1;
+                        var releaseboard =  [];
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
                             if (releaseboard.length === 0 || (releaseboard[releaseboard.length - 1].points + (issue.fields[cfg.jiraPoints] || cfg.jiraPointsDefault) > Number(req.param('velocity')) * 1.10 && i > 0 && i < data.issues.length - 1)) {
                                 releaseboard.push({
-                                    start: timebox.start.clone().add((releaseboard.length + 1) * totalDays, 'days'),
-                                    end: timebox.end.clone().add((releaseboard.length + 1) * totalDays, 'days'),
+                                    start: timebox.start.clone().add(releaseboard.length * totalDays, 'days'),
+                                    end: timebox.end.clone().add(releaseboard.length * totalDays, 'days'),
                                     points: 0,
                                     issues: []
                                 });

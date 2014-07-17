@@ -5,9 +5,9 @@ var bodyParser = require('body-parser'),
     morgan = require('morgan'),
     route = require('./route');
 
-
 var app = express();
-app.use(bodyParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('./app'));
 app.use(morgan());
 

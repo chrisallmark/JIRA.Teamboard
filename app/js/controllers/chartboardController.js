@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('AgileTeamboard')
+angular.module('JIRA.Teamboard')
     .controller('chartboardController', ['$scope', '$location', 'chartService', function ($scope, $location, chartService) {
         $scope.$watch('teamboard.view', function() {
             if (angular.isDefined($scope.teamboard) && $scope.teamboard.view === 'chartboard') {

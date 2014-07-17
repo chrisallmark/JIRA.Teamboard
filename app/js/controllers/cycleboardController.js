@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('AgileTeamboard')
+angular.module('JIRA.Teamboard')
     .controller('cycleboardController', ['$scope', 'apiService', function ($scope, apiService) {
         function classification(flagged, labels, state, type) {
             return angular.lowercase((flagged ? 'block ' : '') + (labels ? labels.join('-') + ' ' : '') + state.replace(/[^a-z0-9]/gi, '-') + ' ' + type.replace(/[^a-z0-9]/gi, '-'));
@@ -86,6 +86,7 @@ angular.module('AgileTeamboard')
                     cycleboard.style = {
                         'width': (100 / cycleboardTime) + '%'
                     };
+                    cycleboard.state = null;
                     $scope.cycleboard = cycleboard;
                 }).finally(function () {
                     $scope.teamboard.loaded = $scope.teamboard.view;
@@ -99,5 +100,15 @@ angular.module('AgileTeamboard')
                 'toggle': 'popover',
                 'trigger': 'hover'
             });
+        };
+        $scope.toggleState = function(state) {
+            state = angular.lowercase(state.replace(/[^a-z0-9]/gi, '-'));
+            if ($scope.cycleboard.state === null) {
+                $('#cycleboard .subtask').not('.' + state).addClass('mute');
+                $scope.cycleboard.state = state;
+            } else {
+                $('#cycleboard .subtask').not('.' + state).removeClass('mute');
+                $scope.cycleboard.state = null;
+            }
         };
     }]);

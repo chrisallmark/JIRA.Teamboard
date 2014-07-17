@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('AgileTeamboard')
+angular.module('JIRA.Teamboard')
     .controller('timerController', ['$scope', '$interval', '$route', '$timeout', 'apiService', function ($scope, $interval, $route, $timeout, apiService) {
         var interval, timeout;
         (function load() {

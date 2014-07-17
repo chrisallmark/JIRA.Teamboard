@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('AgileTeamboard')
+angular.module('JIRA.Teamboard')
     .controller('buildController', ['$scope', '$timeout', 'apiService', function ($scope, $timeout, apiService) {
         function classification(status) {
             return angular.lowercase(status.replace(/[^a-z0-9]/gi, '_'));

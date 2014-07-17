@@ -1,5 +1,5 @@
 'use strict';
-angular.module('AgileTeamboard')
+angular.module('JIRA.Teamboard')
     .directive('subtask', function () {
         return {
             'replace': true,

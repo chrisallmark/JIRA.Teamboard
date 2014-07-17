@@ -19,7 +19,7 @@
         <h1>JIRA Teamboard Help</h1>
         <div id="help-overview">
             <h3>Overview</h3>
-            <p>The JIRA Teamboard is an electronic information radiator that displays vital data about the progress of a development team. Traditional agile wallboards use index cards or sticky notes on a wall and the information can become stale very quickly however the JIRA Teamboard is continually updated with in real-time ensuring that the team are always aware of the current state of play.</p>
+            <p>The JIRA Teamboard is an electronic information radiator that displays vital data about the progress of a development team. Traditional agile wallboards use index cards or sticky notes on a wall and the information can become stale very quickly however the JIRA Teamboard is continually updated in real-time ensuring that the team are always aware of the current state of play.</p>
             <p>It's similar to a scoreboard at a sporting event - it's been designed to be highly visible and easy to understand for anyone walking and it can complement or entirely replace a traditional agile wallboard. To continue with the sports analogy it's also a useful tool for "post-match analysis" during team retrospectives to identify areas for improvement.</p>
         </div>
         <div id="help-basic-usage">
@@ -45,21 +45,16 @@
             <p>To automatically launch the JIRA Teamboard in full screen mode at system start up use:</p>
             <pre>chrome --kiosk {{baseUrl}}/[teamboard]</pre>
         </div>
-        <div id="help-label">
-            <h3>Labels</h3>
+        <div id="help-categorisation">
+            <h3>Categorisation</h3>
             <p>The JIRA Teamboard uses labels for categorisation of stories and tasks by their type.</p>
             <p>The labels are used for the category breakdown in the Task Work chart and to display colour coding for story and task cards when the following labels are used:</p>
             <ul>
-                <li><span class="task be">BE</span></li>
-                <li><span class="task fe">FE</span></li>
-                <li><span class="task qa">QA</span</li>
+                <li><span class="subtask be">BE</span></li>
+                <li><span class="subtask fe">FE</span></li>
+                <li><span class="subtask qa">QA</span</li>
             </ul>
-            <p>Additional colour coding is applied to bugs and tasks which are blocked (flaggedin JIRA):</p>
-            <ul>
-                <li><span class="task bug">BUG</span></li>
-                <li><span class="task block">BLOCK</span></li>
-            </ul>
-
+            <p class="well"> Colour coding is also applied depending on the type or sub-type of the task or issues which are flagged.</p>
         </div>
         <div id="help-sprint-timer">
             <h3>Sprint Timer</h3>
@@ -90,14 +85,14 @@
             <div class="well">Depending on your configuration the sprint burn will either show a burn down of work or a burn up of tasks when the No Estimates setting is applied. </div>
             <h4>Project Burn</h4>
             <p>This chart provides a real-time view of progress and trend against the project backlog. It allows teams to see if they are on track to meet their commitments and adjust their delivery plan as necessary.</p>
-            <div class="well">This chart displays project progress for the last 90 days.</div>
+            <div class="well">This chart displays project progress for the last 60 days.</div>
             <h4>Team Burn</h4>
             <p>This chart shows a breakdown of completed tasks by person by day and provide a useful view on individual productivity or behavioural smells such as large numbers of tasks completing at the same time. It can also be useful during stand-up when someone says "I can't remember what I did yesterday..."</p>
             <div class="well">Place your mouse cursor over the chart to see a detailed task breakdown.</div>
             <h4>Task Flow</h4>
             <p>This chart enables teams to monitor the flow of work during the sprint and also see any increases in scope. Ideally a team's work in progress should be reasonably steady (the height of the yellow area) throughout the sprint. Any obvious deviations from the norm are often good discussion points during retrospectives.</p>
             <h4>Task Work</h4>
-            <p>This chart provides a breakdown of the sprint work remaining by category. The categorisation of stories and tasks in described in the <a href="#" data-ng-click="scrollTo('#help-labels')">labels</a> section.</p>
+            <p>This chart provides a breakdown of the sprint work remaining by category. The categorisation of stories and tasks in described in the <a href="#" data-ng-click="scrollTo('#help-categorisation')">categorisation</a> section.</p>
         </div>
         <div id="help-taskboard">
             <h3><i class="glyphicon glyphicon-th"></i> Taskboard</h3>

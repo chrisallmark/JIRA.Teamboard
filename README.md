@@ -1,7 +1,7 @@
 JIRA.Teamboard
 ==============
 
-The JIRA Teamboard is an electronic information radiator that displays vital data about the progress of a development team. Traditional agile wallboards use index cards or sticky notes on a wall and the information can become stale very quickly however the JIRA Teamboard is continually updated with in real-time ensuring that the team are always aware of the current state of play.
+The JIRA Teamboard is an electronic information radiator that displays vital data about the progress of a development team. Traditional agile wallboards use index cards or sticky notes on a wall and the information can become stale very quickly however the JIRA Teamboard is continually updated in real-time ensuring that the team are always aware of the current state of play.
 
 It's similar to a scoreboard at a sporting event - it's been designed to be highly visible and easy to understand for anyone walking and it can complement or entirely replace a traditional agile wallboard. To continue with the sports analogy it's also a useful tool for "post-match analysis" during team retrospectives to identify areas for improvement.
 
@@ -72,7 +72,7 @@ This chart provides a real-time view of progress and trend against towards sprin
 ###Project Burn
 This chart provides a real-time view of progress and trend against the project backlog. It allows teams to see if they are on track to meet their commitments and adjust their delivery plan as necessary.
 
-> This chart displays project progress for the last 90 days.
+> This chart displays project progress for the last 60 days.
 
 ###Team Burn
 This chart shows a breakdown of completed tasks by person by day and provide a useful view on individual productivity or behavioural smells such as large numbers of tasks completing at the same time. It can also be useful during stand-up when someone says "I can't remember what I did yesterday..."

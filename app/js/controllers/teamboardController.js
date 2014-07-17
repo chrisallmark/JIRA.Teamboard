@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('AgileTeamboard')
+angular.module('JIRA.Teamboard')
     .controller('teamboardController', ['$scope', '$location', '$timeout', 'apiService', function ($scope, $location, $timeout, apiService) {
         var timeout;
         function startAnimation() {
@@ -9,15 +9,15 @@ angular.module('AgileTeamboard')
             switch($scope.teamboard.view) {
                 case 'taskboard':
                     element = $('#taskboard');
-                    element.scrollTop(0).animate({'scrollTop':element.get(0).scrollHeight}, options);
+                    element.scrollTop(0).animate({ 'scrollTop':element.get(0).scrollHeight - element.height() }, options);
                     break;
                 case 'cycleboard':
                     element = $('#cycleboard');
-                    element.scrollTop(0).animate({'scrollTop':element.get(0).scrollHeight}, options);
+                    element.scrollTop(0).animate({ 'scrollTop':element.get(0).scrollHeight - element.height() }, options);
                     break;
                 case 'releaseboard':
                     element = $('#releaseboard');
-                    element.scrollLeft(0).animate({'scrollLeft':element.get(0).scrollWidth}, options);
+                    element.scrollLeft(0).animate({ 'scrollLeft':element.get(0).scrollWidth - element.width() }, options);
                     break;
             }
         }
