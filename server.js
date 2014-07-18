@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('./app'));
 app.use(morgan());
 
-route(app, require('./server.json'));
+route(app, require('./giffgaff.json'));
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 app.listen(process.env.PORT || 1337);

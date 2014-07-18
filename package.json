@@ -4,13 +4,14 @@
   "description": "JIRA.Teamboard ==============",
   "main": "server.js",
   "dependencies": {
-    "body-parser": "^1.4.3",
-    "express": "^4.6.1",
-    "extend": "^1.3.0",
-    "moment": "^2.7.0",
-    "morgan": "^1.1.1",
-    "q": "^1.0.1",
-    "request": "^2.37.0"
+    "body-parser": "latest",
+    "express": "latest",
+    "extend": "latest",
+    "lru-cache": "latest",
+    "moment": "latest",
+    "morgan": "latest",
+    "q": "latest",
+    "request": "latest"
   },
   "devDependencies": {},
   "scripts": {

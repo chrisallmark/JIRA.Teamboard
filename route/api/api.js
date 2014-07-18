@@ -2,6 +2,8 @@
 
 var extend = require('extend'),
     fs = require('fs'),
+    lru = require('lru-cache'),
+    lruCache = lru(),
     moment = require('moment'),
     q = require('q'),
     request = require('request');
@@ -44,6 +46,10 @@ function jql(cfg, query, fields, expand, maxResults) {
         (expand ? '&expand=' + expand.join() : ''));
 }
 
+function perfLog(process, timestamp, operation) {
+    console.log(process + ' took ' + moment.utc().diff(timestamp) + 'ms' + (operation ? ' for ' + operation : ''));
+}
+
 function qReadFile(file) {
     var deferred = q.defer();
     fs.readFile(file, function(err, data) {
@@ -69,7 +75,7 @@ function qRequest(options) {
             console.log(err);
             deferred.reject(err);
         } else {
-            console.log('qRequest took ' + moment.utc().diff(timestamp) + 'ms for ' + options.uri);
+            perfLog('Request', timestamp, options.uri);
             if (res.statusCode === 200) {
                 try {
                     deferred.resolve(JSON.parse(body));
@@ -86,10 +92,18 @@ function qRequest(options) {
 
 function sortBy(property, reverse) {
     return function (a, b) {
-        if (moment.isMoment(a[property]) && moment.isMoment(b[property])) {
-            return a[property].isBefore(b[property]) ? -1 : (a[property].isAfter(b[property]) ? 1 : 0) * (reverse ? -1 : 1);
+        if (reverse) {
+            if (moment.isMoment(a[property]) && moment.isMoment(b[property])) {
+                return a[property].isAfter(b[property]) ? -1 : (a[property].isBefore(b[property]) ? 1 : 0);
+            } else {
+                return a[property] > b[property] ? -1 : (a[property] < b[property] ? 1 : 0);
+            }
         } else {
-            return a[property] < b[property] ? -1 : (a[property] > b[property] ? 1 : 0) * (reverse ? -1 : 1);
+            if (moment.isMoment(a[property]) && moment.isMoment(b[property])) {
+                return a[property].isBefore(b[property]) ? -1 : (a[property].isAfter(b[property]) ? 1 : 0);
+            } else {
+                return a[property] < b[property] ? -1 : (a[property] > b[property] ? 1 : 0);
+            }
         }
     };
 }
@@ -209,8 +223,8 @@ module.exports = function (app, cfg) {
     });
 
     app.get('/api/builds', function (req, res) {
-        var build = function (data) {
-            return {
+        var builder = function (data) {
+            var build = {
                 end: moment.utc(data.buildCompletedTime),
                 key: data.key,
                 name: data.planName,
@@ -222,14 +236,17 @@ module.exports = function (app, cfg) {
                     failed: data.failedTestCount
                 }
             };
+            lruCache.set(data.key, build);
+            return build;
         };
         bamboo(cfg, '/bamboo/rest/api/latest/result')
             .then(function (data) {
                 var qBuild = [];
                 for (var i = 0; i < data.results.result.length; i++) {
                     var result = data.results.result[i];
-                    qBuild.push(bamboo(cfg, '/bamboo/rest/api/latest/result/' + result.key)
-                        .then(build));
+                    qBuild.push(q.when(lruCache.has(result.key) ? lruCache.get(result.key) :
+                        bamboo(cfg, '/bamboo/rest/api/latest/result/' + result.key)
+                        .then(builder)));
                 }
                 return q.all(qBuild);
             })
@@ -304,6 +321,7 @@ module.exports = function (app, cfg) {
                 }
                 return jql(cfg, 'sprint=' + req.param('sprint'), ['changelog', 'created', 'issuetype'], ['changelog'])
                     .then(function (data) {
+                        var timestamp = moment.utc();
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
                             issue.fields.created = moment.max(moment.utc(issue.fields.created).endOf('day'), timebox.start.clone().add(-1, "millisecond"));
@@ -333,6 +351,7 @@ module.exports = function (app, cfg) {
                             burnState.toDo += burnStates[date].toDo;
                             burn.push(extend({ date: date.clone() }, burnState));
                         }
+                        perfLog('Sprint Burn', timestamp, req.url);
                         return burn;
                     });
             })
@@ -358,7 +377,8 @@ module.exports = function (app, cfg) {
                             subtasksDone: 0,
                             subtasksInProgress: 0,
                             subtasksToDo: 0
-                        };
+                        },
+                        timestamp = moment.utc();
                         var issues = [];
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
@@ -447,6 +467,7 @@ module.exports = function (app, cfg) {
                                 taskboard.issues.push(issues[key]);
                             }
                         }
+                        perfLog('Cycleboard', timestamp, req.url);
                         return taskboard;
                     });
             })
@@ -463,7 +484,8 @@ module.exports = function (app, cfg) {
             .then(function (timebox) {
                 return jql(cfg, 'sprint=' + req.param('sprint') + ' ORDER BY Rank', ['assignee', 'issuetype', cfg.jiraFlagged, 'labels', 'parent', cfg.jiraPoints, 'status', 'summary'])
                     .then(function (data) {
-                        var taskboard = {
+                        var issues = [],
+                            taskboard = {
                             start: timebox.start,
                             end: timebox.end,
                             issues: [],
@@ -472,8 +494,8 @@ module.exports = function (app, cfg) {
                             subtasksDone: 0,
                             subtasksInProgress: 0,
                             subtasksToDo: 0
-                        };
-                        var issues = [];
+                        },
+                        timestamp = moment.utc();
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
                             if (!issue.fields.issuetype.subtask) {
@@ -514,6 +536,7 @@ module.exports = function (app, cfg) {
                                 taskboard.issues.push(issues[key]);
                             }
                         }
+                        perfLog('Taskboard', timestamp, req.url);
                         return taskboard;
                     });
             })
@@ -531,6 +554,7 @@ module.exports = function (app, cfg) {
                 var pool = [];
                 return jql(cfg, 'sprint=' + req.param('sprint'), ['changelog', 'created', 'issuetype', 'summary'], ['changelog'])
                     .then(function (data) {
+                        var timestamp = moment.utc();
                         for (var date = timebox.start.clone().endOf('day'); date.isBefore(timebox.end) || date.isSame(timebox.end); date.add(1, 'day')) {
                             for (var i = 0; i < data.issues.length; i++) {
                                 var issue = data.issues[i];
@@ -587,6 +611,7 @@ module.exports = function (app, cfg) {
                                 });
                             }
                         }
+                        perfLog('Task Burn', timestamp, req.url);
                         return {
                             start: timebox.start,
                             end: timebox.end,
@@ -605,22 +630,23 @@ module.exports = function (app, cfg) {
     app.get('/api/:board/:sprint/task/flow', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
-                var flow = [],
-                    flowState = {
-                        done: 0,
-                        inProgress: 0,
-                        toDo: 0
-                    },
-                    flowStates = [];
-                for (var date = timebox.start.clone().add(-1, 'millisecond'); date.isBefore(timebox.end) || date.isSame(timebox.end); date.add(1, 'day')) {
-                    flowStates[date] = {
-                        done: 0,
-                        inProgress: 0,
-                        toDo: 0
-                    };
-                }
                 return jql(cfg, 'sprint=' + req.param('sprint'), ['changelog', 'created', 'issuetype'], ['changelog'])
                     .then(function (data) {
+                        var flow = [],
+                            flowState = {
+                                done: 0,
+                                inProgress: 0,
+                                toDo: 0
+                            },
+                            flowStates = [],
+                            timestamp = moment.utc();
+                        for (var date = timebox.start.clone().add(-1, 'millisecond'); date.isBefore(timebox.end) || date.isSame(timebox.end); date.add(1, 'day')) {
+                            flowStates[date] = {
+                                done: 0,
+                                inProgress: 0,
+                                toDo: 0
+                            };
+                        }
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
                             issue.fields.created = moment.max(moment.utc(issue.fields.created).endOf('day'), timebox.start.clone().add(-1, "millisecond"));
@@ -667,6 +693,7 @@ module.exports = function (app, cfg) {
                             flowState.toDo += flowStates[date].toDo;
                             flow.push(extend({ date: date.clone() }, flowState));
                         }
+                        perfLog('Task Flow', timestamp, req.url);
                         return flow;
                     });
             })
@@ -683,7 +710,8 @@ module.exports = function (app, cfg) {
             .then(function (timebox) {
                 return jql(cfg, 'sprint=' + req.param('sprint') + ' AND status was not \'Closed\' ON \'' + moment.min(moment.utc(), timebox.end).format('YYYY-MM-DD') + '\'', ['issuetype','labels'])
                     .then(function (data) {
-                        var count = [];
+                        var count = [],
+                            timestamp = moment.utc();
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
                             var labels = issue.fields.labels.length === 0 ? '?' : issue.fields.labels.sort().join('/');
@@ -701,6 +729,7 @@ module.exports = function (app, cfg) {
                                 });
                             }
                         }
+                        perfLog('Task Work', timestamp, req.url);
                         return work.sort(sortBy("category"));
                     });
             })
@@ -742,22 +771,23 @@ module.exports = function (app, cfg) {
     });
 
     app.get('/api/:project/burn', function (req, res) {
-        var burn = [],
-            burnState = {
-                done: 0,
-                toDo: 0
-            },
-            burnStates = [],
-            start = moment.utc().add(-60, 'days').startOf('day'),
+        var start = moment.utc().add(-60, 'days').startOf('day'),
             end = moment.utc().endOf('day');
-        for (var date = start.clone().add(-1, 'millisecond'); date.isBefore(end) || date.isSame(end); date.add(1, 'day')) {
-            burnStates[date] = {
-                done: 0,
-                toDo: 0
-            };
-        }
         jql(cfg, 'project=' + req.param('project') + ' AND type in standardIssueTypes() AND status was not \'CLOSED\' BEFORE \'' + start.format('YYYY-MM-DD') + '\'', ['changelog', 'created'], ['changelog'])
             .then(function (data) {
+                var burn = [],
+                    burnState = {
+                        done: 0,
+                        toDo: 0
+                    },
+                    burnStates = [],
+                    timestamp = moment.utc();
+                for (var date = start.clone().add(-1, 'millisecond'); date.isBefore(end) || date.isSame(end); date.add(1, 'day')) {
+                    burnStates[date] = {
+                        done: 0,
+                        toDo: 0
+                    };
+                }
                 for (var i = 0; i < data.issues.length; i++) {
                     var issue = data.issues[i];
                     issue.fields.created = moment.max(moment.utc(issue.fields.created), start.add(-1, "millisecond"));
@@ -784,6 +814,7 @@ module.exports = function (app, cfg) {
                     burnState.toDo += burnStates[date].toDo;
                     burn.push(extend({ date: date.clone() }, burnState));
                 }
+                perfLog('Project Burn', timestamp, req.url);
                 return burn;
             })
             .done(function (burn) {
@@ -797,14 +828,15 @@ module.exports = function (app, cfg) {
     app.get('/api/:project/:board/:sprint/release/board/:velocity', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
-                var totalDays = timebox.end.diff(timebox.start, 'days') + 1;
-                while (timebox.start.isBefore(moment.utc())) {
-                    timebox.start.add(totalDays, 'days');
-                    timebox.end.add(totalDays, 'days');
-                }
                 return jql(cfg, 'project=' + req.param('project') + ' AND type in standardIssueTypes() AND status = \'Open\' AND (sprint not in openSprints() OR sprint is EMPTY) ORDER BY Rank', [cfg.jiraFlagged, 'issuetype', cfg.jiraPoints, 'labels', 'summary', 'status'], [], 999)
                     .then(function (data) {
-                        var releaseboard =  [];
+                        var releaseboard =  [],
+                            timestamp = moment.utc(),
+                            totalDays = timebox.end.diff(timebox.start, 'days') + 1;
+                        while (timebox.start.isBefore(moment.utc())) {
+                            timebox.start.add(totalDays, 'days');
+                            timebox.end.add(totalDays, 'days');
+                        }
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
                             if (releaseboard.length === 0 || (releaseboard[releaseboard.length - 1].points + (issue.fields[cfg.jiraPoints] || cfg.jiraPointsDefault) > Number(req.param('velocity')) * 1.10 && i > 0 && i < data.issues.length - 1)) {
@@ -826,6 +858,7 @@ module.exports = function (app, cfg) {
                             });
                             releaseboard[releaseboard.length-1].points += issue.fields[cfg.jiraPoints] || cfg.jiraPointsDefault;
                         }
+                        perfLog('Releaseboard', timestamp, req.url);
                         return releaseboard;
                     });
             })
