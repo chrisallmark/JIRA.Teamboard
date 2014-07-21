@@ -94,7 +94,7 @@ angular.module('JIRA.Teamboard')
             }
         });
         $scope.popover = function () {
-            $('#cycleboard .issue, #cycleboard .task').popover({
+            $('#cycleboard .issue, #cycleboard .subtask').popover({
                 'container': 'body',
                 'html': true,
                 'toggle': 'popover',
