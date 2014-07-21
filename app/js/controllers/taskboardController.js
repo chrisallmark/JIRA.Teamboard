@@ -41,13 +41,13 @@ angular.module('JIRA.Teamboard')
             }
         });
         $scope.toggleState = function(state) {
-            state = angular.lowercase(state.replace(/[^a-z0-9]/gi, '-'));
-            if ($scope.taskboard.state === null) {
+            if ($scope.taskboard.state) {
+                $('#taskboard .subtask').not('.' + $scope.taskboard.state).removeClass('mute');
+                $scope.taskboard.state = null;
+            } else {
+                state = angular.lowercase(state.replace(/[^a-z0-9]/gi, '-'));
                 $('#taskboard .subtask').not('.' + state).addClass('mute');
                 $scope.taskboard.state = state;
-            } else {
-                $('#taskboard .subtask').not('.' + state).removeClass('mute');
-                $scope.taskboard.state = null;
             }
         };
     }]);
