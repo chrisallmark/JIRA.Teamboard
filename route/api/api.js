@@ -366,17 +366,12 @@ module.exports = function (app, cfg) {
     app.get('/api/:board/:sprint/cycle/board', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
-                return jql(cfg, 'sprint=' + req.param('sprint') + ' ORDER BY Rank', ['assignee', 'changelog', 'issuetype', cfg.jiraFlagged, 'labels', 'parent', cfg.jiraPoints, 'status', 'summary'], ['changelog'])
+                return jql(cfg, 'sprint=' + req.param('sprint') + ' AND status != Open AND status was not Closed BEFORE \'' + timebox.start.format('YYYY-MM-DD') + '\' ORDER BY Rank', ['assignee', 'changelog', 'issuetype', cfg.jiraFlagged, 'labels', 'parent', cfg.jiraPoints, 'status', 'summary'], ['changelog'])
                     .then(function (data) {
                         var taskboard = {
                             start: timebox.start,
                             end: timebox.end,
-                            issues: [],
-                            issuesDone: 0,
-                            issuesToDo: 0,
-                            subtasksDone: 0,
-                            subtasksInProgress: 0,
-                            subtasksToDo: 0
+                            issues: []
                         },
                         timestamp = moment.utc();
                         var issues = [];
@@ -384,17 +379,18 @@ module.exports = function (app, cfg) {
                             var issue = data.issues[i];
                             if (!issue.fields.issuetype.subtask) {
                                 issues[issue.key] = {
-                                    end: moment.min(moment.utc(), timebox.end),
+                                    end: moment.utc(),
                                     flagged: (issue.fields[cfg.jiraFlagged] && issue.fields[cfg.jiraFlagged][0].value) === 'Yes',
                                     key: issue.key,
                                     labels: issue.fields.labels.sort(),
                                     name: issue.fields.summary,
                                     points: issue.fields[cfg.jiraPoints],
-                                    start: moment.min(moment.utc(), timebox.end),
+                                    start: moment.utc(),
                                     state: issue.fields.status.name,
                                     subtasks: [],
                                     type: issue.fields.issuetype.name
                                 };
+/*
                                 for (var j = 0; j < issue.changelog.histories.length; j++) {
                                     var history = issue.changelog.histories[j];
                                     history.created = moment.max(moment.utc(history.created), timebox.start);
@@ -403,16 +399,15 @@ module.exports = function (app, cfg) {
                                         for (var k = 0; k < history.items.length; k++) {
                                             var item = history.items[k];
                                             if (item.fromString === 'Open') {
-                                                issues[issue.key].start = history.created;
+                                                issues[issue.key].start = moment.max(history.created, issues[issue.key].start);
                                             }
                                             if (item.toString === 'Closed') {
-                                                issues[issue.key].end = history.created;
+                                                issues[issue.key].end = moment.min(history.created, issues[issue.key].end);
                                             }
                                         }
                                     }
                                 }
-                                taskboard.issuesDone += (issue.fields.status.name === 'Closed' ? issue.fields[cfg.jiraPoints] : 0);
-                                taskboard.issuesToDo += (issue.fields.status.name !== 'Closed' ? issue.fields[cfg.jiraPoints] : 0);
+*/
                             }
                         }
                         for (var i = 0; i < data.issues.length; i++) {
@@ -421,12 +416,12 @@ module.exports = function (app, cfg) {
                                 var subtask = {
                                     assignee: issue.fields.assignee ? issue.fields.assignee.displayName : null,
                                     avatar: issue.fields.assignee ? issue.fields.assignee.avatarUrls["48x48"] : null,
-                                    end: moment.min(moment.utc(), timebox.end),
+                                    end: moment.min(moment.utc().endOf('day'), timebox.end),
                                     flagged: issue.fields[cfg.jiraFlagged] && issue.fields[cfg.jiraFlagged][0].value === 'Yes',
                                     key: issue.key,
                                     labels: issue.fields.labels.sort(),
                                     name: issue.fields.summary,
-                                    start: moment.min(moment.utc(), timebox.end),
+                                    start: moment.max(moment.utc().startOf('day'), timebox.start),
                                     state: issue.fields.status.name,
                                     transitions: [],
                                     type: issue.fields.issuetype.name
@@ -439,10 +434,10 @@ module.exports = function (app, cfg) {
                                         for (var k = 0; k < history.items.length; k++) {
                                             var item = history.items[k];
                                             if (item.fromString === 'Open') {
-                                                subtask.start = moment.max(history.created, timebox.start);
+                                                subtask.start = moment.max(history.created, timebox.start.startOf('day'));
                                             }
                                             if (item.toString === 'Closed') {
-                                                subtask.end = moment.max(history.created, timebox.start);
+                                                subtask.end = moment.min(history.created, timebox.start.endOf('day'));
                                             }
                                             subtask.transitions.push({
                                                 date: history.created,
@@ -450,16 +445,11 @@ module.exports = function (app, cfg) {
                                                 toState: item.toString
                                             })
                                         }
+                                        issues[issue.fields.parent.key].start = moment.min(subtask.start, issues[issue.fields.parent.key].start);
+                                        issues[issue.fields.parent.key].end = moment.max(subtask.end, issues[issue.fields.parent.key].end);
                                     }
                                 }
-                                if (subtask.state !== "Open" && subtask.state !== "Reopened") {
-                                    issues[issue.fields.parent.key].start = moment.min(issues[issue.fields.parent.key].start, subtask.start);
-                                    issues[issue.fields.parent.key].end = moment.min(issues[issue.fields.parent.key].end, subtask.end);
-                                    issues[issue.fields.parent.key].subtasks.push(subtask);
-                                }
-                                taskboard.subtasksDone += (subtask.state === 'Closed' ? 1 : 0);
-                                taskboard.subtasksInProgress += (subtask.state !=='Open' && subtask.state !=='Reopened' && subtask.state !== 'Closed' ? 1 : 0);
-                                taskboard.subtasksToDo += (subtask.state === 'Open' || subtask.state === 'Reopened' ? 1 : 0);
+                                issues[issue.fields.parent.key].subtasks.push(subtask);
                             }
                         }
                         for (var key in issues) {
@@ -708,7 +698,7 @@ module.exports = function (app, cfg) {
     app.get('/api/:board/:sprint/task/work', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
-                return jql(cfg, 'sprint=' + req.param('sprint') + ' AND status was not \'Closed\' ON \'' + moment.min(moment.utc(), timebox.end).format('YYYY-MM-DD') + '\'', ['issuetype','labels'])
+                return jql(cfg, 'sprint=' + req.param('sprint') + ' AND status was not Closed ON \'' + moment.min(moment.utc(), timebox.end).format('YYYY-MM-DD') + '\'', ['issuetype','labels'])
                     .then(function (data) {
                         var count = [],
                             timestamp = moment.utc();
@@ -773,7 +763,7 @@ module.exports = function (app, cfg) {
     app.get('/api/:project/burn', function (req, res) {
         var start = moment.utc().add(-60, 'days').startOf('day'),
             end = moment.utc().endOf('day');
-        jql(cfg, 'project=' + req.param('project') + ' AND type in standardIssueTypes() AND status was not \'CLOSED\' BEFORE \'' + start.format('YYYY-MM-DD') + '\'', ['changelog', 'created'], ['changelog'])
+        jql(cfg, 'project=' + req.param('project') + ' AND type in standardIssueTypes() AND status was not Closed BEFORE \'' + start.format('YYYY-MM-DD') + '\'', ['changelog', 'created'], ['changelog'])
             .then(function (data) {
                 var burn = [],
                     burnState = {
