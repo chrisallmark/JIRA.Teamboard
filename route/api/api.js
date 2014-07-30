@@ -379,13 +379,13 @@ module.exports = function (app, cfg) {
                             var issue = data.issues[i];
                             if (!issue.fields.issuetype.subtask) {
                                 issues[issue.key] = {
-                                    end: moment.utc(),
+                                    end: moment.min(moment.utc(), timebox.end),
                                     flagged: (issue.fields[cfg.jiraFlagged] && issue.fields[cfg.jiraFlagged][0].value) === 'Yes',
                                     key: issue.key,
                                     labels: issue.fields.labels.sort(),
                                     name: issue.fields.summary,
                                     points: issue.fields[cfg.jiraPoints],
-                                    start: moment.utc(),
+                                    start: moment.max(moment.utc(), timebox.start),
                                     state: issue.fields.status.name,
                                     subtasks: [],
                                     type: issue.fields.issuetype.name
@@ -398,12 +398,12 @@ module.exports = function (app, cfg) {
                                 var subtask = {
                                     assignee: issue.fields.assignee ? issue.fields.assignee.displayName : null,
                                     avatar: issue.fields.assignee ? issue.fields.assignee.avatarUrls["48x48"] : null,
-                                    end: moment.min(moment.utc().endOf('day'), timebox.end),
+                                    end: moment.min(moment.max(moment.utc(), timebox.start.clone().endOf('day')), timebox.end),
                                     flagged: issue.fields[cfg.jiraFlagged] && issue.fields[cfg.jiraFlagged][0].value === 'Yes',
                                     key: issue.key,
                                     labels: issue.fields.labels.sort(),
                                     name: issue.fields.summary,
-                                    start: moment.max(moment.utc().startOf('day'), timebox.start),
+                                    start: timebox.start, //moment.max(moment.utc().startOf('day'), timebox.start),
                                     state: issue.fields.status.name,
                                     transitions: [],
                                     type: issue.fields.issuetype.name
@@ -416,10 +416,10 @@ module.exports = function (app, cfg) {
                                         for (var k = 0; k < history.items.length; k++) {
                                             var item = history.items[k];
                                             if (item.fromString === 'Open') {
-                                                subtask.start = moment.max(history.created, timebox.start.startOf('day'));
+                                                subtask.start = moment.max(history.created, subtask.start);
                                             }
                                             if (item.toString === 'Closed') {
-                                                subtask.end = moment.min(history.created, timebox.start.endOf('day'));
+                                                subtask.end = moment.min(history.created, subtask.end);
                                             }
                                             subtask.transitions.push({
                                                 date: history.created,
@@ -532,7 +532,8 @@ module.exports = function (app, cfg) {
                                 var issue = data.issues[i];
                                 for (var j = 0; j < issue.changelog.histories.length; j++) {
                                     var history = issue.changelog.histories[j];
-                                    if (moment.max(moment.utc(history.created), timebox.start).isSame(date, 'day')) {
+                                    history.created = moment.utc(history.created);
+                                    if (history.created.isAfter(timebox.start) || history.created.isSame(timebox.start) && moment.max(moment.utc(history.created), timebox.start).isSame(date, 'day')) {
                                         for (var k = 0; k < history.items.length; k++) {
                                             var item = history.items[k];
                                             if (item.field === 'status' && item.fromString !== 'Open' && item.fromString !== item.toString) {
@@ -653,12 +654,6 @@ module.exports = function (app, cfg) {
                                                     flowStates[history.created].inProgress--;
                                                     flowStates[history.created].done++;
                                                 }
-                                            }
-                                            if (item.fromString === 'Open' && item.toString === 'Reopened') {
-                                                console.log('O>R ' + issue.key);
-                                            }
-                                            if (item.fromString === 'Reopened' && item.toString === 'Open') {
-                                                console.log('R>O ' + issue.key);
                                             }
                                         }
                                     }
