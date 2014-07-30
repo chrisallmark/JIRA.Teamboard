@@ -533,7 +533,8 @@ module.exports = function (app, cfg) {
                                 for (var j = 0; j < issue.changelog.histories.length; j++) {
                                     var history = issue.changelog.histories[j];
                                     history.created = moment.utc(history.created);
-                                    if (history.created.isAfter(timebox.start) || history.created.isSame(timebox.start) && moment.max(moment.utc(history.created), timebox.start).isSame(date, 'day')) {
+                                    if ((history.created.isAfter(timebox.start) || history.created.isSame(timebox.start)) &&
+                                        moment.max(moment.utc(history.created), timebox.start).isSame(date, 'day')) {
                                         for (var k = 0; k < history.items.length; k++) {
                                             var item = history.items[k];
                                             if (item.field === 'status' && item.fromString !== 'Open' && item.fromString !== item.toString) {
