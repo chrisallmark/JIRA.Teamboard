@@ -51,7 +51,7 @@ angular.module('JIRA.Teamboard')
                             data.addRow([
                                 {v: data.getNumberOfRows(), f: (index === 0 ? '-' : burn.date.format('dddd Do'))},
                                 burn.toDo + burn.done,
-                                burn.date.isBefore(moment.utc().endOf('day')) ? burn.done : null
+                                burn.date.isBefore(moment.utc().endOf('day')) || burn.date.isSame(moment.utc().endOf('day')) ? burn.done : null
                         ]);
                         }
                     });

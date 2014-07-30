@@ -20,7 +20,7 @@ angular.module('JIRA.Teamboard')
                 });
                 $scope.builds = builds;
             }).finally(function () {
-                timeout = $timeout(load, 1000 * 60);
+                timeout = $timeout(load, 1000 * 30);
             });
         })();
         $scope.$on('$destroy', function (event) {

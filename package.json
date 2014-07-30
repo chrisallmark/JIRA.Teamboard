@@ -7,7 +7,6 @@
     "body-parser": "latest",
     "express": "latest",
     "extend": "latest",
-    "lru-cache": "latest",
     "moment": "latest",
     "morgan": "latest",
     "q": "latest",

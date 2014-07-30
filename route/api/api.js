@@ -2,8 +2,6 @@
 
 var extend = require('extend'),
     fs = require('fs'),
-    lru = require('lru-cache'),
-    lruCache = lru(),
     moment = require('moment'),
     q = require('q'),
     request = require('request');
@@ -223,34 +221,24 @@ module.exports = function (app, cfg) {
     });
 
     app.get('/api/builds', function (req, res) {
-        var builder = function (data) {
-            var build = {
-                end: moment.utc(data.buildCompletedTime),
-                key: data.key,
-                name: data.planName,
-                start: moment.utc(data.buildStartedTime),
-                reason: data.buildReason,
-                status: data.state,
-                tests: {
-                    passed: data.successfulTestCount,
-                    failed: data.failedTestCount
-                }
-            };
-            lruCache.set(data.key, build);
-            return build;
-        };
-        bamboo(cfg, '/bamboo/rest/api/latest/result')
+        bamboo(cfg, '/bamboo/rest/api/latest/result?expand=results.result.plan')
             .then(function (data) {
-                var qBuild = [];
+                var builds = [];
                 for (var i = 0; i < data.results.result.length; i++) {
                     var result = data.results.result[i];
-                    qBuild.push(q.when(lruCache.has(result.key) ? lruCache.get(result.key) :
-                        bamboo(cfg, '/bamboo/rest/api/latest/result/' + result.key)
-                        .then(builder)));
+                    builds.push({
+                        end: moment.utc(result.buildCompletedTime),
+                        key: result.key,
+                        name: result.planName,
+                        start: moment.utc(result.buildStartedTime),
+                        reason: result.buildReason,
+                        status: result.state,
+                        tests: {
+                            passed: result.successfulTestCount,
+                            failed: result.failedTestCount
+                        }
+                    });
                 }
-                return q.all(qBuild);
-            })
-            .then(function (builds) {
                 return builds.sort(sortBy("start", true));
             })
             .done(function (builds) {
@@ -390,24 +378,6 @@ module.exports = function (app, cfg) {
                                     subtasks: [],
                                     type: issue.fields.issuetype.name
                                 };
-/*
-                                for (var j = 0; j < issue.changelog.histories.length; j++) {
-                                    var history = issue.changelog.histories[j];
-                                    history.created = moment.max(moment.utc(history.created), timebox.start);
-                                    if (history.created.isBefore(timebox.end) || history.created.isSame(timebox.end)) {
-                                        history.items = history.items.filter(statusFilter);
-                                        for (var k = 0; k < history.items.length; k++) {
-                                            var item = history.items[k];
-                                            if (item.fromString === 'Open') {
-                                                issues[issue.key].start = moment.max(history.created, issues[issue.key].start);
-                                            }
-                                            if (item.toString === 'Closed') {
-                                                issues[issue.key].end = moment.min(history.created, issues[issue.key].end);
-                                            }
-                                        }
-                                    }
-                                }
-*/
                             }
                         }
                         for (var i = 0; i < data.issues.length; i++) {
