@@ -214,20 +214,28 @@ body {
         top: 0;
         width: 56px;
       }
-      &.successful {
-        &:before, > div {
-          background-color: $green-color;
-        }
-        &:before {
-          content: "\2714";
-        }
-      }
       &.failed {
         &:before, > div {
           background-color: $red-color;
         }
         &:before {
           content: "\2716";
+        }
+      }
+      &.in-progress {
+        &:before, > div {
+          background-color: $amber-color;
+        }
+        &:before {
+          content: "\2708";
+        }
+      }
+      &.successful {
+        &:before, > div {
+          background-color: $green-color;
+        }
+        &:before {
+          content: "\2714";
         }
       }
       > div {

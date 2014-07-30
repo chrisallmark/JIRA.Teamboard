@@ -107,7 +107,10 @@ function sortBy(property, reverse) {
 }
 
 function statusFilter(a) {
-    return a.field === 'status' && a.fromString !== a.toString;
+    return a.field === 'status' &&
+        a.fromString !== a.toString &&
+        !(a.fromString === 'Open' && a.toString === 'Reopened') &&
+        !(a.fromString == 'Reopened' && a.toString === 'Open');
 }
 
 function timebox(cfg, board, sprint) {
@@ -226,18 +229,27 @@ module.exports = function (app, cfg) {
                 var builds = [];
                 for (var i = 0; i < data.results.result.length; i++) {
                     var result = data.results.result[i];
-                    builds.push({
-                        end: moment.utc(result.buildCompletedTime),
-                        key: result.key,
-                        name: result.planName,
-                        start: moment.utc(result.buildStartedTime),
-                        reason: result.buildReason,
-                        status: result.state,
-                        tests: {
-                            passed: result.successfulTestCount,
-                            failed: result.failedTestCount
-                        }
-                    });
+                    if (result.plan.isBuilding) {
+                        builds.push({
+                            end: moment.utc(),
+                            name: result.planName,
+                            status: "In Progress",
+                            start: moment.utc()
+                        });
+                    } else {
+                        builds.push({
+                            end: moment.utc(result.buildCompletedTime),
+                            key: result.key,
+                            name: result.planName,
+                            start: moment.utc(result.buildStartedTime),
+                            reason: result.buildReason,
+                            status: result.state,
+                            tests: {
+                                passed: result.successfulTestCount,
+                                failed: result.failedTestCount
+                            }
+                        });
+                    }
                 }
                 return builds.sort(sortBy("start", true));
             })
@@ -590,23 +602,23 @@ module.exports = function (app, cfg) {
     app.get('/api/:board/:sprint/task/flow', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
+                var flow = [],
+                    flowState = {
+                        done: 0,
+                        inProgress: 0,
+                        toDo: 0
+                    },
+                    flowStates = [];
+                for (var date = timebox.start.clone().add(-1, 'millisecond'); date.isBefore(timebox.end) || date.isSame(timebox.end); date.add(1, 'day')) {
+                    flowStates[date] = {
+                        done: 0,
+                        inProgress: 0,
+                        toDo: 0
+                    };
+                }
                 return jql(cfg, 'sprint=' + req.param('sprint'), ['changelog', 'created', 'issuetype'], ['changelog'])
                     .then(function (data) {
-                        var flow = [],
-                            flowState = {
-                                done: 0,
-                                inProgress: 0,
-                                toDo: 0
-                            },
-                            flowStates = [],
-                            timestamp = moment.utc();
-                        for (var date = timebox.start.clone().add(-1, 'millisecond'); date.isBefore(timebox.end) || date.isSame(timebox.end); date.add(1, 'day')) {
-                            flowStates[date] = {
-                                done: 0,
-                                inProgress: 0,
-                                toDo: 0
-                            };
-                        }
+                        var timestamp = moment.utc();
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
                             issue.fields.created = moment.max(moment.utc(issue.fields.created).endOf('day'), timebox.start.clone().add(-1, "millisecond"));
@@ -642,6 +654,12 @@ module.exports = function (app, cfg) {
                                                     flowStates[history.created].done++;
                                                 }
                                             }
+                                            if (item.fromString === 'Open' && item.toString === 'Reopened') {
+                                                console.log('O>R ' + issue.key);
+                                            }
+                                            if (item.fromString === 'Reopened' && item.toString === 'Open') {
+                                                console.log('R>O ' + issue.key);
+                                            }
                                         }
                                     }
                                 }
@@ -653,7 +671,7 @@ module.exports = function (app, cfg) {
                             flowState.toDo += flowStates[date].toDo;
                             flow.push(extend({ date: date.clone() }, flowState));
                         }
-                        perfLog('Task Flow', timestamp, req.url);
+                        perfLog('Task flow', timestamp, req.url);
                         return flow;
                     });
             })
