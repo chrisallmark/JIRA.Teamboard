@@ -43,7 +43,7 @@ body {
   overflow: hidden;
   .popover {
     color: $background-color;
-    max-width: 350px;
+    max-width: 300px;
     width: auto;
   }
   .popover-content, .popover-title {
@@ -115,7 +115,7 @@ body {
   }
   aside {
     padding-right: 0;
-    h3 {
+    header h3 {
       background-color: $foreground-color;
       color: $background-color;
       letter-spacing: 4px;
@@ -193,12 +193,13 @@ body {
 }
 
 #help-builds, #builds {
+  cursor: pointer;
   list-style-type: none;
   padding: 0;
   .build {
     > div {
       position: relative;
-      padding: 12px 0;
+      padding: 8px 0;
       &:before, > div {
         background-color: #999;
       }
@@ -211,7 +212,7 @@ body {
         line-height: 48px;
         position: absolute;
         text-align: center;
-        top: 0;
+        top: 1px;
         width: 56px;
       }
       &.failed {
@@ -238,12 +239,17 @@ body {
           content: "\2714";
         }
       }
+      &.unknown {
+        &:before {
+          content: "?";
+        }
+      }
       > div {
         margin-left: 48px;
-        padding: 0 8px;
+        padding: 0 8px 0 16px;
         > div {
           font-size: 12px;
-          line-height: 16px;
+          line-height: 20px;
           overflow: hidden;
           white-space: nowrap;
           &:first-of-type {
@@ -353,7 +359,7 @@ body {
 }
 
 #cycleboard {
-  table {
+  > table {
     width: 100%;
     td:first-of-type {
         width: 13%;

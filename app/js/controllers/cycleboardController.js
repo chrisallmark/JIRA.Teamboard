@@ -35,11 +35,11 @@ angular.module('JIRA.Teamboard')
         function popover(subtask) {
             var popover = '';
             if (subtask) {
-                popover += '<strong>' + subtask.key + '</strong> / ' + subtask.name + ' Transitions / <strong>' + subtask.assignee + ' </strong><hr/><table>';
+                popover += '<small>' + subtask.key + '</small><br><strong>' + subtask.name + '</strong><hr/><table>';
                 angular.forEach(subtask.transitions, function(transition, index) {
                     popover += '<tr><td>' + moment.utc(transition.date).format('YYYY-MM-DD @ HH:mm') + '</td><td>' + transition.fromState + ' &rarr; ' + transition.toState + '</td></tr>';
                 });
-                popover += '</table>';
+                popover += '</table><small>' + subtask.assignee + '</small>';
             }
             return popover;
         }
@@ -87,15 +87,18 @@ angular.module('JIRA.Teamboard')
                         'width': (100 / cycleboardTime) + '%'
                     };
                     cycleboard.state = null;
+                    $('#cycleboard .popover').remove();
                     $scope.cycleboard = cycleboard;
                 }).finally(function () {
                     $scope.teamboard.loaded = $scope.teamboard.view;
                 });
+            } else {
+                $('#cycleboard .popover').remove();
             }
         });
         $scope.popover = function () {
             $('#cycleboard .issue, #cycleboard .subtask').popover({
-                'container': 'body',
+                'container': 'section',
                 'html': true,
                 'toggle': 'popover',
                 'trigger': 'hover'

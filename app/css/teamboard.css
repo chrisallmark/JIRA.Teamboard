@@ -7,7 +7,7 @@ body {
   overflow: hidden; }
   body .popover {
     color: black;
-    max-width: 350px;
+    max-width: 300px;
     width: auto; }
   body .popover-content, body .popover-title {
     font-size: small;
@@ -53,7 +53,7 @@ body {
   padding-right: 0; }
 #teamboard aside {
   padding-right: 0; }
-  #teamboard aside h3 {
+  #teamboard aside header h3 {
     background-color: white;
     color: black;
     letter-spacing: 4px;
@@ -104,11 +104,12 @@ body {
     line-height: 48px; }
 
 #help-builds, #builds {
+  cursor: pointer;
   list-style-type: none;
   padding: 0; }
   #help-builds .build > div, #builds .build > div {
     position: relative;
-    padding: 12px 0; }
+    padding: 8px 0; }
     #help-builds .build > div:before, #help-builds .build > div > div, #builds .build > div:before, #builds .build > div > div {
       background-color: #999; }
     #help-builds .build > div:before, #builds .build > div:before {
@@ -120,7 +121,7 @@ body {
       line-height: 48px;
       position: absolute;
       text-align: center;
-      top: 0;
+      top: 1px;
       width: 56px; }
     #help-builds .build > div.failed:before, #help-builds .build > div.failed > div, #builds .build > div.failed:before, #builds .build > div.failed > div {
       background-color: #dc3912; }
@@ -134,12 +135,14 @@ body {
       background-color: #109618; }
     #help-builds .build > div.successful:before, #builds .build > div.successful:before {
       content: "\2714"; }
+    #help-builds .build > div.unknown:before, #builds .build > div.unknown:before {
+      content: "?"; }
     #help-builds .build > div > div, #builds .build > div > div {
       margin-left: 48px;
-      padding: 0 8px; }
+      padding: 0 8px 0 16px; }
       #help-builds .build > div > div > div, #builds .build > div > div > div {
         font-size: 12px;
-        line-height: 16px;
+        line-height: 20px;
         overflow: hidden;
         white-space: nowrap; }
         #help-builds .build > div > div > div:first-of-type, #builds .build > div > div > div:first-of-type {
@@ -216,11 +219,11 @@ body {
     padding: 5px;
     vertical-align: top; }
 
-#cycleboard table {
+#cycleboard > table {
   width: 100%; }
-  #cycleboard table td:first-of-type {
+  #cycleboard > table td:first-of-type {
     width: 13%; }
-  #cycleboard table td:last-of-type .in-progress .closed {
+  #cycleboard > table td:last-of-type .in-progress .closed {
     opacity: 0.5; }
 #cycleboard .issue {
   width: 100%; }

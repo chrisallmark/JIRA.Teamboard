@@ -12,25 +12,29 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-6 form-group">
+                <div class="col-sm-4 form-group">
                     <label class="control-label" for="project">Project:</label>
                     <select id="project" class="form-control" data-ng-disabled="!form.projects" required data-ng-model="form.project" data-ng-options="project.name for project in form.projects">
                         <option value=""></option>
                     </select>
                 </div>
-                <div class="col-sm-6 form-group">
+                <div class="col-sm-4 form-group">
                     <label class="control-label" for="board">Board:</label>
                     <select id="board" class="form-control" data-ng-disabled="!form.boards" required data-ng-model="form.board" data-ng-options="board.name for board in form.boards">
+                        <option value=""></option>
+                    </select>
+                </div>
+                <div class="col-sm-4 form-group">
+                    <label class="control-label" for="sprint">Sprint:</label>
+                    <select id="sprint" class="form-control" required data-ng-disabled="!form.sprints" data-ng-model="form.sprint" data-ng-options="sprint.name for sprint in form.sprints">
                         <option value=""></option>
                     </select>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-6 form-group">
-                    <label class="control-label" for="sprint">Sprint:</label>
-                    <select id="sprint" class="form-control" required data-ng-disabled="!form.sprints" data-ng-model="form.sprint" data-ng-options="sprint.name for sprint in form.sprints">
-                        <option value=""></option>
-                    </select>
+                    <label class="control-label" for="labels">Labels:</label>
+                    <input id="labels" class="form-control" data-ng-model="configuration.labels" />
                 </div>
                 <div class="col-sm-2 form-group">
                     <label class="control-label" for="velocity">Velocity:</label>

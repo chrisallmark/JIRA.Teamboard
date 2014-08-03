@@ -28,7 +28,6 @@ angular.module('JIRA.Teamboard')
             $location.path('/configuration' + $location.path());
         };
         $scope.load = function(view) {
-            $('.popover').popover('hide');
             $scope.teamboard.view = view;
             stopAnimation();
         };

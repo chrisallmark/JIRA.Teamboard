@@ -48,6 +48,15 @@ function perfLog(process, timestamp, operation) {
     console.log(process + ' took ' + moment.utc().diff(timestamp) + 'ms' + (operation ? ' for ' + operation : ''));
 }
 
+function labelFilter(labels) {
+    if (labels) {
+        labels = labels.split(',');
+    }
+    return function (a) {
+        return labels ? labels.indexOf(a) != -1 : true;
+    };
+}
+
 function qReadFile(file) {
     var deferred = q.defer();
     fs.readFile(file, function(err, data) {
@@ -87,6 +96,7 @@ function qRequest(options) {
     });
     return deferred.promise;
 }
+
 
 function sortBy(property, reverse) {
     return function (a, b) {
@@ -155,6 +165,7 @@ module.exports = function (app, cfg) {
     app.post('/api/configurations', function (req, res) {
         var configuration = {
             board: req.body.board,
+            labels: req.body.labels,
             name: req.body.name,
             project: req.body.project,
             slideshow: req.body.slideshow || false,
@@ -224,31 +235,38 @@ module.exports = function (app, cfg) {
     });
 
     app.get('/api/builds', function (req, res) {
-        bamboo(cfg, '/bamboo/rest/api/latest/result?expand=results.result.plan')
+        function build(result) {
+            if (result.plan.isBuilding) {
+                return {
+                    branch: result.plan.type === 'chain-branch',
+                    end: moment.utc(),
+                    name: result.planName,
+                    status: "In Progress",
+                    start: moment.utc()
+                };
+            } else {
+                return {
+                    branch: result.plan.type === 'chain_branch',
+                    end: moment.utc(result.buildCompletedTime),
+                    key: result.key,
+                    name: result.planName,
+                    start: moment.utc(result.buildStartedTime),
+                    reason: result.buildReason,
+                    status: result.state,
+                    tests: {
+                        passed: result.successfulTestCount,
+                        failed: result.failedTestCount
+                    }
+                };
+            }
+        }
+        bamboo(cfg, '/bamboo/rest/api/latest/result?expand=results.result.plan.branches.branch.latestResult.plan')
             .then(function (data) {
                 var builds = [];
                 for (var i = 0; i < data.results.result.length; i++) {
-                    var result = data.results.result[i];
-                    if (result.plan.isBuilding) {
-                        builds.push({
-                            end: moment.utc(),
-                            name: result.planName,
-                            status: "In Progress",
-                            start: moment.utc()
-                        });
-                    } else {
-                        builds.push({
-                            end: moment.utc(result.buildCompletedTime),
-                            key: result.key,
-                            name: result.planName,
-                            start: moment.utc(result.buildStartedTime),
-                            reason: result.buildReason,
-                            status: result.state,
-                            tests: {
-                                passed: result.successfulTestCount,
-                                failed: result.failedTestCount
-                            }
-                        });
+                    builds.push(build(data.results.result[i]));
+                    for (var j = 0; j < data.results.result[i].plan.branches.branch.length; j++) {
+                        builds.push(build(data.results.result[i].plan.branches.branch[j].latestResult));
                     }
                 }
                 return builds.sort(sortBy("start", true));
@@ -366,7 +384,7 @@ module.exports = function (app, cfg) {
     app.get('/api/:board/:sprint/cycle/board', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
-                return jql(cfg, 'sprint=' + req.param('sprint') + ' AND status != Open AND status was not Closed BEFORE \'' + timebox.start.format('YYYY-MM-DD') + '\' ORDER BY Rank', ['assignee', 'changelog', 'issuetype', cfg.jiraFlagged, 'labels', 'parent', cfg.jiraPoints, 'status', 'summary'], ['changelog'])
+                return jql(cfg, 'sprint=' + req.param('sprint') + ' AND status was not Closed BEFORE \'' + timebox.start.format('YYYY-MM-DD') + '\' ORDER BY Rank', ['assignee', 'changelog', 'issuetype', cfg.jiraFlagged, 'labels', 'parent', cfg.jiraPoints, 'status', 'summary'], ['changelog'])
                     .then(function (data) {
                         var taskboard = {
                             start: timebox.start,
@@ -379,13 +397,13 @@ module.exports = function (app, cfg) {
                             var issue = data.issues[i];
                             if (!issue.fields.issuetype.subtask) {
                                 issues[issue.key] = {
-                                    end: moment.min(moment.utc(), timebox.end),
+                                    end: null, //moment.min(moment.utc(), timebox.end),
                                     flagged: (issue.fields[cfg.jiraFlagged] && issue.fields[cfg.jiraFlagged][0].value) === 'Yes',
                                     key: issue.key,
                                     labels: issue.fields.labels.sort(),
                                     name: issue.fields.summary,
                                     points: issue.fields[cfg.jiraPoints],
-                                    start: moment.max(moment.utc(), timebox.start),
+                                    start: null, //moment.max(moment.utc(), timebox.start),
                                     state: issue.fields.status.name,
                                     subtasks: [],
                                     type: issue.fields.issuetype.name
@@ -403,7 +421,7 @@ module.exports = function (app, cfg) {
                                     key: issue.key,
                                     labels: issue.fields.labels.sort(),
                                     name: issue.fields.summary,
-                                    start: timebox.start, //moment.max(moment.utc().startOf('day'), timebox.start),
+                                    start: timebox.start,
                                     state: issue.fields.status.name,
                                     transitions: [],
                                     type: issue.fields.issuetype.name
@@ -425,13 +443,15 @@ module.exports = function (app, cfg) {
                                                 date: history.created,
                                                 fromState: item.fromString,
                                                 toState: item.toString
-                                            })
+                                            });
                                         }
-                                        issues[issue.fields.parent.key].start = moment.min(subtask.start, issues[issue.fields.parent.key].start);
-                                        issues[issue.fields.parent.key].end = moment.max(subtask.end, issues[issue.fields.parent.key].end);
                                     }
                                 }
-                                issues[issue.fields.parent.key].subtasks.push(subtask);
+                                if (subtask.state !== 'Open' && subtask.state !== 'Reopened') {
+                                    issues[issue.fields.parent.key].start = issues[issue.fields.parent.key].start === null ? subtask.start : moment.min(subtask.start, issues[issue.fields.parent.key].start);
+                                    issues[issue.fields.parent.key].end = issues[issue.fields.parent.key].end === null ? subtask.end : moment.max(subtask.end, issues[issue.fields.parent.key].end);
+                                    issues[issue.fields.parent.key].subtasks.push(subtask);
+                                }
                             }
                         }
                         for (var key in issues) {
@@ -682,12 +702,13 @@ module.exports = function (app, cfg) {
     app.get('/api/:board/:sprint/task/work', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
-                return jql(cfg, 'sprint=' + req.param('sprint') + ' AND status was not Closed ON \'' + moment.min(moment.utc(), timebox.end).format('YYYY-MM-DD') + '\'', ['issuetype','labels'])
+                return jql(cfg, 'sprint=' + req.param('sprint') + ' AND type not in standardIssueTypes() AND status was not Closed ON \'' + moment.min(moment.utc(), timebox.end).format('YYYY-MM-DD') + '\'', ['issuetype','labels'])
                     .then(function (data) {
                         var count = [],
                             timestamp = moment.utc();
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
+                            issue.fields.labels = issue.fields.labels.filter(labelFilter(req.param('labels')));
                             var labels = issue.fields.labels.length === 0 ? '?' : issue.fields.labels.sort().join('/');
                             if (!count[labels]) {
                                 count[labels] = 0;

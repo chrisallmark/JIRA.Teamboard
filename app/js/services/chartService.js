@@ -150,14 +150,14 @@ angular.module('JIRA.Teamboard')
                                 }
                                 if (day && day.date.isSame(date, 'day')) {
                                     data.setCell(row, (index * 2) + 1, day.subtasks.length);
-                                    var tooltip = '<div class="task-tooltip"><strong>' + day.date.format('dddd Do') + '</strong> / ' + day.subtasks.length + ' Tasks / <strong>' + burner.name + ' </strong><hr/><table>';
+                                    var tooltip = '<div class="task-tooltip"><strong>' + day.date.format('dddd Do') + '</strong><hr/><table>';
                                     angular.forEach(day.subtasks, function(subtask, index) {
                                         tooltip += '<tr><td>' + subtask.key + '</td><td><strong>' + subtask.name + '</strong><br/>';
                                         angular.forEach(subtask.transitions, function(transition, index) {
                                             tooltip += (index === 0 || subtask.transitions[index - 1].toState !== transition.fromState ? (index === 0 ? '' : ', ') + transition.fromState : '') + ' &rarr; ' + transition.toState;
                                         });
                                     });
-                                    tooltip += '</td></tr></table></div>';
+                                    tooltip += '</td></tr></table><small>' + burner.name + ' </small></div>';
                                     data.setCell(row, (index * 2) + 2, tooltip);
                                 }
                                 else {
@@ -228,7 +228,8 @@ angular.module('JIRA.Teamboard')
                 var deferred = $q.defer();
                 var taskwork = apiService.taskwork.query({
                     board: configuration.board,
-                    sprint: configuration.sprint
+                    sprint: configuration.sprint,
+                    labels: configuration.labels
                 });
                 taskwork.$promise.then(function (taskwork) {
                     var data = new google.visualization.DataTable();

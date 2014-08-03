@@ -22,6 +22,7 @@ angular.module('JIRA.Teamboard')
                         build.rating = '...';
                     }
                 });
+                $('#builds .popover').remove();
                 $scope.builds = builds;
             }).finally(function () {
                 timeout = $timeout(load, 1000 * 30);
@@ -34,11 +35,12 @@ angular.module('JIRA.Teamboard')
         });
         $scope.popover = function () {
             $('#builds .build > div').popover({
-                'container': 'body',
+                'container': '#builds',
                 'html': true,
                 'placement': 'left',
-                'toggle': 'popover',
-                'trigger': 'hover'
+                'toggle': 'popover'
+            }).on('click', function (e) {
+                $('#builds .build > div').not(this).popover('hide');
             });
         };
     }]);
