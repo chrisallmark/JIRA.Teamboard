@@ -1,5 +1,7 @@
 'use strict';
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 var bodyParser = require('body-parser'),
     express = require('express'),
     morgan = require('morgan'),
@@ -11,7 +13,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('./app'));
 app.use(morgan('combined'));
 
-route(app, require('./giffgaff.json'));
+route(app, require('./server.json'));
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 app.listen(process.env.PORT || 1337);
