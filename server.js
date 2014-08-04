@@ -9,7 +9,7 @@ var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('./app'));
-app.use(morgan());
+app.use(morgan('combined'));
 
 route(app, require('./giffgaff.json'));
 

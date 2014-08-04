@@ -97,7 +97,6 @@ function qRequest(options) {
     return deferred.promise;
 }
 
-
 function sortBy(property, reverse) {
     return function (a, b) {
         if (reverse) {
@@ -241,8 +240,8 @@ module.exports = function (app, cfg) {
                     branch: result.plan.type === 'chain-branch',
                     end: moment.utc(),
                     name: result.planName,
-                    status: "In Progress",
-                    start: moment.utc()
+                    start: moment.utc(),
+                    status: "In Progress"
                 };
             } else {
                 return {
@@ -250,8 +249,8 @@ module.exports = function (app, cfg) {
                     end: moment.utc(result.buildCompletedTime),
                     key: result.key,
                     name: result.planName,
-                    start: moment.utc(result.buildStartedTime),
                     reason: result.buildReason,
+                    start: moment.utc(result.buildStartedTime),
                     status: result.state,
                     tests: {
                         passed: result.successfulTestCount,
