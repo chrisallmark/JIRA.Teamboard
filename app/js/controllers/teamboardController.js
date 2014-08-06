@@ -29,11 +29,13 @@ angular.module('JIRA.Teamboard')
         };
         $scope.load = function(view) {
             $scope.teamboard.view = view;
-            stopAnimation();
+            if ($scope.teamboard.animate) {
+                stopAnimation();
+            }
         };
         $scope.toggleSlideshow = function() {
             $scope.teamboard.slideshow = !$scope.teamboard.slideshow;
-            if (!$scope.teamboard.slideshow) {
+            if ($scope.teamboard.animate) {
                 stopAnimation();
             }
         };
@@ -43,7 +45,7 @@ angular.module('JIRA.Teamboard')
             }
         });
         $scope.$watch('teamboard.loaded', function(newValue, oldValue) {
-            if (newValue !== oldValue && $scope.teamboard.view === $scope.teamboard.loaded && $scope.teamboard.slideshow) {
+            if (newValue !== oldValue && $scope.teamboard.view === $scope.teamboard.loaded && $scope.teamboard.slideshow && $scope.teamboard.animate) {
                 $timeout(startAnimation, 100);
             }
         });

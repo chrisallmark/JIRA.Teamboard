@@ -6,7 +6,7 @@ var extend = require('extend'),
     q = require('q'),
     request = require('request');
 
-function bamboo(cfg, endpoint) {
+function bambooAPI(cfg, endpoint) {
     return qRequest({
         auth: {
             user: cfg.crowdUser,
@@ -29,6 +29,17 @@ function jira(cfg, endpoint) {
             user: cfg.crowdUser,
             pass: cfg.crowdPass
         },
+        encoding: null,
+        uri: cfg.jiraHost + endpoint
+    });
+}
+
+function jiraAPI(cfg, endpoint) {
+    return qRequest({
+        auth: {
+            user: cfg.crowdUser,
+            pass: cfg.crowdPass
+        },
         headers: {
             'Accept': 'application/json'
         },
@@ -37,7 +48,7 @@ function jira(cfg, endpoint) {
 }
 
 function jql(cfg, query, fields, expand, maxResults) {
-    return jira(cfg, '/rest/api/latest/search?jql=' +
+    return jiraAPI(cfg, '/rest/api/latest/search?jql=' +
         encodeURIComponent(query) +
         '&maxResults=' + (maxResults ? maxResults : 999) +
         (fields ? '&fields=' + fields.join() : '') +
@@ -85,7 +96,7 @@ function qRequest(options) {
             perfLog('Request', timestamp, options.uri);
             if (res.statusCode === 200) {
                 try {
-                    deferred.resolve(JSON.parse(body));
+                    deferred.resolve(res.headers['content-type'].indexOf('application/json') >= 0 ? JSON.parse(body) : body);
                 } catch (e) {
                     deferred.reject(e.message);
                 }
@@ -123,7 +134,7 @@ function statusFilter(a) {
 }
 
 function timebox(cfg, board, sprint) {
-    return jira(cfg, '/rest/greenhopper/latest/rapid/charts/sprintreport?rapidViewId=' + board + '&sprintId=' + sprint)
+    return jiraAPI(cfg, '/rest/greenhopper/latest/rapid/charts/sprintreport?rapidViewId=' + board + '&sprintId=' + sprint)
         .then(function (data) {
             return {
                 start: moment.utc(data.sprint.startDate).startOf('day'),
@@ -137,7 +148,7 @@ module.exports = function (app, cfg) {
         fs.readdir('./cfg', function(err, files) {
             if (err) {
                 console.log(err);
-                res.send(500);
+                res.status(500).send(err);
             }
             else
             {
@@ -155,7 +166,7 @@ module.exports = function (app, cfg) {
                         res.writeHead(200, { 'Content-Type': 'application/json' });
                         res.end(JSON.stringify(configurations));
                     }, function (err) {
-                        res.send(500, err);
+                        res.status(500).send(err);
                     });
             }
         });
@@ -163,6 +174,7 @@ module.exports = function (app, cfg) {
 
     app.post('/api/configurations', function (req, res) {
         var configuration = {
+            animate: req.body.animate,
             board: req.body.board,
             labels: req.body.labels,
             name: req.body.name,
@@ -179,17 +191,17 @@ module.exports = function (app, cfg) {
     app.delete('/api/configurations/:configurationName', function (req, res) {
         fs.stat(cfgFile(req.params.configurationName), function(err, stat) {
             if (err) {
-                res.send(404);
+                res.status(404).send(err);
             }
             else
             {
                 fs.unlink(cfgFile(req.params.configurationName), function(err) {
                     if (err) {
-                        res.send(500);
+                        res.status(500).send(err);
                     }
                     else
                     {
-                        res.send(200);
+                        res.send(200).send('Ok');
                     }
                 });
             }
@@ -199,7 +211,7 @@ module.exports = function (app, cfg) {
     app.get('/api/configurations/:configurationName', function (req, res) {
         fs.stat(cfgFile(req.params.configurationName), function(err, stat) {
             if (err) {
-                res.send(404);
+                res.status(404).send(err);
             }
             else
             {
@@ -210,8 +222,16 @@ module.exports = function (app, cfg) {
         });
     });
 
+    app.get('/api/avatar/:name', function (req, res) {
+        jira(cfg, '/secure/useravatar?ownerId=' + req.params.name)
+            .then(function(data) {
+                res.writeHead(200, { 'Content-Type': 'image/png' });
+                res.end(data, 'binary');
+            });
+    });
+
     app.get('/api/boards', function (req, res) {
-        jira(cfg, '/rest/greenhopper/latest/rapidview')
+        jiraAPI(cfg, '/rest/greenhopper/latest/rapidview')
             .then(function (data) {
                 var boards = [];
                 for (var i = 0; i < data.views.length; i++) {
@@ -229,7 +249,7 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(boards));
             }, function (err) {
-                res.send(500, err);
+                res.status(500).send(err);
             });
     });
 
@@ -259,7 +279,7 @@ module.exports = function (app, cfg) {
                 };
             }
         }
-        bamboo(cfg, '/bamboo/rest/api/latest/result?expand=results.result.plan.branches.branch.latestResult.plan')
+        bambooAPI(cfg, '/bamboo/rest/api/latest/result?expand=results.result.plan.branches.branch.latestResult.plan')
             .then(function (data) {
                 var builds = [];
                 for (var i = 0; i < data.results.result.length; i++) {
@@ -274,12 +294,12 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(builds));
             }, function (err) {
-                res.send(500, err);
+                res.status(500).send(err);
             });
     });
 
     app.get('/api/projects', function (req, res) {
-        jira(cfg, '/rest/api/latest/project')
+        jiraAPI(cfg, '/rest/api/latest/project')
             .then(function (data) {
                 var projects = [];
                 for (var i = 0; i < data.length; i++) {
@@ -295,12 +315,12 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(projects));
             }, function (err) {
-                res.send(500, err);
+                res.status(500).send(err);
             });
     });
 
     app.get('/api/:board/sprints', function (req, res) {
-        jira(cfg, '/rest/greenhopper/latest/sprintquery/' + req.param('board'))
+        jiraAPI(cfg, '/rest/greenhopper/latest/sprintquery/' + req.param('board'))
             .then(function (data) {
                 var sprints = [];
                 for (var i = 0; i < data.sprints.length; i++) {
@@ -317,7 +337,7 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(sprints));
             }, function (err) {
-                res.send(500, err);
+                res.status(500).send(err);
             });
     });
 
@@ -376,7 +396,7 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(burn));
             }, function (err) {
-                res.send(500, err);
+                res.status(500).send(err);
             });
     });
 
@@ -414,7 +434,7 @@ module.exports = function (app, cfg) {
                             if (issue.fields.issuetype.subtask) {
                                 var subtask = {
                                     assignee: issue.fields.assignee ? issue.fields.assignee.displayName : null,
-                                    avatar: issue.fields.assignee ? issue.fields.assignee.avatarUrls["48x48"] : null,
+                                    avatar: issue.fields.assignee ? issue.fields.assignee.name : null,
                                     end: moment.min(moment.max(moment.utc(), timebox.start.clone().endOf('day')), timebox.end),
                                     flagged: issue.fields[cfg.jiraFlagged] && issue.fields[cfg.jiraFlagged][0].value === 'Yes',
                                     key: issue.key,
@@ -466,7 +486,7 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(taskboard));
             }, function (err) {
-                res.send(500, err);
+                res.status(500).send(err);
             });
     });
 
@@ -509,7 +529,7 @@ module.exports = function (app, cfg) {
                             if (issue.fields.issuetype.subtask) {
                                 issues[issue.fields.parent.key].subtasks.push({
                                     assignee: issue.fields.assignee ? issue.fields.assignee.displayName : null,
-                                    avatar: issue.fields.assignee ? issue.fields.assignee.avatarUrls["48x48"] : null,
+                                    avatar: issue.fields.assignee ? issue.fields.assignee.name : null,
                                     flagged: issue.fields[cfg.jiraFlagged] && issue.fields[cfg.jiraFlagged][0].value === 'Yes',
                                     key: issue.key,
                                     labels: issue.fields.labels.sort(),
@@ -535,7 +555,7 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(taskboard));
             }, function (err) {
-                res.send(500, err);
+                res.status(500).send(err);
             });
     });
 
@@ -616,7 +636,7 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(burn));
             }, function (err) {
-                res.send(500, err);
+                res.status(500).send(err);
             });
     });
 
@@ -694,7 +714,7 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(flow));
             }, function (err) {
-                res.send(500, err);
+                res.status(500).send(err);
             });
     });
 
@@ -732,7 +752,7 @@ module.exports = function (app, cfg) {
                 res.end(JSON.stringify(work));
 
             }, function (err) {
-                res.send(500, err);
+                res.status(500).send(err);
             });
     });
 
@@ -760,7 +780,7 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(timer));
             }, function (err) {
-                res.send(500, err);
+                res.status(500).send(err);
             });
     });
 
@@ -815,7 +835,7 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(burn));
             }, function (err) {
-                res.send(500, err);
+                res.status(500).send(err);
             });
     });
 
@@ -860,7 +880,7 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(releaseboard));
             }, function (err) {
-                res.send(500, err);
+                res.status(500).send(err);
             });
     });
 };

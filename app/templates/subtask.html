@@ -5,7 +5,7 @@
     <div>
         <span class="badge pull-right" data-ng-click="toggleState(subtask.state)">{{subtask.state}}</span>
         <div class="polaroid" title="{{subtask.owner}}" data-ng-if="subtask.assignee">
-            <img data-ng-src="{{subtask.avatar}}"/>
+            <img data-ng-src="/api/avatar/{{subtask.avatar}}"/>
             <span>{{subtask.tag}}</span>
         </div>
     </div>

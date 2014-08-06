@@ -1,12 +1,12 @@
 'use strict';
 module.exports = function(app) {
-    app.get('/configurations', function(request, response) {
-        response.sendfile('./app/index.html');
+    app.get('/configurations', function(req, res) {
+        res.sendFile('/index.html', {'root': './app'});
     });
-    app.get('/configuration/:id', function(request, response) {
-        response.sendfile('./app/index.html');
+    app.get('/configuration/:id', function(req, res) {
+        res.sendFile('/index.html', {'root': './app'});
     });
-    app.get('/:id', function(request, response) {
-        response.sendfile('./app/index.html');
+    app.get('/:id', function(req, res) {
+        res.sendFile('/index.html', {'root': './app'});
     });
 }
