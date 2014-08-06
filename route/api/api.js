@@ -225,7 +225,7 @@ module.exports = function (app, cfg) {
     app.get('/api/avatar/:name', function (req, res) {
         jira(cfg, '/secure/useravatar?ownerId=' + req.params.name)
             .then(function(data) {
-                res.writeHead(200, { 'Content-Type': 'image/png' });
+                res.writeHead(200, { 'Cache-Control': 'public, max-age=' + 60 * 60 * 24 * 90, 'Content-Type': 'image/png' });
                 res.end(data, 'binary');
             });
     });
