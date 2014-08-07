@@ -124,7 +124,7 @@ body {
       text-transform: lowercase;
     }
     nav {
-      margin: 16px 0;
+      margin: 14px 0;
       text-align: center;
       ul {
         li {
@@ -163,12 +163,10 @@ body {
 }
 
 #help-timer, #timer {
-  margin: 8px 0;
   > div:first-of-type {
     > div:first-of-type {
       font: {
         size: 128px;
-        weight: bold;
       }
       letter-spacing: -12px;
       line-height: 96px;
@@ -185,7 +183,6 @@ body {
     color: $blue-color;
     font: {
       size: 48px;
-      weight: bold;
     }
     letter-spacing: -2px;
     line-height: 48px;

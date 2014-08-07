@@ -1,6 +1,6 @@
 <div id="{{subtask.id}}" class="pull-left subtask" title="{{subtask.key}}" data-ng-class="subtask.classification" data-ng-style="{'z-index':999-$index}">
     <div>
-        <small>{{subtask.name}}</small>
+        <small><strong>{{subtask.key}}</strong><br/>{{subtask.name}}</small>
     </div>
     <div>
         <span class="badge pull-right" data-ng-click="toggleState(subtask.state)">{{subtask.state}}</span>

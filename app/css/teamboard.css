@@ -61,7 +61,7 @@ body {
     padding: 0 0 2px 0;
     text-transform: lowercase; }
   #teamboard aside nav {
-    margin: 16px 0;
+    margin: 14px 0;
     text-align: center; }
     #teamboard aside nav ul li {
       width: 13.5%; }
@@ -83,25 +83,21 @@ body {
   width: 100%;
   z-index: 99999; }
 
-#help-timer, #timer {
-  margin: 8px 0; }
-  #help-timer > div:first-of-type > div:first-of-type, #timer > div:first-of-type > div:first-of-type {
-    font-size: 128px;
-    font-weight: bold;
-    letter-spacing: -12px;
-    line-height: 96px;
-    margin-bottom: 8px;
-    padding: 0; }
-  #help-timer > div:first-of-type > div:last-of-type, #timer > div:first-of-type > div:last-of-type {
-    font-size: 24px;
-    line-height: 24px;
-    margin: 24px 0; }
-  #help-timer > div:last-of-type, #timer > div:last-of-type {
-    color: #0088cc;
-    font-size: 48px;
-    font-weight: bold;
-    letter-spacing: -2px;
-    line-height: 48px; }
+#help-timer > div:first-of-type > div:first-of-type, #timer > div:first-of-type > div:first-of-type {
+  font-size: 128px;
+  letter-spacing: -12px;
+  line-height: 96px;
+  margin-bottom: 8px;
+  padding: 0; }
+#help-timer > div:first-of-type > div:last-of-type, #timer > div:first-of-type > div:last-of-type {
+  font-size: 24px;
+  line-height: 24px;
+  margin: 24px 0; }
+#help-timer > div:last-of-type, #timer > div:last-of-type {
+  color: #0088cc;
+  font-size: 48px;
+  letter-spacing: -2px;
+  line-height: 48px; }
 
 #help-builds, #builds {
   cursor: pointer;
