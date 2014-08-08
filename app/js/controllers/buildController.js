@@ -12,14 +12,14 @@ angular.module('JIRA.Teamboard')
                     build.start = moment(build.start).calendar();
                     build.end = moment(build.end).calendar();
                     build.classification = classification(build.status);
-                    if (angular.equals(build.tests, {})) {
-                        build.rating = '???';
-                    } else {
-                        if (build.tests.failed === 0 && build.tests.passed === 0) {
+                    if (build.tests) {
+                        if (build.tests.failed || 0 + build.tests.passed || 0 === 0) {
                             build.rating = 'N/A';
                         } else {
                             build.rating = Math.floor((build.tests.passed / (build.tests.passed + build.tests.failed)) * 100) + '%';
                         }
+                    } else {
+                        build.rating = '???';
                     }
                 });
                 $('#builds .popover').remove();
