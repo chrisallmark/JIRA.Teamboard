@@ -80,17 +80,17 @@ angular.module('JIRA.Teamboard')
                 });
                 return deferred.promise;
             },
-            'projectburn': function(configuration) {
+            'backlogburn': function(configuration) {
                 var deferred = $q.defer();
-                var projectburn = apiService.projectburn.query({
-                    'project': configuration.project
+                var backlogburn = apiService.backlogburn.query({
+                    'backlog': configuration.backlog
                 });
-                projectburn.$promise.then(function (projectburn) {
+                backlogburn.$promise.then(function (backlogburn) {
                     var data = new google.visualization.DataTable();
                     data.addColumn('number', 'Date');
                     data.addColumn('number', 'To Do');
                     data.addColumn('number', 'Done');
-                    angular.forEach(projectburn, function(day) {
+                    angular.forEach(backlogburn, function(day) {
                         day.date = moment.utc(day.date);
                         data.addRow([
                             {v: data.getNumberOfRows(), f: day.date.format('Do MMM YYYY')},
