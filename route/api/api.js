@@ -64,7 +64,7 @@ function labelFilter(labels) {
         labels = labels.split(',');
     }
     return function (a) {
-        return labels ? labels.indexOf(a) != -1 : true;
+        return labels ? labels.indexOf(a) !== -1 : true;
     };
 }
 
@@ -96,7 +96,7 @@ function qRequest(options) {
             perfLog('Request', timestamp, options.uri);
             if (res.statusCode === 200) {
                 try {
-                    deferred.resolve(res.headers['content-type'].indexOf('application/json') >= 0 ? JSON.parse(body) : body);
+                    deferred.resolve(res.headers['content-type'].indexOf('application/json') !== -1 ? JSON.parse(body) : body);
                 } catch (e) {
                     deferred.reject(e.message);
                 }
@@ -178,6 +178,7 @@ module.exports = function (app, cfg) {
             board: req.body.board,
             labels: req.body.labels,
             name: req.body.name,
+            plans: req.body.plans,
             project: req.body.project,
             slideshow: req.body.slideshow || false,
             sprint: req.body.sprint,
@@ -281,11 +282,14 @@ module.exports = function (app, cfg) {
         }
         bambooAPI(cfg, '/bamboo/rest/api/latest/result?expand=results.result.plan.branches.branch.latestResult.plan')
             .then(function (data) {
+                console.log(req.param('plans'));
                 var builds = [];
                 for (var i = 0; i < data.results.result.length; i++) {
-                    builds.push(build(data.results.result[i]));
-                    for (var j = 0; j < data.results.result[i].plan.branches.branch.length; j++) {
-                        builds.push(build(data.results.result[i].plan.branches.branch[j].latestResult));
+                    if (!req.param('plans') || req.param('plans').indexOf(data.results.result[i].plan.shortName) !== -1) {
+                        builds.push(build(data.results.result[i]));
+                        for (var j = 0; j < data.results.result[i].plan.branches.branch.length; j++) {
+                            builds.push(build(data.results.result[i].plan.branches.branch[j].latestResult));
+                        }
                     }
                 }
                 return builds.sort(sortBy("start", true));
@@ -293,6 +297,29 @@ module.exports = function (app, cfg) {
             .done(function (builds) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(builds));
+            }, function (err) {
+                res.status(500).send(err);
+            });
+    });
+
+    app.get('/api/plans', function (req, res) {
+        bambooAPI(cfg, '/bamboo/rest/api/latest/plan')
+            .then(function (data) {
+                console.log(data);
+                var plans = [];
+                for (var i = 0; i < data.plans.plan.length; i++) {
+                    var plan = data.plans.plan[i];
+                    if (plan.enabled) {
+                        plans.push({
+                            name: plan.shortName
+                        });
+                    }
+                }
+                return plans.sort(sortBy("name"));
+            })
+            .done(function (plans) {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify(plans));
             }, function (err) {
                 res.status(500).send(err);
             });

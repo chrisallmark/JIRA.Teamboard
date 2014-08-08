@@ -7,6 +7,7 @@ angular.module('JIRA.Teamboard')
             'builds': $resource('/api/builds'),
             'configurations': $resource('/api/configurations/:configurationName'),
             'cycleboard': $resource('/api/:board/:sprint/cycle/board'),
+            'plans': $resource('/api/plans'),
             'projectburn': $resource('/api/:project/burn'),
             'projects': $resource('/api/projects'),
             'releaseboard': $resource('/api/:project/:board/:sprint/release/board/:velocity'),

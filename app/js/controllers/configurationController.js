@@ -2,11 +2,42 @@
 
 angular.module('JIRA.Teamboard')
     .controller('configurationController', ['$scope', '$routeParams', 'apiService', function ($scope, $routeParams, apiService) {
+        $scope.add = function (plans) {
+            if (!angular.isDefined($scope.configuration.plans)) {
+                $scope.configuration.plans = [];
+            }
+            angular.forEach(plans, function(plan) {
+                if ($scope.configuration.plans.indexOf(plan.name) === -1) {
+                    $scope.configuration.plans.push(plan.name);
+                }
+            });
+            $scope.configuration.plans.sort();
+        };
         $scope.configuration = {};
         $scope.form = {};
         $scope.ok = function () {
             apiService.configurations.save($scope.configuration);
             $scope.back();
+        };
+        $scope.remove = function (plans) {
+            for (var i = plans.length; i >= 0; i--) {
+                if ($scope.configuration.plans.indexOf(plans[i]) !== -1) {
+                    $scope.configuration.plans.splice($scope.configuration.plans.indexOf(plans[i]), 1);
+                }
+            }
+/*
+            angular.forEach(plans, function(plan) {
+                if ($scope.configuration.plans.indexOf(plan) !== -1) {
+                    $scope.configuration.plans.splice($scope.configuration.plans.indexOf(plan), 1);
+                }
+            });
+*/
+            $scope.configuration.plan = null;
+            if ($scope.configuration.plans.length === 0) {
+                delete $scope.configuration['plans'];
+            } else {
+                $scope.configuration.plans.sort();
+            }
         };
         $scope.$watch('form.project', function (newValue, oldValue) {
             if (newValue !== oldValue) {
@@ -43,6 +74,9 @@ angular.module('JIRA.Teamboard')
                     delete $scope.configuration.sprint;
                 }
             }
+        });
+        apiService.plans.query().$promise.then(function (plans) {
+            $scope.form.plans = plans;
         });
         if ($routeParams.configurationName) {
             apiService.configurations.get({'configurationName': $routeParams.configurationName}).$promise.then(function (configuration) {

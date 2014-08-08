@@ -11,7 +11,7 @@ angular.module('JIRA.Teamboard')
                     'project': $scope.teamboard.project,
                     'board': $scope.teamboard.board,
                     'sprint': $scope.teamboard.sprint,
-                    'velocity': $scope.teamboard.velocity,
+                    'velocity': $scope.teamboard.velocity
                 }).$promise.then(function (releaseboard) {
                     angular.forEach(releaseboard, function(sprint) {
                         sprint.start = moment.utc(sprint.start).format("MMM Do");

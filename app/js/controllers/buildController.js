@@ -7,7 +7,7 @@ angular.module('JIRA.Teamboard')
         }
         var timeout;
         (function load() {
-            apiService.builds.query().$promise.then(function (builds) {
+            apiService.builds.query({'plans': $scope.teamboard.plans}).$promise.then(function (builds) {
                 angular.forEach(builds, function(build) {
                     build.start = moment(build.start).calendar();
                     build.end = moment(build.end).calendar();

@@ -54,7 +54,25 @@
                 </div>
             </div>
             <div class="row">
-                <div class="form-group text-right">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="control-label" for="available-plans">Available Plans:</label>
+                        <select id="available-plans" class="form-control" multiple data-ng-disabled="!form.plans || plans.length === 0" data-ng-model="form.plan" data-ng-options="plan.name for plan in form.plans"></select>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <label class="control-label" for="monitored-plans">Monitored Plans:</label>
+                    <select id="monitored-plans" class="form-control" multiple data-ng-model="configuration.plan" data-ng-options="plan for plan in configuration.plans"></select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6 form-group">
+                    <button class="btn btn-default" title="Add All" data-ng-click="add(form.plans)" data-ng-disabled="!form.plans"><i class="glyphicon glyphicon-fast-forward"></i></button>
+                    <button class="btn btn-default" title="Add Selected" data-ng-click="add(form.plan)" data-ng-disabled="!form.plan"><i class="glyphicon glyphicon-step-forward"></i></button>
+                    <button class="btn btn-default" title="Remove Selected" data-ng-click="remove(configuration.plan)" data-ng-disabled="!configuration.plan"><i class="glyphicon glyphicon-step-backward"></i></button>
+                    <button class="btn btn-default" title="Remove All" data-ng-click="remove(configuration.plans)" data-ng-disabled="!configuration.plans"><i class="glyphicon glyphicon-fast-backward"></i></button>
+                </div>
+                <div class="col-sm-6 form-group text-right">
                     <button class="btn btn-default" data-ng-click="ok()" data-ng-disabled="configurationForm.$invalid">Ok</button>
                     <button class="btn btn-default" data-ng-click="back()">Cancel</button>
                 </div>
