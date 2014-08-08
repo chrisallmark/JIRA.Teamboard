@@ -258,7 +258,7 @@ module.exports = function (app, cfg) {
         function build(result) {
             if (result.plan.isBuilding) {
                 return {
-                    branch: result.plan.type === 'chain-branch',
+                    branch: result.plan.type === 'chain_branch',
                     end: moment.utc(),
                     name: result.planName,
                     start: moment.utc(),
