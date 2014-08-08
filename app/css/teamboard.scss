@@ -239,6 +239,7 @@ body {
       &.unknown {
         &:before {
           content: "?";
+          font-weight: bold;
         }
       }
       > div {

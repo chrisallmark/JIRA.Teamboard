@@ -282,7 +282,6 @@ module.exports = function (app, cfg) {
         }
         bambooAPI(cfg, '/bamboo/rest/api/latest/result?expand=results.result.plan.branches.branch.latestResult.plan')
             .then(function (data) {
-                console.log(req.param('plans'));
                 var builds = [];
                 for (var i = 0; i < data.results.result.length; i++) {
                     if (!req.param('plans') || req.param('plans').indexOf(data.results.result[i].plan.shortName) !== -1) {
@@ -305,7 +304,6 @@ module.exports = function (app, cfg) {
     app.get('/api/plans', function (req, res) {
         bambooAPI(cfg, '/bamboo/rest/api/latest/plan')
             .then(function (data) {
-                console.log(data);
                 var plans = [];
                 for (var i = 0; i < data.plans.plan.length; i++) {
                     var plan = data.plans.plan[i];

@@ -132,7 +132,8 @@ body {
     #help-builds .build > div.successful:before, #builds .build > div.successful:before {
       content: "\2714"; }
     #help-builds .build > div.unknown:before, #builds .build > div.unknown:before {
-      content: "?"; }
+      content: "?";
+      font-weight: bold; }
     #help-builds .build > div > div, #builds .build > div > div {
       margin-left: 48px;
       padding: 0 8px 0 16px; }
