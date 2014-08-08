@@ -2,16 +2,16 @@
 
 angular.module('JIRA.Teamboard')
     .controller('configurationController', ['$scope', '$routeParams', 'apiService', function ($scope, $routeParams, apiService) {
-        $scope.add = function (plans) {
-            if (!angular.isDefined($scope.configuration.plans)) {
-                $scope.configuration.plans = [];
+        $scope.add = function (builds) {
+            if (!angular.isDefined($scope.configuration.builds)) {
+                $scope.configuration.builds = [];
             }
-            angular.forEach(plans, function(plan) {
-                if ($scope.configuration.plans.indexOf(plan.name) === -1) {
-                    $scope.configuration.plans.push(plan.name);
+            angular.forEach(builds, function(build) {
+                if ($scope.configuration.builds.indexOf(build.name) === -1) {
+                    $scope.configuration.builds.push(build.name);
                 }
             });
-            $scope.configuration.plans.sort();
+            $scope.configuration.builds.sort();
         };
         $scope.configuration = {};
         $scope.form = {};
@@ -19,30 +19,23 @@ angular.module('JIRA.Teamboard')
             apiService.configurations.save($scope.configuration);
             $scope.back();
         };
-        $scope.remove = function (plans) {
-            for (var i = plans.length; i >= 0; i--) {
-                if ($scope.configuration.plans.indexOf(plans[i]) !== -1) {
-                    $scope.configuration.plans.splice($scope.configuration.plans.indexOf(plans[i]), 1);
+        $scope.remove = function (builds) {
+            for (var i = builds.length; i >= 0; i--) {
+                if ($scope.configuration.builds.indexOf(builds[i]) !== -1) {
+                    $scope.configuration.builds.splice($scope.configuration.builds.indexOf(builds[i]), 1);
                 }
             }
-/*
-            angular.forEach(plans, function(plan) {
-                if ($scope.configuration.plans.indexOf(plan) !== -1) {
-                    $scope.configuration.plans.splice($scope.configuration.plans.indexOf(plan), 1);
-                }
-            });
-*/
-            $scope.configuration.plan = null;
-            if ($scope.configuration.plans.length === 0) {
-                delete $scope.configuration['plans'];
+            $scope.configuration.build = null;
+            if ($scope.configuration.builds.length === 0) {
+                delete $scope.configuration['builds'];
             } else {
-                $scope.configuration.plans.sort();
+                $scope.configuration.builds.sort();
             }
         };
-        $scope.$watch('form.project', function (newValue, oldValue) {
+        $scope.$watch('form.backlog', function (newValue, oldValue) {
             if (newValue !== oldValue) {
                 if (newValue) {
-                    $scope.configuration.project = newValue.key;
+                    $scope.configuration.backlog = newValue.key;
                 } else {
                     delete $scope.configuration.board;
                 }
@@ -75,19 +68,19 @@ angular.module('JIRA.Teamboard')
                 }
             }
         });
-        apiService.plans.query().$promise.then(function (plans) {
-            $scope.form.plans = plans;
+        apiService.builds.query().$promise.then(function (builds) {
+            $scope.form.builds = builds;
         });
         if ($routeParams.configurationName) {
             apiService.configurations.get({'configurationName': $routeParams.configurationName}).$promise.then(function (configuration) {
                 $scope.configuration = configuration;
-                apiService.projects.query().$promise.then(function (projects) {
-                    angular.forEach(projects, function(project) {
-                        if (project.key === $scope.configuration.project) {
-                            $scope.form.project = project;
+                apiService.backlogs.query().$promise.then(function (backlogs) {
+                    angular.forEach(backlogs, function(project) {
+                        if (project.key === $scope.configuration.backlog) {
+                            $scope.form.backlog = project;
                         }
                     });
-                    $scope.form.projects = projects;
+                    $scope.form.backlogs = backlogs;
                 });
                 apiService.boards.query().$promise.then(function (boards) {
                     angular.forEach(boards, function(board) {
@@ -100,8 +93,8 @@ angular.module('JIRA.Teamboard')
             });
         }
         else {
-            apiService.projects.query().$promise.then(function (projects) {
-                $scope.form.projects = projects;
+            apiService.backlogs.query().$promise.then(function (backlogs) {
+                $scope.form.backlogs = backlogs;
             });
             apiService.boards.query().$promise.then(function (boards) {
                 $scope.form.boards = boards;

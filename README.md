@@ -69,7 +69,7 @@ The build monitor can be configured to monitor the key builds for your team and 
 ###Sprint Burn
 This chart provides a real-time view of progress and trend against towards sprint completion. It allows teams to see if they are on track to meet their commitments and adjust their delivery plan as necessary.
 
-###Project Burn
+###Backlog Burn
 This chart provides a real-time view of progress and trend against the project backlog. It allows teams to see if they are on track to meet their commitments and adjust their delivery plan as necessary.
 
 > This chart displays project progress for the last 60 days.

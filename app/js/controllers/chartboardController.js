@@ -12,9 +12,9 @@ angular.module('JIRA.Teamboard')
                             lineChart.draw(chart.data, chart.options);
                         });
                         break;
-                    case 'projectburn':
+                    case 'backlogburn':
                         chartService.releaseburn($scope.teamboard).then(function(chart) {
-                            var lineChart = new google.visualization.LineChart($('#chartboard .project-burn')[0]);
+                            var lineChart = new google.visualization.LineChart($('#chartboard .backlog-burn')[0]);
                             lineChart.draw(chart.data, chart.options);
                         });
                         break;

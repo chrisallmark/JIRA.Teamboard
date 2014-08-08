@@ -148,7 +148,7 @@ module.exports = function (app, cfg) {
         fs.readdir('./cfg', function(err, files) {
             if (err) {
                 console.log(err);
-                res.status(500).send(err);
+                res.status(500, err).end();
             }
             else
             {
@@ -166,7 +166,7 @@ module.exports = function (app, cfg) {
                         res.writeHead(200, { 'Content-Type': 'application/json' });
                         res.end(JSON.stringify(configurations));
                     }, function (err) {
-                        res.status(500).send(err);
+                        res.status(500, err).end();
                     });
             }
         });
@@ -175,11 +175,12 @@ module.exports = function (app, cfg) {
     app.post('/api/configurations', function (req, res) {
         var configuration = {
             animate: req.body.animate,
+            backlog: req.body.backlog,
             board: req.body.board,
+            builds: req.body.builds,
             labels: req.body.labels,
             name: req.body.name,
             plans: req.body.plans,
-            project: req.body.project,
             slideshow: req.body.slideshow || false,
             sprint: req.body.sprint,
             velocity: req.body.velocity,
@@ -192,17 +193,17 @@ module.exports = function (app, cfg) {
     app.delete('/api/configurations/:configurationName', function (req, res) {
         fs.stat(cfgFile(req.params.configurationName), function(err, stat) {
             if (err) {
-                res.status(404).send(err);
+                res.status(404, err).end();
             }
             else
             {
                 fs.unlink(cfgFile(req.params.configurationName), function(err) {
                     if (err) {
-                        res.status(500).send(err);
+                        res.status(500, err).end();
                     }
                     else
                     {
-                        res.send(200).send('Ok');
+                        res.send(200).end();
                     }
                 });
             }
@@ -212,7 +213,7 @@ module.exports = function (app, cfg) {
     app.get('/api/configurations/:configurationName', function (req, res) {
         fs.stat(cfgFile(req.params.configurationName), function(err, stat) {
             if (err) {
-                res.status(404).send(err);
+                res.status(404, err).end();
             }
             else
             {
@@ -250,11 +251,31 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(boards));
             }, function (err) {
-                res.status(500).send(err);
+                res.status(500, err).end();
             });
     });
 
     app.get('/api/builds', function (req, res) {
+        bambooAPI(cfg, '/bamboo/rest/api/latest/project')
+            .then(function (data) {
+                var builds = [];
+                for (var i = 0; i < data.projects.project.length; i++) {
+                    var project = data.projects.project[i];
+                    builds.push({
+                        name: project.name
+                    });
+                }
+                return builds.sort(sortBy("name"));
+            })
+            .done(function (builds) {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify(builds));
+            }, function (err) {
+                res.status(500, err).end();
+            });
+    });
+
+    app.get('/api/builds/results', function (req, res) {
         function build(result) {
             if (result.plan.isBuilding) {
                 return {
@@ -284,7 +305,7 @@ module.exports = function (app, cfg) {
             .then(function (data) {
                 var builds = [];
                 for (var i = 0; i < data.results.result.length; i++) {
-                    if (!req.param('plans') || req.param('plans').indexOf(data.results.result[i].plan.shortName) !== -1) {
+                    if (!req.param('builds') || req.param('builds').indexOf(data.results.result[i].plan.projectName) !== -1) {
                         builds.push(build(data.results.result[i]));
                         for (var j = 0; j < data.results.result[i].plan.branches.branch.length; j++) {
                             builds.push(build(data.results.result[i].plan.branches.branch[j].latestResult));
@@ -297,50 +318,28 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(builds));
             }, function (err) {
-                res.status(500).send(err);
+                res.status(500, err).end();
             });
     });
 
-    app.get('/api/plans', function (req, res) {
-        bambooAPI(cfg, '/bamboo/rest/api/latest/plan')
-            .then(function (data) {
-                var plans = [];
-                for (var i = 0; i < data.plans.plan.length; i++) {
-                    var plan = data.plans.plan[i];
-                    if (plan.enabled) {
-                        plans.push({
-                            name: plan.shortName
-                        });
-                    }
-                }
-                return plans.sort(sortBy("name"));
-            })
-            .done(function (plans) {
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(plans));
-            }, function (err) {
-                res.status(500).send(err);
-            });
-    });
-
-    app.get('/api/projects', function (req, res) {
+    app.get('/api/backlogs', function (req, res) {
         jiraAPI(cfg, '/rest/api/latest/project')
             .then(function (data) {
-                var projects = [];
+                var backlogs = [];
                 for (var i = 0; i < data.length; i++) {
                     var project = data[i];
-                    projects.push({
+                    backlogs.push({
                         key: project.key,
                         name: project.name
                     });
                 }
-                return projects.sort(sortBy("name"));
+                return backlogs.sort(sortBy("name"));
             })
-            .done(function (projects) {
+            .done(function (backlogs) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(projects));
+                res.end(JSON.stringify(backlogs));
             }, function (err) {
-                res.status(500).send(err);
+                res.status(500, err).end();
             });
     });
 
@@ -362,7 +361,7 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(sprints));
             }, function (err) {
-                res.status(500).send(err);
+                res.status(500, err).end();
             });
     });
 
@@ -421,7 +420,7 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(burn));
             }, function (err) {
-                res.status(500).send(err);
+                res.status(500, err).end();
             });
     });
 
@@ -511,7 +510,7 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(taskboard));
             }, function (err) {
-                res.status(500).send(err);
+                res.status(500, err).end();
             });
     });
 
@@ -580,7 +579,7 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(taskboard));
             }, function (err) {
-                res.status(500).send(err);
+                res.status(500, err).end();
             });
     });
 
@@ -661,7 +660,7 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(burn));
             }, function (err) {
-                res.status(500).send(err);
+                res.status(500, err).end();
             });
     });
 
@@ -739,7 +738,7 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(flow));
             }, function (err) {
-                res.status(500).send(err);
+                res.status(500, err).end();
             });
     });
 
@@ -777,7 +776,7 @@ module.exports = function (app, cfg) {
                 res.end(JSON.stringify(work));
 
             }, function (err) {
-                res.status(500).send(err);
+                res.status(500, err).end();
             });
     });
 
@@ -805,7 +804,7 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(timer));
             }, function (err) {
-                res.status(500).send(err);
+                res.status(500, err).end();
             });
     });
 
@@ -853,14 +852,14 @@ module.exports = function (app, cfg) {
                     burnState.toDo += burnStates[date].toDo;
                     burn.push(extend({ date: date.clone() }, burnState));
                 }
-                perfLog('Project Burn', timestamp, req.url);
+                perfLog('Backlog Burn', timestamp, req.url);
                 return burn;
             })
             .done(function (burn) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(burn));
             }, function (err) {
-                res.status(500).send(err);
+                res.status(500, err).end();
             });
     });
 
@@ -905,7 +904,7 @@ module.exports = function (app, cfg) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(releaseboard));
             }, function (err) {
-                res.status(500).send(err);
+                res.status(500, err).end();
             });
     });
 };

@@ -167,6 +167,7 @@ body {
     > div:first-of-type {
       font: {
         size: 128px;
+        weight: bold;
       }
       letter-spacing: -12px;
       line-height: 96px;
@@ -276,7 +277,7 @@ body {
 }
 
 #dashboard, #chartboard {
-  .project-burn, .sprint-burn, .task-burn, .task-flow, .task-work {
+  .backlog-burn, .sprint-burn, .task-burn, .task-flow, .task-work {
     background-color: $dark-grey-color;
   }
   .emoticon {
@@ -329,7 +330,7 @@ body {
 }
 
 #chartboard {
-  .project-burn, .sprint-burn, .task-burn, .task-flow, .task-work {
+  .backlog-burn, .sprint-burn, .task-burn, .task-flow, .task-work {
     height: 1020px;
     .emoticon {
       top: 400px;
@@ -338,7 +339,7 @@ body {
 }
 
 #dashboard {
-  .project-burn, .sprint-burn, .task-burn, .task-flow, .task-work {
+  .backlog-burn, .sprint-burn, .task-burn, .task-flow, .task-work {
     height: 500px;
     .emoticon {
       top: 175px;

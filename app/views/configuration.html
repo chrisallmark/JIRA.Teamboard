@@ -13,8 +13,8 @@
             </div>
             <div class="row">
                 <div class="col-sm-4 form-group">
-                    <label class="control-label" for="project">Project:</label>
-                    <select id="project" class="form-control" data-ng-disabled="!form.projects" required data-ng-model="form.project" data-ng-options="project.name for project in form.projects">
+                    <label class="control-label" for="backlog">Backlog:</label>
+                    <select id="backlog" class="form-control" data-ng-disabled="!form.backlogs" required data-ng-model="form.backlog" data-ng-options="backlog.name for backlog in form.backlogs">
                         <option value=""></option>
                     </select>
                 </div>
@@ -56,21 +56,21 @@
             <div class="row">
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <label class="control-label" for="available-plans">Available Plans:</label>
-                        <select id="available-plans" class="form-control" multiple data-ng-disabled="!form.plans || plans.length === 0" data-ng-model="form.plan" data-ng-options="plan.name for plan in form.plans"></select>
+                        <label class="control-label" for="available-builds">Available Builds:</label>
+                        <select id="available-builds" class="form-control" multiple data-ng-disabled="!form.builds || builds.length === 0" data-ng-model="form.build" data-ng-options="build.name for build in form.builds"></select>
                     </div>
                 </div>
                 <div class="col-sm-6">
-                    <label class="control-label" for="monitored-plans">Monitored Plans:</label>
-                    <select id="monitored-plans" class="form-control" multiple data-ng-model="configuration.plan" data-ng-options="plan for plan in configuration.plans"></select>
+                    <label class="control-label" for="monitored-builds">Monitored Builds:</label>
+                    <select id="monitored-builds" class="form-control" multiple data-ng-model="configuration.build" data-ng-options="build for build in configuration.builds"></select>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-6 form-group">
-                    <button class="btn btn-default" title="Add All" data-ng-click="add(form.plans)" data-ng-disabled="!form.plans"><i class="glyphicon glyphicon-fast-forward"></i></button>
-                    <button class="btn btn-default" title="Add Selected" data-ng-click="add(form.plan)" data-ng-disabled="!form.plan"><i class="glyphicon glyphicon-step-forward"></i></button>
-                    <button class="btn btn-default" title="Remove Selected" data-ng-click="remove(configuration.plan)" data-ng-disabled="!configuration.plan"><i class="glyphicon glyphicon-step-backward"></i></button>
-                    <button class="btn btn-default" title="Remove All" data-ng-click="remove(configuration.plans)" data-ng-disabled="!configuration.plans"><i class="glyphicon glyphicon-fast-backward"></i></button>
+                    <button class="btn btn-default" title="Add All" data-ng-click="add(form.builds)" data-ng-disabled="!form.builds"><i class="glyphicon glyphicon-fast-forward"></i></button>
+                    <button class="btn btn-default" title="Add Selected" data-ng-click="add(form.build)" data-ng-disabled="!form.build"><i class="glyphicon glyphicon-step-forward"></i></button>
+                    <button class="btn btn-default" title="Remove Selected" data-ng-click="remove(configuration.build)" data-ng-disabled="!configuration.build"><i class="glyphicon glyphicon-step-backward"></i></button>
+                    <button class="btn btn-default" title="Remove All" data-ng-click="remove(configuration.builds)" data-ng-disabled="!configuration.builds"><i class="glyphicon glyphicon-fast-backward"></i></button>
                 </div>
                 <div class="col-sm-6 form-group text-right">
                     <button class="btn btn-default" data-ng-click="ok()" data-ng-disabled="configurationForm.$invalid">Ok</button>

@@ -8,8 +8,8 @@ angular.module('JIRA.Teamboard')
                     var lineChart= new google.visualization.LineChart($('#dashboard .sprint-burn')[0]);
                     lineChart.draw(chart.data, chart.options);
                 });
-                chartService.projectburn($scope.teamboard).then(function(chart) {
-                    var lineChart = new google.visualization.LineChart($('#dashboard .project-burn')[0]);
+                chartService.backlogburn($scope.teamboard).then(function(chart) {
+                    var lineChart = new google.visualization.LineChart($('#dashboard .backlog-burn')[0]);
                     lineChart.draw(chart.data, chart.options);
                 });
                 chartService.taskburn($scope.teamboard).then(function(chart) {
