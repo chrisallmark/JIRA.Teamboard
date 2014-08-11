@@ -13,6 +13,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('./app'));
 app.use(morgan('combined'));
 
-route(app, require('./giffgaff.json'));
+route(app, require('./server.json'));
 
 app.listen(process.env.PORT || 1337);
