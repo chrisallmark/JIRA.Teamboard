@@ -8,7 +8,7 @@ angular.module('JIRA.Teamboard')
         $scope.$watch('teamboard.view', function() {
             if (angular.isDefined($scope.teamboard) && $scope.teamboard.view === 'releaseboard') {
                 apiService.releaseboard.query({
-                    'project': $scope.teamboard.project,
+                    'backlog': $scope.teamboard.backlog,
                     'board': $scope.teamboard.board,
                     'sprint': $scope.teamboard.sprint,
                     'velocity': $scope.teamboard.velocity

@@ -865,10 +865,10 @@ module.exports = function (app, cfg) {
             });
     });
 
-    app.get('/api/:project/:board/:sprint/release/board/:velocity', function (req, res) {
+    app.get('/api/:backlog/:board/:sprint/release/board/:velocity', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
-                return jql(cfg, 'project=' + req.param('project') + ' AND type in standardIssueTypes() AND status = \'Open\' AND (sprint not in openSprints() OR sprint is EMPTY) ORDER BY Rank', [cfg.jiraFlagged, 'issuetype', cfg.jiraPoints, 'labels', 'summary', 'status'], [], 999)
+                return jql(cfg, 'project=' + req.param('backlog') + ' AND type in standardIssueTypes() AND status = \'Open\' AND (sprint not in openSprints() OR sprint is EMPTY) ORDER BY Rank', [cfg.jiraFlagged, 'issuetype', cfg.jiraPoints, 'labels', 'summary', 'status'], [], 999)
                     .then(function (data) {
                         var releaseboard =  [],
                             timestamp = moment.utc(),
