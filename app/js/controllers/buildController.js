@@ -9,9 +9,10 @@ angular.module('JIRA.Teamboard')
         (function load() {
             apiService.results.query({'builds': $scope.teamboard.builds}).$promise.then(function (builds) {
                 angular.forEach(builds, function(build) {
-                    build.start = moment(build.start).calendar();
-                    build.end = moment(build.end).calendar();
+                    build.start = moment(build.start);
+                    build.end = moment(build.end);
                     build.classification = classification(build.status);
+                    build.duration = build.end.diff(build.start, 'seconds') + 's';
                     if (build.tests) {
                         if (build.tests.failed || 0 + build.tests.passed || 0 === 0) {
                             build.rating = 'N/A';

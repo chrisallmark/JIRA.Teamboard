@@ -54,11 +54,7 @@ body {
 #teamboard aside {
   padding-right: 0; }
   #teamboard aside header h3 {
-    background-color: white;
-    color: black;
-    letter-spacing: 4px;
     margin: 0 0 8px;
-    padding: 0 0 2px 0;
     text-transform: lowercase; }
   #teamboard aside nav {
     margin: 14px 0;
@@ -339,13 +335,6 @@ body {
     overflow: auto; }
     #modal-help #help-content i {
       vertical-align: text-top; }
-    #modal-help #help-content img {
-      -webkit-border-radius: 8px;
-      border-radius: 8px;
-      background-color: black;
-      margin-bottom: 5px;
-      padding: 10px;
-      width: 100%; }
     #modal-help #help-content #help-builds {
       color: white;
       margin-left: 10px;
@@ -354,5 +343,12 @@ body {
         border-color: white; }
     #modal-help #help-content #help-sprint {
       margin-left: 10px; }
+    #modal-help #help-content .screenshot {
+      -webkit-border-radius: 8px;
+      border-radius: 8px;
+      background-color: black;
+      margin-bottom: 5px;
+      padding: 10px;
+      width: 100%; }
     #modal-help #help-content .subtask {
       line-height: 32px; }

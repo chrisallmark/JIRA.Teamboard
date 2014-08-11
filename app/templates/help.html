@@ -52,7 +52,7 @@
             <ul>
                 <li><span class="subtask be">BE</span></li>
                 <li><span class="subtask fe">FE</span></li>
-                <li><span class="subtask qa">QA</span</li>
+                <li><span class="subtask qa">QA</span></li>
             </ul>
             <p class="well"> Colour coding is also applied depending on the type or sub-type of the task or issues which are flagged.</p>
         </div>
@@ -71,7 +71,7 @@
             <h3>Build Monitor</h3>
             <ul id="help-builds" class="pull-right">
                 <li class="build" data-ng-repeat="build in builds">
-                    <build/>
+                    <build></build>
                 </li>
             </ul>
             <p>The build monitor can be configured to monitor the key builds for your team and provides a visual call-to-action when code breaks. You can monitor as many builds as you like but only the most recent builds will be displayed. As new builds are triggered they will appear at the top of the build list.</p>
@@ -79,12 +79,12 @@
         </div>
         <div id="help-dashboard">
             <h3><i class="glyphicon glyphicon-fire"></i> Dashboard</h3>
-            <img src="/img/dashboard.png"/>
+            <img class="screenshot" src="/img/dashboard.png"/>
             <h4>Sprint Burn</h4>
             <p>This chart provides a real-time view of progress and trend against towards sprint completion. It allows teams to see if they are on track to meet their commitments and adjust their delivery plan as necessary.</p>
             <div class="well">Depending on your configuration the sprint burn will either show a burn down of work or a burn up of tasks when the No Estimates setting is applied. </div>
             <h4>Backlog Burn</h4>
-            <p>This chart provides a real-time view of progress and trend against the project backlog. It allows teams to see if they are on track to meet their commitments and adjust their delivery plan as necessary.</p>
+            <p>This chart provides a real-time view of progress and trend against the product backlog. It allows teams to see if they are on track to meet their commitments and adjust their delivery plan as necessary.</p>
             <div class="well">This chart displays project progress for the last 60 days.</div>
             <h4>Team Burn</h4>
             <p>This chart shows a breakdown of completed tasks by person by day and provide a useful view on individual productivity or behavioural smells such as large numbers of tasks completing at the same time. It can also be useful during stand-up when someone says "I can't remember what I did yesterday..."</p>
@@ -96,7 +96,7 @@
         </div>
         <div id="help-taskboard">
             <h3><i class="glyphicon glyphicon-th"></i> Taskboard</h3>
-            <img src="/img/taskboard.png"/>
+            <img class="screenshot" src="/img/taskboard.png"/>
             <p>The taskboard displays a standard wallboard view with stories on the left-hand side and tasks ordered by state (either Not Started, In Progress or Done) on the right. If a WIP (Work In Progress) limit has been configured and exceeded then the In Progress column will be highlighted in red.</p>
             <h4>Story Cards</h4>
             <p>Stories display the story title, the current state and the number of story points.</p>
@@ -106,7 +106,7 @@
         </div>
         <div id="help-cycleboard">
             <h3><i class="glyphicon glyphicon-tasks"></i> Cycleboard</h3>
-            <img src="/img/cycleboard.png"/>
+            <img class="screenshot" src="/img/cycleboard.png"/>
             <p>The cycleboard displays a Gantt-style view of the stories and tasks in the current sprint which are either "In Progress or "Done".</p>
             <h4>Story Cards</h4>
             <p>Stories display the current state of the story and the number of story points.</p>
@@ -117,7 +117,7 @@
         </div>
         <div id="help-releaseboard">
             <h3><i class="glyphicon glyphicon-road"></i> Releasboard</h3>
-            <img src="/img/releaseboard.png"/>
+            <img class="screenshot" src="/img/releaseboard.png"/>
             <p>The releaseboard displays a projected release schedule based upon your team's velocity against an estimated backlog of stories. Futures sprints are calculated based upon the dates and duration of the current sprint and. The sprint will be highlighted in green if it's under allocated or blue if it's over allocated - this is a trigger to either change the order the stories or to split them if they are too large.</p>
             <div class="well">If you don't specify a velocity for your team then the releaseboard is hidden.</div>
         </div>
@@ -127,16 +127,22 @@
         </div>
         <div id="help-configuration">
             <h3><i class="glyphicon glyphicon-wrench"></i> Configuration</h3>
-            <img src="/img/configuration.png"/>
+            <img class="screenshot" src="/img/configuration.png"/>
             <p></p>
             <ul>
-                <li><strong>Name</strong> - the unique identifier for this teamboard configuration</li>
-                <li><strong>Project</strong> - the project where the backlog is held</li>
-                <li><strong>Board</strong> - the name of the board which holds the sprint</li>
+                <li><strong>Name</strong> - the unique identifier for this team / teamboard</li>
+                <li><strong>Logo</strong> - the url of a team logo (300px x 100px)</li>
+                <li><strong>Backlog</strong> - the name of the project where the backlog is held</li>
+                <li><strong>Board</strong> - the name of the board that defines the sprint</li>
                 <li><strong>Sprint</strong> - the name of the sprint to monitor</li>
+                <li><strong>Target</strong> - the day number of the sprint to be "release ready"</li>
+                <li><strong>Labels</strong> - a comma delimited list of labels for categorisation of task work</li>
                 <li><strong>Velocity</strong> - the estimated velocity of the team</li>
-                <li><strong>WIP</strong> - the number of concurrent tasks that team should have in progress</li>
-                <li><strong>Slideshow</strong> - start the slideshow automatically when the application loads</li>
+                <li><strong>WIP</strong> - the maximum number of concurrent tasks that team should have in progress</li>
+                <li><strong>Slideshow</strong> - activate the slideshow when the application loads</li>
+                <li><strong>Animate</strong> - animate the boards when the slideshow is active</li>
+                <li><strong>Available Builds</strong> - the list of the available build projects</li>
+                <li><strong>Monitored Builds</strong> - the list of build projects to monitor</li>
             </ul>
             <div class="well">You can duplicate a configuration by editing it and changing the name.</div>
         </div>

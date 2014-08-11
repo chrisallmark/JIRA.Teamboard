@@ -179,10 +179,12 @@ module.exports = function (app, cfg) {
             board: req.body.board,
             builds: req.body.builds,
             labels: req.body.labels,
+            logo: req.body.logo,
             name: req.body.name,
             plans: req.body.plans,
             slideshow: req.body.slideshow || false,
             sprint: req.body.sprint,
+            target: req.body.target,
             velocity: req.body.velocity,
             wip: req.body.wip
         };

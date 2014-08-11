@@ -1,6 +1,6 @@
 <div data-content="{{build.reason}}" data-ng-class="build.classification" title="{{build.key}}">
     <div>
         <div class="text-right">{{build.name}}</div>
-        <div class="text-right">{{build.start}}&nbsp;:&nbsp;<span title="{{build.tests.failed}}/{{build.tests.passed}}">{{build.rating}}</span>&nbsp;:&nbsp;<img data-ng-src="/img/{{build.branch ? 'branch.png' : 'master.png'}}" /></div>
+        <div class="text-right"><small>{{build.end.calendar()}}&nbsp;:&nbsp;{{build.duration}}&nbsp;:&nbsp;<span title="{{build.tests.failed}}/{{build.tests.passed}}">{{build.rating}}</span>&nbsp;:&nbsp;<img data-ng-src="/img/{{build.branch ? 'branch.png' : 'master.png'}}" /></small></div>
     </div>
 </div>

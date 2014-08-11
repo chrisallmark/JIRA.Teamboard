@@ -44,18 +44,25 @@ angular.module('JIRA.Teamboard')
                     var data = new google.visualization.DataTable();
                     data.addColumn('number', 'Day');
                     data.addColumn('number', 'To Do');
+                    data.addColumn({ type: 'string', role: 'annotation' });
                     data.addColumn('number', 'Done');
                     angular.forEach(sprintburn, function(burn, index) {
                         burn.date = moment.utc(burn.date);
                         if (index === 0 || burn.date.isoWeekday() <= 5) {
                             data.addRow([
-                                {v: data.getNumberOfRows(), f: (index === 0 ? '-' : burn.date.format('dddd Do'))},
+                            {v: data.getNumberOfRows(), f: (index === 0 ? '-' : burn.date.format('dddd Do'))},
                                 burn.toDo + burn.done,
+                                index == configuration.target ? '\u25CE' : null,
                                 burn.date.isBefore(moment.utc().endOf('day')) || burn.date.isSame(moment.utc().endOf('day')) ? burn.done : null
-                        ]);
+                            ]);
                         }
                     });
                     var options = $.extend(true, defaultOptions(), {
+                        annotation: {
+                            1: {
+                                style: 'line'
+                            }
+                        },
                         colors: ['#36c', '#f90'],
                         hAxis: {
                             viewWindow: {

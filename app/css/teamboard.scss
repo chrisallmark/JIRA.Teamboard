@@ -116,11 +116,7 @@ body {
   aside {
     padding-right: 0;
     header h3 {
-      background-color: $foreground-color;
-      color: $background-color;
-      letter-spacing: 4px;
       margin: 0 0 8px;
-      padding: 0 0 2px 0;
       text-transform: lowercase;
     }
     nav {
@@ -518,13 +514,6 @@ body {
     i {
       vertical-align: text-top;
     }
-    img {
-      @include border-radius(8px);
-      background-color: $background-color;
-      margin-bottom: 5px;
-      padding: 10px;
-      width: 100%;
-    }
     #help-builds {
       color:$foreground-color;
       margin-left: 10px;
@@ -535,6 +524,13 @@ body {
     }
     #help-sprint {
       margin-left: 10px;
+    }
+    .screenshot {
+      @include border-radius(8px);
+      background-color: $background-color;
+      margin-bottom: 5px;
+      padding: 10px;
+      width: 100%;
     }
     .subtask {
       line-height: 32px;

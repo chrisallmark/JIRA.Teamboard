@@ -8,17 +8,23 @@
             <div class="row">
                 <div class="col-sm-12 form-group">
                     <label class="control-label" for="name">Name:</label>
-                    <input id="name" class="form-control" placeholder="Name" required type="text" data-ng-model="configuration.name" />
+                    <input id="name" class="form-control" placeholder="Team Name" required type="text" data-ng-model="configuration.name" />
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-4 form-group">
+                <div class="col-sm-12 form-group">
+                    <label class="control-label" for="logo">Logo:</label>
+                    <input id="logo" class="form-control" placeholder="Team Logo URL" type="text" data-ng-model="configuration.logo" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3 form-group">
                     <label class="control-label" for="backlog">Backlog:</label>
                     <select id="backlog" class="form-control" data-ng-disabled="!form.backlogs" required data-ng-model="form.backlog" data-ng-options="backlog.name for backlog in form.backlogs">
                         <option value=""></option>
                     </select>
                 </div>
-                <div class="col-sm-4 form-group">
+                <div class="col-sm-3 form-group">
                     <label class="control-label" for="board">Board:</label>
                     <select id="board" class="form-control" data-ng-disabled="!form.boards" required data-ng-model="form.board" data-ng-options="board.name for board in form.boards">
                         <option value=""></option>
@@ -29,6 +35,10 @@
                     <select id="sprint" class="form-control" required data-ng-disabled="!form.sprints" data-ng-model="form.sprint" data-ng-options="sprint.name for sprint in form.sprints">
                         <option value=""></option>
                     </select>
+                </div>
+                <div class="col-sm-2 form-group">
+                    <label class="control-label" for="labels">Target:</label>
+                    <input id="target" class="form-control" data-ng-model="configuration.target" />
                 </div>
             </div>
             <div class="row">

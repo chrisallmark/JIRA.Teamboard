@@ -17,8 +17,8 @@
         </section>
         <aside class="col-lg-2" data-ng-if="teamboard">
             <header>
-                <img src="/img/logo.png" width="100%"/>
-                <h3 class="text-center" data-ng-bind="teamboard.name"</h3>
+                <img data-ng-src="{{teamboard.logo}}" src="/img/logo.png" width="100%"/>
+                <h3 class="text-center">{{teamboard.name}}</h3>
             </header>
             <nav>
                 <ul class="nav nav-pills">

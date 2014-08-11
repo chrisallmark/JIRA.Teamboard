@@ -5,20 +5,32 @@ angular.module('JIRA.Teamboard')
         $scope.baseUrl = $location.protocol() + '://' + $location.host() + ($location.port() === 80 ? '' : ':' + $location.port());
         $scope.builds = [
             {
-                classification: "successful",
-                name: "Buld #2",
+                branch: true,
+                classification: 'in-progress',
+                duration: '0s',
+                name: 'Buld #3',
+                rating: '???',
+                end: moment()
+            },
+            {
+                branch: false,
+                classification: 'successful',
+                duration: '456s',
+                name: 'Buld #2',
                 rating: '100%',
-                start: moment().add(-1, 'days').calendar(),
+                end: moment().add(-1, 'days'),
                 tests: {
                     failed: 0,
                     passed: 1
                 }
             },
             {
-                classification: "failed",
-                name: "Buld #1",
+                branch: true,
+                classification: 'failed',
+                duration: '123s',
+                name: 'Buld #1',
                 rating: '0%',
-                start: moment().add(-2, 'days').calendar(),
+                end: moment().add(-2, 'days'),
                 tests: {
                     failed: 1,
                     passed: 0
