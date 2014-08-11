@@ -310,7 +310,9 @@ module.exports = function (app, cfg) {
                     if (!req.param('builds') || req.param('builds').indexOf(data.results.result[i].plan.projectName) !== -1) {
                         builds.push(build(data.results.result[i]));
                         for (var j = 0; j < data.results.result[i].plan.branches.branch.length; j++) {
-                            builds.push(build(data.results.result[i].plan.branches.branch[j].latestResult));
+                            if (data.results.result[i].plan.branches.branch[j].latestResult) {
+                                builds.push(build(data.results.result[i].plan.branches.branch[j].latestResult));
+                            }
                         }
                     }
                 }
