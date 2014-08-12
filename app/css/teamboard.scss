@@ -116,7 +116,7 @@ body {
   aside {
     padding-right: 0;
     header h3 {
-      margin: 0 0 8px;
+      margin: 0;
       text-transform: lowercase;
     }
     nav {
@@ -193,7 +193,7 @@ body {
   .build {
     > div {
       position: relative;
-      padding: 8px 0;
+      padding: 10px 0;
       &:before, > div {
         background-color: #999;
       }
@@ -206,7 +206,7 @@ body {
         line-height: 48px;
         position: absolute;
         text-align: center;
-        top: 1px;
+        top: 0;
         width: 56px;
       }
       &.failed {
@@ -244,7 +244,7 @@ body {
         padding: 0 8px 0 16px;
         > div {
           font-size: 12px;
-          line-height: 20px;
+          line-height: 18px;
           overflow: hidden;
           white-space: nowrap;
           &:first-of-type {

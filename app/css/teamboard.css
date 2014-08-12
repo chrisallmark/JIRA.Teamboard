@@ -54,7 +54,7 @@ body {
 #teamboard aside {
   padding-right: 0; }
   #teamboard aside header h3 {
-    margin: 0 0 8px;
+    margin: 0;
     text-transform: lowercase; }
   #teamboard aside nav {
     margin: 14px 0;
@@ -102,7 +102,7 @@ body {
   padding: 0; }
   #help-builds .build > div, #builds .build > div {
     position: relative;
-    padding: 8px 0; }
+    padding: 10px 0; }
     #help-builds .build > div:before, #help-builds .build > div > div, #builds .build > div:before, #builds .build > div > div {
       background-color: #999; }
     #help-builds .build > div:before, #builds .build > div:before {
@@ -114,7 +114,7 @@ body {
       line-height: 48px;
       position: absolute;
       text-align: center;
-      top: 1px;
+      top: 0;
       width: 56px; }
     #help-builds .build > div.failed:before, #help-builds .build > div.failed > div, #builds .build > div.failed:before, #builds .build > div.failed > div {
       background-color: #dc3912; }
@@ -136,7 +136,7 @@ body {
       padding: 0 8px 0 16px; }
       #help-builds .build > div > div > div, #builds .build > div > div > div {
         font-size: 12px;
-        line-height: 20px;
+        line-height: 18px;
         overflow: hidden;
         white-space: nowrap; }
         #help-builds .build > div > div > div:first-of-type, #builds .build > div > div > div:first-of-type {
