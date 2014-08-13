@@ -77,7 +77,12 @@ angular.module('JIRA.Teamboard')
                         $scope.load(angular.lowercase($location.search().view || 'dashboard'));
                     }
                 }
-                timeout = $timeout(load, 1000 * 60 * 2.5);
+                var now = moment();
+                if (now.isAfter(moment(8, 'hh')) && now.isBefore(moment(18,'hh')) && now.isoWeekday() !== 6 && now.isoWeekday() !== 7) {
+                    timeout = $timeout(load, 1000 * 60 * 2.5);
+                } else {
+                    timeout = $timeout(load, moment(8, 'hh').diff(now));
+                }
             })();
         }, function(error) {
             if (error.status === 404) {

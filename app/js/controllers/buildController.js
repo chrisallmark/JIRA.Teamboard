@@ -26,7 +26,12 @@ angular.module('JIRA.Teamboard')
                 $('#builds .popover').remove();
                 $scope.builds = builds;
             }).finally(function () {
-                timeout = $timeout(load, 1000 * 30);
+                var now = moment();
+                if (now.isAfter(moment(8, 'hh')) && now.isBefore(moment(18,'hh')) && now.isoWeekday() !== 6 && now.isoWeekday() !== 7) {
+                    timeout = $timeout(load, 1000 * 30);
+                } else {
+                    timeout = $timeout(load, moment(8, 'hh').diff(now));
+                }
             });
         })();
         $scope.$on('$destroy', function (event) {

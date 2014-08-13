@@ -8,16 +8,16 @@ angular.module('JIRA.Teamboard')
                 board: $scope.teamboard.board,
                 sprint: $scope.teamboard.sprint
             }).$promise.then(function (timer) {
-                timer.start = moment.utc(timer.start);
-                timer.end = moment.utc(timer.end);
+                timer.start = moment(timer.start);
+                timer.end = moment(timer.end);
                 if (angular.isDefined(interval)) {
                     $interval.cancel(interval);
                 }
                 interval = $interval(function () {
-                    if (timer.end.isBefore(moment.utc())) {
+                    if (timer.end.isBefore(moment())) {
                         timer.countdown = '00:00:00:00';
                     } else {
-                        var now = moment.utc().add('minutes', moment().zone() * -1);
+                        var now = moment().add('minutes', moment().zone() * -1);
                         var days = ('00' + timer.end.diff(now, 'days')).substr(-2);
                         var hours = ('00' + timer.end.diff(now, 'hours') % 24).substr(-2);
                         var minutes = ('00' + timer.end.diff(now, 'minutes') % 60).substr(-2);
