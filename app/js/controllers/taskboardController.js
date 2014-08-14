@@ -16,28 +16,32 @@ angular.module('JIRA.Teamboard')
             }
         }
         $scope.$watch('teamboard.view', function() {
-            if (angular.isDefined($scope.teamboard) && $scope.teamboard.view === 'taskboard') {
-                apiService.taskboard.get({
-                    board: $scope.teamboard.board,
-                    sprint: $scope.teamboard.sprint
-                }).$promise.then(function (taskboard) {
-                    taskboard.start = moment(taskboard.start).format("ddd Do");
-                    taskboard.end = moment(taskboard.end).format("ddd Do");
-                    var wip = 0;
-                    angular.forEach(taskboard.issues, function(issue) {
-                        issue.classification = classification(issue.flagged, issue.labels, issue.state, issue.type);
-                        angular.forEach(issue.subtasks, function(subtask) {
-                            subtask.classification = classification(subtask.flagged, subtask.labels, subtask.state, subtask.type);
-                            subtask.tag = tag(subtask.assignee);
-                            wip += (subtask.state !== "Open" && subtask.state !== "Closed");
+            if (angular.isDefined($scope.teamboard)) {
+                if ($scope.teamboard.view === 'taskboard') {
+                    apiService.taskboard.get({
+                        board: $scope.teamboard.board,
+                        sprint: $scope.teamboard.sprint
+                    }).$promise.then(function (taskboard) {
+                            taskboard.start = moment(taskboard.start).format("ddd Do");
+                            taskboard.end = moment(taskboard.end).format("ddd Do");
+                            var wip = 0;
+                            angular.forEach(taskboard.issues, function (issue) {
+                                issue.classification = classification(issue.flagged, issue.labels, issue.state, issue.type);
+                                angular.forEach(issue.subtasks, function (subtask) {
+                                    subtask.classification = classification(subtask.flagged, subtask.labels, subtask.state, subtask.type);
+                                    subtask.tag = tag(subtask.assignee);
+                                    wip += (subtask.state !== "Open" && subtask.state !== "Closed");
+                                });
+                            });
+                            taskboard.state = null;
+                            taskboard.wipExceeded = Number($scope.teamboard.wip) > 0 ? wip > Number($scope.teamboard.wip) : false;
+                            $scope.taskboard = taskboard;
+                        }).finally(function () {
+                            $scope.teamboard.loaded = $scope.teamboard.view;
                         });
-                    });
-                    taskboard.state = null;
-                    taskboard.wipExceeded = Number($scope.teamboard.wip) > 0 ? wip > Number($scope.teamboard.wip) : false;
-                    $scope.taskboard = taskboard;
-                }).finally(function () {
-                    $scope.teamboard.loaded = $scope.teamboard.view;
-                });
+                } else if ($scope.teamboard.loaded === 'taskboard' && $scope.teamboard.view === 'reload') {
+                    $scope.teamboard.view = $scope.teamboard.loaded;
+                }
             }
         });
         $scope.toggleState = function(state) {

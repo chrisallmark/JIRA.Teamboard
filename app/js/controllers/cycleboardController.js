@@ -44,56 +44,60 @@ angular.module('JIRA.Teamboard')
             return popover;
         }
         $scope.$watch('teamboard.view', function() {
-            if (angular.isDefined($scope.teamboard) && $scope.teamboard.view === 'cycleboard') {
-                apiService.cycleboard.get({
-                    'board': $scope.teamboard.board,
-                    'sprint': $scope.teamboard.sprint
-                }).$promise.then(function (cycleboard) {
-                    cycleboard.start = moment(cycleboard.start);
-                    cycleboard.end = moment(cycleboard.end);
-                    cycleboard.cycleDates = cycleDates(cycleboard.start, cycleboard.end);
-                    var cycleboardTime = cycleTime(cycleboard.start, cycleboard.end);
-                    var cycleboardTimeTotal = 0;
-                    angular.forEach(cycleboard.issues, function(issue) {
-                        issue.start = moment(issue.start);
-                        issue.end = moment(issue.end);
-                        issue.classification = classification(issue.flagged, issue.labels, issue.state, issue.type);
-                        var issueCycleTime = cycleTime(issue.start, issue.end);
-                        issue.style = {
-                            'margin-left': (cycleTime(cycleboard.start, issue.start) - 1) * (100 / cycleboardTime) + '%',
-                            'width': issueCycleTime * (100 / cycleboardTime) + '%'
-                        };
-                        var issueCycleTotal = 0;
-                        angular.forEach(issue.subtasks, function(subtask) {
-                            subtask.start = moment(subtask.start);
-                            subtask.end = moment(subtask.end);
-                            subtask.classification = classification(subtask.flagged,subtask.labels, subtask.state, subtask.type);
-                            var subtaskCycleTime = cycleTime(subtask.start, subtask.end);
-                            subtask.cycleTime = subtaskCycleTime;
-                            subtask.popover = popover(subtask);
-                            subtask.style = {
-                                'margin-left': (cycleTime(issue.start, subtask.start) - 1) * (100 / issueCycleTime) + '%',
-                                'width': subtaskCycleTime * (100 / issueCycleTime) + '%'
+            if (angular.isDefined($scope.teamboard)) {
+                if ($scope.teamboard.view === 'cycleboard') {
+                    apiService.cycleboard.get({
+                        'board': $scope.teamboard.board,
+                        'sprint': $scope.teamboard.sprint
+                    }).$promise.then(function (cycleboard) {
+                        cycleboard.start = moment(cycleboard.start);
+                        cycleboard.end = moment(cycleboard.end);
+                        cycleboard.cycleDates = cycleDates(cycleboard.start, cycleboard.end);
+                        var cycleboardTime = cycleTime(cycleboard.start, cycleboard.end);
+                        var cycleboardTimeTotal = 0;
+                        angular.forEach(cycleboard.issues, function(issue) {
+                            issue.start = moment(issue.start);
+                            issue.end = moment(issue.end);
+                            issue.classification = classification(issue.flagged, issue.labels, issue.state, issue.type);
+                            var issueCycleTime = cycleTime(issue.start, issue.end);
+                            issue.style = {
+                                'margin-left': (cycleTime(cycleboard.start, issue.start) - 1) * (100 / cycleboardTime) + '%',
+                                'width': issueCycleTime * (100 / cycleboardTime) + '%'
                             };
-                            issueCycleTotal += subtaskCycleTime;
+                            var issueCycleTotal = 0;
+                            angular.forEach(issue.subtasks, function(subtask) {
+                                subtask.start = moment(subtask.start);
+                                subtask.end = moment(subtask.end);
+                                subtask.classification = classification(subtask.flagged,subtask.labels, subtask.state, subtask.type);
+                                var subtaskCycleTime = cycleTime(subtask.start, subtask.end);
+                                subtask.cycleTime = subtaskCycleTime;
+                                subtask.popover = popover(subtask);
+                                subtask.style = {
+                                    'margin-left': (cycleTime(issue.start, subtask.start) - 1) * (100 / issueCycleTime) + '%',
+                                    'width': subtaskCycleTime * (100 / issueCycleTime) + '%'
+                                };
+                                issueCycleTotal += subtaskCycleTime;
+                            });
+                            issue.cycleTimeAverage = days(issue.subtasks.length === 0 ? 0 : (issueCycleTotal / issue.subtasks.length).toFixed(2), 'task');
+                            issue.cycleTime = days(issueCycleTime);
+                            cycleboardTimeTotal += issueCycleTime;
                         });
-                        issue.cycleTimeAverage = days(issue.subtasks.length === 0 ? 0 : (issueCycleTotal / issue.subtasks.length).toFixed(2), 'task');
-                        issue.cycleTime = days(issueCycleTime);
-                        cycleboardTimeTotal += issueCycleTime;
+                        cycleboard.cycleTimeAverage = days(cycleboard.issues.length === 0 ? 0 : (cycleboardTimeTotal / cycleboard.issues.length).toFixed(2), 'issue');
+                        cycleboard.cycleTime = days(cycleboardTime);
+                        cycleboard.style = {
+                            'width': (100 / cycleboardTime) + '%'
+                        };
+                        cycleboard.state = null;
+                        $('#cycleboard .popover').remove();
+                        $scope.cycleboard = cycleboard;
+                    }).finally(function () {
+                        $scope.teamboard.loaded = $scope.teamboard.view;
                     });
-                    cycleboard.cycleTimeAverage = days(cycleboard.issues.length === 0 ? 0 : (cycleboardTimeTotal / cycleboard.issues.length).toFixed(2), 'issue');
-                    cycleboard.cycleTime = days(cycleboardTime);
-                    cycleboard.style = {
-                        'width': (100 / cycleboardTime) + '%'
-                    };
-                    cycleboard.state = null;
+                } else if ($scope.teamboard.loaded === 'cycleboard' && $scope.teamboard.view === 'reload') {
+                    $scope.teamboard.view = $scope.teamboard.loaded;
+                } else {
                     $('#cycleboard .popover').remove();
-                    $scope.cycleboard = cycleboard;
-                }).finally(function () {
-                    $scope.teamboard.loaded = $scope.teamboard.view;
-                });
-            } else {
-                $('#cycleboard .popover').remove();
+                }
             }
         });
         $scope.popover = function () {

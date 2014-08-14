@@ -57,10 +57,11 @@ body {
     margin: 0;
     text-transform: lowercase; }
   #teamboard aside nav {
+    display: block;
     margin: 14px 0;
     text-align: center; }
-    #teamboard aside nav ul li {
-      width: 13.5%; }
+    #teamboard aside nav ul {
+      display: inline-block; }
       #teamboard aside nav ul li a {
         font-size: 150%;
         padding: 4px 6px 2px 6px; }

@@ -120,15 +120,14 @@ body {
       text-transform: lowercase;
     }
     nav {
+      display: block;
       margin: 14px 0;
       text-align: center;
       ul {
-        li {
-          width: 13.5%;
-          a {
+        display: inline-block;
+        li a {
             font-size: 150%;
             padding: 4px 6px 2px 6px;
-          }
         }
       }
     }
