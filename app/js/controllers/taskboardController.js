@@ -22,8 +22,8 @@ angular.module('JIRA.Teamboard')
                         board: $scope.teamboard.board,
                         sprint: $scope.teamboard.sprint
                     }).$promise.then(function (taskboard) {
-                            taskboard.start = moment(taskboard.start).format("ddd Do");
-                            taskboard.end = moment(taskboard.end).format("ddd Do");
+                            taskboard.start = moment.utc(taskboard.start).format("ddd Do");
+                            taskboard.end = moment.utc(taskboard.end).format("ddd Do");
                             var wip = 0;
                             angular.forEach(taskboard.issues, function (issue) {
                                 issue.classification = classification(issue.flagged, issue.labels, issue.state, issue.type);

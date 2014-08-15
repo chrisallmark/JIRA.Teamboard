@@ -37,7 +37,7 @@ angular.module('JIRA.Teamboard')
             if (subtask) {
                 popover += '<small>' + subtask.key + '</small><br><strong>' + subtask.name + '</strong><hr/><table>';
                 angular.forEach(subtask.transitions, function(transition, index) {
-                    popover += '<tr><td>' + moment(transition.date).format('YYYY-MM-DD @ HH:mm') + '</td><td>' + transition.fromState + ' &rarr; ' + transition.toState + '</td></tr>';
+                    popover += '<tr><td>' + moment.utc(transition.date).format('YYYY-MM-DD @ HH:mm') + '</td><td>' + transition.fromState + ' &rarr; ' + transition.toState + '</td></tr>';
                 });
                 popover += '</table><small>' + subtask.assignee + '</small>';
             }
@@ -50,14 +50,14 @@ angular.module('JIRA.Teamboard')
                         'board': $scope.teamboard.board,
                         'sprint': $scope.teamboard.sprint
                     }).$promise.then(function (cycleboard) {
-                        cycleboard.start = moment(cycleboard.start);
-                        cycleboard.end = moment(cycleboard.end);
+                        cycleboard.start = moment.utc(cycleboard.start);
+                        cycleboard.end = moment.utc(cycleboard.end);
                         cycleboard.cycleDates = cycleDates(cycleboard.start, cycleboard.end);
                         var cycleboardTime = cycleTime(cycleboard.start, cycleboard.end);
                         var cycleboardTimeTotal = 0;
                         angular.forEach(cycleboard.issues, function(issue) {
-                            issue.start = moment(issue.start);
-                            issue.end = moment(issue.end);
+                            issue.start = moment.utc(issue.start);
+                            issue.end = moment.utc(issue.end);
                             issue.classification = classification(issue.flagged, issue.labels, issue.state, issue.type);
                             var issueCycleTime = cycleTime(issue.start, issue.end);
                             issue.style = {
@@ -66,8 +66,8 @@ angular.module('JIRA.Teamboard')
                             };
                             var issueCycleTotal = 0;
                             angular.forEach(issue.subtasks, function(subtask) {
-                                subtask.start = moment(subtask.start);
-                                subtask.end = moment(subtask.end);
+                                subtask.start = moment.utc(subtask.start);
+                                subtask.end = moment.utc(subtask.end);
                                 subtask.classification = classification(subtask.flagged,subtask.labels, subtask.state, subtask.type);
                                 var subtaskCycleTime = cycleTime(subtask.start, subtask.end);
                                 subtask.cycleTime = subtaskCycleTime;

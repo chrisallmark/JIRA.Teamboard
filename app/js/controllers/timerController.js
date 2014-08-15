@@ -8,16 +8,16 @@ angular.module('JIRA.Teamboard')
                 board: $scope.teamboard.board,
                 sprint: $scope.teamboard.sprint
             }).$promise.then(function (timer) {
-                timer.start = moment(timer.start);
-                timer.end = moment(timer.end);
+                timer.start = moment.utc(timer.start);
+                timer.end = moment.utc(timer.end);
                 if (angular.isDefined(interval)) {
                     $interval.cancel(interval);
                 }
                 interval = $interval(function () {
-                    if (timer.end.isBefore(moment())) {
+                    if (timer.end.isBefore(moment.utc().utc())) {
                         timer.countdown = '00:00:00:00';
                     } else {
-                        var now = moment().add('minutes', moment().zone() * -1);
+                        var now = moment.utc().add(moment.utc().zone(), 'minutes').add(moment.utc().isDSTShifted() ? 0 : 1, 'hours');
                         var days = ('00' + timer.end.diff(now, 'days')).substr(-2);
                         var hours = ('00' + timer.end.diff(now, 'hours') % 24).substr(-2);
                         var minutes = ('00' + timer.end.diff(now, 'minutes') % 60).substr(-2);
@@ -27,9 +27,7 @@ angular.module('JIRA.Teamboard')
                 }, 1000);
                 $scope.timer = timer;
             });
-            var now = moment(),
-                today = moment().endOf('day');
-            timeout = $timeout($route.reload, today.diff(now));
+            timeout = $timeout($route.reload, moment.utc().endOf('day').diff(moment.utc()));
         })();
         $scope.$on('$destroy', function (event) {
             if (angular.isDefined(interval)) {

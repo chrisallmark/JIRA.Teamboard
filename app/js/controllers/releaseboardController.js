@@ -15,8 +15,8 @@ angular.module('JIRA.Teamboard')
                         'velocity': $scope.teamboard.velocity
                     }).$promise.then(function (releaseboard) {
                         angular.forEach(releaseboard, function(sprint) {
-                            sprint.start = moment(sprint.start).format("MMM Do");
-                            sprint.end = moment(sprint.end).format("MMM Do");
+                            sprint.start = moment.utc(sprint.start).format("MMM Do");
+                            sprint.end = moment.utc(sprint.end).format("MMM Do");
                             angular.forEach(sprint.issues, function(issue) {
                                 issue.classification = classification(issue.flagged, issue.labels, issue.state, issue.type);
                             });

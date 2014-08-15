@@ -56,7 +56,7 @@ function jql(cfg, query, fields, expand, maxResults) {
 }
 
 function perfLog(process, timestamp, operation) {
-    console.log(process + ' took ' + moment().diff(timestamp) + 'ms' + (operation ? ' for ' + operation : ''));
+    console.log(process + ' took ' + moment.utc().diff(timestamp) + 'ms' + (operation ? ' for ' + operation : ''));
 }
 
 function labelFilter(labels) {
@@ -87,7 +87,7 @@ function qReadFile(file) {
 
 function qRequest(options) {
     var deferred = q.defer();
-    var timestamp = moment();
+    var timestamp = moment.utc();
     request(options, function (err, res, body) {
         if (err) {
             console.log(err);
@@ -117,7 +117,7 @@ function sortBy(property, reverse) {
                 return a[property] > b[property] ? -1 : (a[property] < b[property] ? 1 : 0);
             }
         } else {
-            if (moment.isMoment(a[property]) && moment.isMoment(b[property])) {
+            if (moment.isMoment(a[property]) && moment.isMoment(b[poperty])) {
                 return a[property].isBefore(b[property]) ? -1 : (a[property].isAfter(b[property]) ? 1 : 0);
             } else {
                 return a[property] < b[property] ? -1 : (a[property] > b[property] ? 1 : 0);
@@ -136,9 +136,9 @@ function statusFilter(a) {
 function timebox(cfg, board, sprint) {
     return jiraAPI(cfg, '/rest/greenhopper/latest/rapid/charts/sprintreport?rapidViewId=' + board + '&sprintId=' + sprint)
         .then(function (data) {
-            return {
-                start: moment(data.sprint.startDate).startOf('day'),
-                end: moment(data.sprint.endDate).endOf('day')
+             return {
+                start: moment.utc(data.sprint.startDate.substring(0, 10) + '12:00').startOf('day'),
+                end: moment.utc(data.sprint.endDate.substring(0, 10) + '12:00').endOf('day')
             };
         });
 }
@@ -281,19 +281,19 @@ module.exports = function (app, cfg) {
             if (result.plan.isBuilding) {
                 return {
                     branch: result.plan.type === 'chain_branch',
-                    end: moment(),
+                    end: moment.utc(),
                     name: result.planName,
-                    start: moment(),
+                    start: moment.utc(),
                     status: "In Progress"
                 };
             } else {
                 return {
                     branch: result.plan.type === 'chain_branch',
-                    end: moment(result.buildCompletedTime),
+                    end: moment.utc(result.buildCompletedTime),
                     key: result.key,
                     name: result.planName,
                     reason: result.buildReason,
-                    start: moment(result.buildStartedTime),
+                    start: moment.utc(result.buildStartedTime),
                     status: result.state,
                     tests: {
                         passed: result.successfulTestCount,
@@ -315,7 +315,7 @@ module.exports = function (app, cfg) {
                         }
                     }
                 }
-                return builds.sort(sortBy("start", true));
+                return builds.sort(sortBy("end", true));
             })
             .done(function (builds) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -385,15 +385,15 @@ module.exports = function (app, cfg) {
                 }
                 return jql(cfg, 'sprint=' + req.param('sprint'), ['changelog', 'created', 'issuetype'], ['changelog'])
                     .then(function (data) {
-                        var timestamp = moment();
+                        var timestamp = moment.utc();
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
-                            issue.fields.created = moment.max(moment(issue.fields.created).endOf('day'), timebox.start.clone().add(-1, "millisecond"));
+                            issue.fields.created = moment.max(moment.utc(issue.fields.created).endOf('day'), timebox.start.clone().add(-1, "millisecond"));
                             if (issue.fields.created.isBefore(timebox.end) || issue.fields.created.isSame(timebox.end)) {
                                 burnStates[issue.fields.created].toDo++;
                                 for (var j = 0; j < issue.changelog.histories.length; j++) {
                                     var history = issue.changelog.histories[j];
-                                    history.created = moment.max(moment(history.created).endOf('day'), timebox.start.clone().add(-1, "millisecond"));
+                                    history.created = moment.max(moment.utc(history.created).endOf('day'), timebox.start.clone().add(-1, "millisecond"));
                                     if (history.created.isBefore(timebox.end) || history.created.isSame(timebox.end)) {
                                         history.items = history.items.filter(statusFilter);
                                         for (var k = 0; k < history.items.length; k++) {
@@ -430,26 +430,26 @@ module.exports = function (app, cfg) {
     app.get('/api/:board/:sprint/cycle/board', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
-                return jql(cfg, 'sprint=' + req.param('sprint') + ' AND status was not Closed BEFORE \'' + timebox.start.format('YYYY-MM-DD') + '\' ORDER BY Rank', ['assignee', 'changelog', 'issuetype', cfg.jiraFlagged, 'labels', 'parent', cfg.jiraPoints, 'status', 'summary'], ['changelog'])
+                return jql(cfg, 'sprint=' + req.param('sprint') + ' ORDER BY Rank', ['assignee', 'changelog', 'issuetype', cfg.jiraFlagged, 'labels', 'parent', cfg.jiraPoints, 'status', 'summary'], ['changelog'])
                     .then(function (data) {
                         var taskboard = {
                             start: timebox.start,
                             end: timebox.end,
                             issues: []
                         },
-                        timestamp = moment();
+                        timestamp = moment.utc();
                         var issues = [];
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
                             if (!issue.fields.issuetype.subtask) {
                                 issues[issue.key] = {
-                                    end: null, //moment.min(moment(), timebox.end),
+                                    end: null,
                                     flagged: (issue.fields[cfg.jiraFlagged] && issue.fields[cfg.jiraFlagged][0].value) === 'Yes',
                                     key: issue.key,
                                     labels: issue.fields.labels.sort(),
                                     name: issue.fields.summary,
                                     points: issue.fields[cfg.jiraPoints],
-                                    start: null, //moment.max(moment(), timebox.start),
+                                    start: null,
                                     state: issue.fields.status.name,
                                     subtasks: [],
                                     type: issue.fields.issuetype.name
@@ -462,7 +462,7 @@ module.exports = function (app, cfg) {
                                 var subtask = {
                                     assignee: issue.fields.assignee ? issue.fields.assignee.displayName : null,
                                     avatar: issue.fields.assignee ? issue.fields.assignee.name : null,
-                                    end: moment.min(moment.max(moment(), timebox.start.clone().endOf('day')), timebox.end),
+                                    end: moment.min(moment.max(moment.utc(), timebox.start.clone().endOf('day')), timebox.end),
                                     flagged: issue.fields[cfg.jiraFlagged] && issue.fields[cfg.jiraFlagged][0].value === 'Yes',
                                     key: issue.key,
                                     labels: issue.fields.labels.sort(),
@@ -474,7 +474,7 @@ module.exports = function (app, cfg) {
                                 };
                                 for (var j = 0; j < issue.changelog.histories.length; j++) {
                                     var history = issue.changelog.histories[j];
-                                    history.created = moment(history.created);
+                                    history.created = moment.utc(history.created);
                                     if (history.created.isBefore(timebox.end) || history.created.isSame(timebox.end)) {
                                         history.items = history.items.filter(statusFilter);
                                         for (var k = 0; k < history.items.length; k++) {
@@ -533,7 +533,7 @@ module.exports = function (app, cfg) {
                             subtasksInProgress: 0,
                             subtasksToDo: 0
                         },
-                        timestamp = moment();
+                        timestamp = moment.utc();
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
                             if (!issue.fields.issuetype.subtask) {
@@ -592,15 +592,15 @@ module.exports = function (app, cfg) {
                 var pool = [];
                 return jql(cfg, 'sprint=' + req.param('sprint'), ['changelog', 'created', 'issuetype', 'summary'], ['changelog'])
                     .then(function (data) {
-                        var timestamp = moment();
+                        var timestamp = moment.utc();
                         for (var date = timebox.start.clone().endOf('day'); date.isBefore(timebox.end) || date.isSame(timebox.end); date.add(1, 'day')) {
                             for (var i = 0; i < data.issues.length; i++) {
                                 var issue = data.issues[i];
                                 for (var j = 0; j < issue.changelog.histories.length; j++) {
                                     var history = issue.changelog.histories[j];
-                                    history.created = moment(history.created);
+                                    history.created = moment.utc(history.created);
                                     if ((history.created.isAfter(timebox.start) || history.created.isSame(timebox.start)) &&
-                                        moment.max(moment(history.created), timebox.start).isSame(date, 'day')) {
+                                        moment.max(moment.utc(history.created), timebox.start).isSame(date, 'day')) {
                                         for (var k = 0; k < history.items.length; k++) {
                                             var item = history.items[k];
                                             if (item.field === 'status' && item.fromString !== 'Open' && item.fromString !== item.toString) {
@@ -686,15 +686,15 @@ module.exports = function (app, cfg) {
                 }
                 return jql(cfg, 'sprint=' + req.param('sprint'), ['changelog', 'created', 'issuetype'], ['changelog'])
                     .then(function (data) {
-                        var timestamp = moment();
+                        var timestamp = moment.utc();
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
-                            issue.fields.created = moment.max(moment(issue.fields.created).endOf('day'), timebox.start.clone().add(-1, "millisecond"));
+                            issue.fields.created = moment.max(moment.utc(issue.fields.created).endOf('day'), timebox.start.clone().add(-1, "millisecond"));
                             if (issue.fields.created.isBefore(timebox.end) || issue.fields.created.isSame(timebox.end)) {
                                 flowStates[issue.fields.created].toDo++;
                                 for (var j = 0; j < issue.changelog.histories.length; j++) {
                                     var history = issue.changelog.histories[j];
-                                    history.created = moment.max(moment(history.created).endOf('day'), timebox.start.clone().add(-1, "millisecond"));
+                                    history.created = moment.max(moment.utc(history.created).endOf('day'), timebox.start.clone().add(-1, "millisecond"));
                                     if (history.created.isBefore(timebox.end) || history.created.isSame(timebox.end)) {
                                         history.items = history.items.filter(statusFilter);
                                         for (var k = 0; k < history.items.length; k++) {
@@ -748,10 +748,10 @@ module.exports = function (app, cfg) {
     app.get('/api/:board/:sprint/task/work', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
-                return jql(cfg, 'sprint=' + req.param('sprint') + ' AND type not in standardIssueTypes() AND status was not Closed ON \'' + moment.min(moment(), timebox.end).format('YYYY-MM-DD') + '\'', ['issuetype','labels'])
+                return jql(cfg, 'sprint=' + req.param('sprint') + ' AND type not in standardIssueTypes() AND status was not Closed ON \'' + moment.min(moment.utc(), timebox.end).format('YYYY-MM-DD') + '\'', ['issuetype','labels'])
                     .then(function (data) {
                         var count = [],
-                            timestamp = moment();
+                            timestamp = moment.utc();
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
                             issue.fields.labels = issue.fields.labels.filter(labelFilter(req.param('labels')));
@@ -791,7 +791,7 @@ module.exports = function (app, cfg) {
                     workingDays = 0;
                 for (var date = timebox.start.clone(); date.isBefore(timebox.end); date.add(1, 'day')) {
                     if (date.isoWeekday() < 6) {
-                        if (!date.isBefore(moment().startOf('day'))) {
+                        if (!date.isBefore(moment.utc().startOf('day'))) {
                             remainingDays++;
                         }
                         workingDays++;
@@ -812,8 +812,8 @@ module.exports = function (app, cfg) {
     });
 
     app.get('/api/:project/burn', function (req, res) {
-        var start = moment().add(-60, 'days').startOf('day'),
-            end = moment().endOf('day');
+        var start = moment.utc().add(-60, 'days').startOf('day'),
+            end = moment.utc().endOf('day');
         jql(cfg, 'project=' + req.param('project') + ' AND type in standardIssueTypes() AND status was not Closed BEFORE \'' + start.format('YYYY-MM-DD') + '\'', ['changelog', 'created'], ['changelog'])
             .then(function (data) {
                 var burn = [],
@@ -822,7 +822,7 @@ module.exports = function (app, cfg) {
                         toDo: 0
                     },
                     burnStates = [],
-                    timestamp = moment();
+                    timestamp = moment.utc();
                 for (var date = start.clone().add(-1, 'millisecond'); date.isBefore(end) || date.isSame(end); date.add(1, 'day')) {
                     burnStates[date] = {
                         done: 0,
@@ -831,11 +831,11 @@ module.exports = function (app, cfg) {
                 }
                 for (var i = 0; i < data.issues.length; i++) {
                     var issue = data.issues[i];
-                    issue.fields.created = moment.max(moment(issue.fields.created), start.add(-1, "millisecond"));
+                    issue.fields.created = moment.max(moment.utc(issue.fields.created), start.add(-1, "millisecond"));
                     burnStates[issue.fields.created.endOf('day')].toDo++;
                     for (var j = 0; j < issue.changelog.histories.length; j++) {
                         var history = issue.changelog.histories[j];
-                        history.created = moment.max(moment(history.created), start.add(-1, "millisecond"));
+                        history.created = moment.max(moment.utc(history.created), start.add(-1, "millisecond"));
                         history.items = history.items.filter(statusFilter);
                         for (var k = 0; k < history.items.length; k++) {
                             var item = history.items[k];
@@ -872,9 +872,9 @@ module.exports = function (app, cfg) {
                 return jql(cfg, 'project=' + req.param('backlog') + ' AND type in standardIssueTypes() AND status = \'Open\' AND (sprint not in openSprints() OR sprint is EMPTY) ORDER BY Rank', [cfg.jiraFlagged, 'issuetype', cfg.jiraPoints, 'labels', 'summary', 'status'], [], 999)
                     .then(function (data) {
                         var releaseboard =  [],
-                            timestamp = moment(),
+                            timestamp = moment.utc(),
                             totalDays = timebox.end.diff(timebox.start, 'days') + 1;
-                        while (timebox.start.isBefore(moment())) {
+                        while (timebox.start.isBefore(moment.utc())) {
                             timebox.start.add(totalDays, 'days');
                             timebox.end.add(totalDays, 'days');
                         }

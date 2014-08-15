@@ -47,13 +47,13 @@ angular.module('JIRA.Teamboard')
                     data.addColumn({ type: 'string', role: 'annotation' });
                     data.addColumn('number', 'Done');
                     angular.forEach(sprintburn, function(burn, index) {
-                        burn.date = moment(burn.date);
+                        burn.date = moment.utc(burn.date);
                         if (index === 0 || burn.date.isoWeekday() <= 5) {
                             data.addRow([
                             {v: data.getNumberOfRows(), f: (index === 0 ? '-' : burn.date.format('dddd Do'))},
                                 burn.toDo + burn.done,
                                 index == configuration.target ? '\u25CE' : null,
-                                burn.date.isBefore(moment().endOf('day')) || burn.date.isSame(moment().endOf('day')) ? burn.done : null
+                                burn.date.isBefore(moment.utc().endOf('day')) || burn.date.isSame(moment.utc().endOf('day')) ? burn.done : null
                             ]);
                         }
                     });
@@ -98,11 +98,11 @@ angular.module('JIRA.Teamboard')
                     data.addColumn('number', 'To Do');
                     data.addColumn('number', 'Done');
                     angular.forEach(backlogburn, function(day) {
-                        day.date = moment(day.date);
+                        day.date = moment.utc(day.date);
                         data.addRow([
                             {v: data.getNumberOfRows(), f: day.date.format('Do MMM YYYY')},
                             day.toDo + day.done,
-                                day.date <= moment().endOf('day') ? day.done : null
+                                day.date <= moment.utc().endOf('day') ? day.done : null
                         ]);
                     });
                     var options = $.extend(true, defaultOptions(), {
@@ -131,15 +131,15 @@ angular.module('JIRA.Teamboard')
                     sprint: configuration.sprint
                 });
                 taskburn.$promise.then(function (taskburn) {
-                    taskburn.start = moment(taskburn.start);
-                    taskburn.end = moment(taskburn.end);
+                    taskburn.start = moment.utc(taskburn.start);
+                    taskburn.end = moment.utc(taskburn.end);
                     var data = new google.visualization.DataTable();
                     data.addColumn('string', 'Day');
                     angular.forEach(taskburn.burners, function(burner, index) {
                         data.addColumn('number', burner.name === '' ? '?' : burner.name.split(' ')[0]);
                         data.addColumn({'type': 'string', 'role': 'tooltip', p: {'html': true}});
                         var row = 0;
-                        var date = moment(taskburn.start.endOf('day'));
+                        var date = moment.utc(taskburn.start.endOf('day'));
                         while (date.isBefore(taskburn.end, 'day') || date.isSame(taskburn.end, 'day')) {
                             if (date.isoWeekday() <= 5) {
                                 if (index === 0) {
@@ -149,7 +149,7 @@ angular.module('JIRA.Teamboard')
                                 for (var i = 0; i < burner.days.length; i++) {
                                     day = burner.days[i];
                                     if (!moment.isMoment(day.date)) {
-                                        day.date = moment(day.date);
+                                        day.date = moment.utc(day.date);
                                     }
                                     if (day.date.isSame(date, 'day')) {
                                         break;
@@ -211,7 +211,7 @@ angular.module('JIRA.Teamboard')
                     data.addColumn('number', 'In Progress');
                     data.addColumn('number', 'To Do');
                     angular.forEach(taskflow, function(flow, index) {
-                        flow.date = moment(flow.date);
+                        flow.date = moment.utc(flow.date);
                         if (index === 0 || flow.date.isoWeekday() <= 5) {
                             data.addRow([
                                 {v: data.getNumberOfRows(), f: (index === 0 ? '-' : flow.date.format('dddd Do'))},

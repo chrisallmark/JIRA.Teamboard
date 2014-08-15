@@ -9,8 +9,8 @@ angular.module('JIRA.Teamboard')
         (function load() {
             apiService.results.query({'builds': $scope.teamboard.builds}).$promise.then(function (builds) {
                 angular.forEach(builds, function(build) {
-                    build.start = moment(build.start);
-                    build.end = moment(build.end);
+                    build.start = moment.utc(build.start).add(moment().zone() * -1, 'minutes').add(moment().isDSTShifted() ? 0 : -1, 'hours');
+                    build.end = moment.utc(build.end).add(moment().zone() * -1, 'minutes').add(moment().isDSTShifted() ? 0 : -1, 'hours');
                     build.classification = classification(build.status);
                     build.duration = build.end.diff(build.start, 'seconds') + 's';
                     if (build.tests) {
@@ -30,7 +30,7 @@ angular.module('JIRA.Teamboard')
                 if (now.isAfter(moment(8, 'hh')) && now.isBefore(moment(18, 'hh')) && now.isoWeekday() !== 6 && now.isoWeekday() !== 7) {
                     timeout = $timeout(load, 1000 * 30);
                 } else {
-                    timeout = $timeout(load, moment(8, 'hh').diff(now));
+                    timeout = $timeout(load, moment().add(1, 'day').hour(8).startOf('hour').diff(now));
                 }
             });
         })();
