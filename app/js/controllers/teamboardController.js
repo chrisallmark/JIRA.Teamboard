@@ -75,11 +75,11 @@ angular.module('JIRA.Teamboard')
                 } else {
                     $scope.load(angular.isDefined($scope.teamboard.view) ? 'reload' : angular.lowercase($location.search().view || 'dashboard'));
                 }
-                var now = moment.utc();
-                if (now.isAfter(moment.utc(8, 'hh')) && now.isBefore(moment.utc(18, 'hh')) && now.isoWeekday() !== 6 && now.isoWeekday() !== 7) {
+                var now = moment();
+                if (now.isAfter(moment(8, 'hh')) && now.isBefore(moment(18, 'hh')) && now.isoWeekday() !== 6 && now.isoWeekday() !== 7) {
                     timeout = $timeout(load, 1000 * 60 * 2.5);
                 } else {
-                    timeout = $timeout(load, moment.utc().add(1, 'day').hour(8).startOf('hour').diff(now));
+                    timeout = $timeout(load, moment.add(now.isBefore(moment(8, 'hh')) ? 0 : 1, 'day').hour(8).startOf('hour').diff(now));
                 }
             })();
         }, function(error) {

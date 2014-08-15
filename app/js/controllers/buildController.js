@@ -30,7 +30,7 @@ angular.module('JIRA.Teamboard')
                 if (now.isAfter(moment(8, 'hh')) && now.isBefore(moment(18, 'hh')) && now.isoWeekday() !== 6 && now.isoWeekday() !== 7) {
                     timeout = $timeout(load, 1000 * 30);
                 } else {
-                    timeout = $timeout(load, moment().add(1, 'day').hour(8).startOf('hour').diff(now));
+                    timeout = $timeout(load, moment.add(now.isBefore(moment(8, 'hh')) ? 0 : 1, 'day').hour(8).startOf('hour').diff(now));
                 }
             });
         })();
