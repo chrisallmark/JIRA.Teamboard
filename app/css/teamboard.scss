@@ -17,7 +17,7 @@ $task-text-color: #000;
 $task-qa-color: #cfc;
 $overallocated-color: #003;
 $underallocated-color: #030;
-$wip-exceeded-color: #dc3912;
+$wip-exceeded-color: #300;
 $invalid-color: #FEE;
 $invalid-border-color: #f00;
 
@@ -398,6 +398,7 @@ body {
       }
       &.wip-exceeded {
         background-color: $wip-exceeded-color;
+        color: $red-color;
       }
     }
   }

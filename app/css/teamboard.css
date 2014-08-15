@@ -243,7 +243,8 @@ body {
     #taskboard table td:first-of-type {
       width: 13%; }
     #taskboard table td.wip-exceeded {
-      background-color: #dc3912; }
+      background-color: #330000;
+      color: #dc3912; }
 #taskboard .issue {
   width: 100%; }
 #taskboard .subtask {
