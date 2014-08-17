@@ -14,10 +14,11 @@ angular.module('JIRA.Teamboard')
                     $interval.cancel(interval);
                 }
                 interval = $interval(function () {
-                    if (timer.end.isBefore(moment.utc().utc())) {
+                    if (timer.end.isBefore(moment.utc())) {
                         timer.countdown = '00:00:00:00';
                     } else {
-                        var now = moment.utc().add(moment.utc().zone(), 'minutes').add(moment.utc().isDSTShifted() ? 0 : 1, 'hours');
+                        console.log(moment().isDST());
+                        var now = moment.utc().add(moment().zone() * -1, 'minutes');
                         var days = ('00' + timer.end.diff(now, 'days')).substr(-2);
                         var hours = ('00' + timer.end.diff(now, 'hours') % 24).substr(-2);
                         var minutes = ('00' + timer.end.diff(now, 'minutes') % 60).substr(-2);

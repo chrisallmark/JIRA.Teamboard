@@ -289,7 +289,7 @@ module.exports = function (app, cfg) {
             } else {
                 return {
                     branch: result.plan.type === 'chain_branch',
-                    end: moment.utc(result.buildCompletedTime),
+                    end: moment.utc(result.buildCompletedTime || result.buildStartedTime ),
                     key: result.key,
                     name: result.planName,
                     reason: result.buildReason,

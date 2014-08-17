@@ -9,8 +9,8 @@ angular.module('JIRA.Teamboard')
         (function load() {
             apiService.results.query({'builds': $scope.teamboard.builds}).$promise.then(function (builds) {
                 angular.forEach(builds, function(build) {
-                    build.start = moment.utc(build.start).add(moment().zone() * -1, 'minutes').add(moment().isDSTShifted() ? 0 : -1, 'hours');
-                    build.end = moment.utc(build.end).add(moment().zone() * -1, 'minutes').add(moment().isDSTShifted() ? 0 : -1, 'hours');
+                    build.start = moment.utc(build.start).add(moment().zone() * -1, 'minutes');
+                    build.end = moment.utc(build.end).add(moment().zone() * -1, 'minutes');
                     build.classification = classification(build.status);
                     build.duration = build.end.diff(build.start, 'seconds') + 's';
                     if (build.tests) {
