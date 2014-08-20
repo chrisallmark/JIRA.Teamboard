@@ -14,7 +14,7 @@ angular.module('JIRA.Teamboard')
                     build.classification = classification(build.status);
                     build.duration = build.end.diff(build.start, 'seconds') + 's';
                     if (build.tests) {
-                        if (build.tests.failed || 0 + build.tests.passed || 0 === 0) {
+                        if ((build.tests.failed || 0) + (build.tests.passed || 0) === 0) {
                             build.rating = 'N/A';
                         } else {
                             build.rating = Math.floor((build.tests.passed / (build.tests.passed + build.tests.failed)) * 100) + '%';
