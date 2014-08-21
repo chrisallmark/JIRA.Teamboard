@@ -41,6 +41,8 @@ angular.module('JIRA.Teamboard')
                         });
                 } else if ($scope.teamboard.loaded === 'taskboard' && $scope.teamboard.view === 'reload') {
                     $scope.teamboard.view = $scope.teamboard.loaded;
+                } else {
+                    $('#taskboard').scrollTop(0);
                 }
             }
         });

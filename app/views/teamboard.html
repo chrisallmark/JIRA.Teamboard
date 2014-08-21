@@ -6,7 +6,13 @@
             }).trigger('resize');
         </script>
     </div>
-    <div class="loader row" data-ng-show="teamboard.view !== teamboard.loaded"></div>
+    <div class="loader row" data-ng-show="teamboard.view !== teamboard.loaded">
+        <div data-ng-controller="loaderController">
+            <span data-ng-bind-html="loader.message"></span>
+            <br/>
+            <img src="/img/loader.gif" />
+        </div>
+    </div>
     <div class="row">
         <section class="col-lg-10">
             <div data-ng-include="'/templates/chartboard.html'" data-ng-show="teamboard.loaded === 'chartboard'"></div>

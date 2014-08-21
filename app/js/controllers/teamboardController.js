@@ -5,19 +5,18 @@ angular.module('JIRA.Teamboard')
         var timeout;
         function startAnimation() {
             var element;
-            var options = {'easing': 'linear', 'duration': 1000 * 60 * 2.5};
             switch($scope.teamboard.view) {
                 case 'taskboard':
                     element = $('#taskboard');
-                    element.scrollTop(0).animate({ 'scrollTop':element.get(0).scrollHeight - element.height() }, options);
+                    element.scrollTop(0).animate({ 'scrollTop':element.get(0).scrollHeight - element.height() }, 1000 * 60 * 2.5, 'linear');
                     break;
                 case 'cycleboard':
                     element = $('#cycleboard');
-                    element.scrollTop(0).animate({ 'scrollTop':element.get(0).scrollHeight - element.height() }, options);
+                    element.scrollTop(0).animate({ 'scrollTop':element.get(0).scrollHeight - element.height() }, 1000 * 60 * 2.5, 'linear');
                     break;
                 case 'releaseboard':
                     element = $('#releaseboard');
-                    element.scrollLeft(0).animate({ 'scrollLeft':element.get(0).scrollWidth - element.width() }, options);
+                    element.scrollLeft(0).animate({ 'scrollLeft':element.get(0).scrollWidth - element.width() }, 1000 * 60 * 2.5, 'linear');
                     break;
             }
         }

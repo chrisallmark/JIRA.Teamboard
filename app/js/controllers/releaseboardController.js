@@ -29,6 +29,8 @@ angular.module('JIRA.Teamboard')
                     });
                 } else if ($scope.teamboard.loaded === 'releaseboard' && $scope.teamboard.view === 'reload') {
                     $scope.teamboard.view = $scope.teamboard.loaded;
+                } else {
+                    $('#releaseboard').scrollLeft(0).scrollTop(0);
                 }
             }
         });

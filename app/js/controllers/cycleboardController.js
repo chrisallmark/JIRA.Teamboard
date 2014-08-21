@@ -96,6 +96,7 @@ angular.module('JIRA.Teamboard')
                 } else if ($scope.teamboard.loaded === 'cycleboard' && $scope.teamboard.view === 'reload') {
                     $scope.teamboard.view = $scope.teamboard.loaded;
                 } else {
+                    $('#cycleboard').scrollTop(0);
                     $('#cycleboard .popover').remove();
                 }
             }

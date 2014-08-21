@@ -71,14 +71,16 @@ body {
   padding-right: 0; }
 #teamboard .loader {
   background-color: rgba(0, 0, 0, 0.5);
-  background-image: url("/img/loader.gif");
-  background-position: center;
-  background-repeat: no-repeat;
+  display: table;
   position: absolute;
   height: 100%;
-  vertical-align: middle;
   width: 100%;
   z-index: 99999; }
+  #teamboard .loader > div {
+    display: table-cell;
+    font-size: x-large;
+    text-align: center;
+    vertical-align: middle; }
 
 #help-timer > div:first-of-type > div:first-of-type, #timer > div:first-of-type > div:first-of-type {
   font-size: 128px;

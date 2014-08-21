@@ -143,17 +143,19 @@ body {
     }
   }
   .loader {
-    background: {
-      color: rgba(0, 0, 0, 0.50);
-      image: url('/img/loader.gif');
-      position: center;
-      repeat: no-repeat;
-    }
+    background-color: rgba(0, 0, 0, 0.50);
+    display: table;
     position: absolute;
     height: 100%;
-    vertical-align: middle;
     width: 100%;
     z-index: 99999;
+    > div {
+      display: table-cell;
+      font-size: x-large;
+      text-align: center;
+      vertical-align: middle;
+    }
+
   }
 }
 
