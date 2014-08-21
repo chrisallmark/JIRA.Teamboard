@@ -1,5 +1,8 @@
 $background-color: #000;
 $foreground-color: #fff;
+$black-color: #000;
+$white-color: #fff;
+$grey-color: #ccc;
 $red-color: #dc3912;
 $amber-color: #f90;
 $green-color: #109618;
@@ -42,7 +45,7 @@ body {
   font-size: 125%;
   overflow: hidden;
   .popover {
-    color: $background-color;
+    color: $white-color;
     max-width: 300px;
     width: auto;
   }
@@ -56,7 +59,7 @@ body {
       width: 100%;
     }
     tr {
-      border-bottom: dotted 1px #ccc;
+      border-bottom: dotted 1px $grey-color;
     }
     td {
       padding: 0 2px;
@@ -143,17 +146,21 @@ body {
     }
   }
   .loader {
-    background-color: rgba(0, 0, 0, 0.50);
+    background-color: rgba(0, 0, 0, 0.75);
     display: table;
     position: absolute;
     height: 100%;
     width: 100%;
     z-index: 99999;
     > div {
+      color: $grey-color;
       display: table-cell;
       font-size: x-large;
       text-align: center;
       vertical-align: middle;
+      strong {
+        color: $white-color;
+      }
     }
 
   }
@@ -199,7 +206,7 @@ body {
         background-color: #999;
       }
       &:before {
-        border: 5px solid #000000;
+        border: 5px solid $background-color;
         border-radius: 32px;
         content: "?";
         font-size: 32px;
@@ -281,8 +288,8 @@ body {
     @include border-radius(128px);
     @include rotate(90deg);
     background-color: $amber-color;
-    border: 5px solid $background-color;
-    color: $background-color;
+    border: 5px solid $black-color;
+    color: $black-color;
     font: {
       size: 96px;
       weight: bold;
@@ -303,7 +310,7 @@ body {
   }
   .google-visualization-tooltip {
     .task-tooltip {
-      color: #000;
+      color: $black-color;
       font-size: 100%;
       padding: 4px;
       white-space: nowrap;
@@ -311,7 +318,7 @@ body {
         margin: 2px 0;
       }
       tr {
-        border-bottom: dotted 1px #ccc;
+        border-bottom: dotted 1px $grey-color;
       }
       td {
         padding-right: 4px;
@@ -428,9 +435,9 @@ body {
 .issue, .subtask {
   padding: 3px 5px;
   &.block {
-    background-color: $background-color !important;
-    border: solid 1px $foreground-color !important;;
-    color: $foreground-color !important;;
+    background-color: $black-color !important;
+    border: solid 1px $white-color !important;;
+    color: $white-color !important;;
   }
   &.be {
     background-color: $task-be-color;
@@ -478,8 +485,8 @@ body {
   }
   .polaroid {
     @include rotate(-5deg);
-    background-color: #fff;
-    border: 1px solid #999;
+    background-color: $white-color;
+    border: 1px solid $grey-color;
     bottom: -8px;
     box-shadow: 1px -1px 1px rgba(0, 0, 0, 0.25);
     cursor: pointer;
@@ -487,7 +494,7 @@ body {
     padding: 3px 3px 0 3px;
     position: absolute;
     img {
-      border: 1px solid #ccc;
+      border: 1px solid $grey-color;
       height: 40px;
       width: 40px;
     }
@@ -511,17 +518,17 @@ body {
     overflow: hidden;
   }
   #help-content {
-    color: $background-color;
+    color: $black-color;
     overflow: auto;
     i {
       vertical-align: text-top;
     }
     #help-builds {
-      color:$foreground-color;
+      color: $white-color;
       margin-left: 10px;
       width: 250px;
       .build > div:before {
-        border-color: $foreground-color;
+        border-color: $white-color;
       }
     }
     #help-sprint {
@@ -529,7 +536,7 @@ body {
     }
     .screenshot {
       @include border-radius(8px);
-      background-color: $background-color;
+      background-color: $black-color;
       margin-bottom: 5px;
       padding: 10px;
       width: 100%;

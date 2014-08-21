@@ -6,7 +6,7 @@ body {
   font-size: 125%;
   overflow: hidden; }
   body .popover {
-    color: black;
+    color: white;
     max-width: 300px;
     width: auto; }
   body .popover-content, body .popover-title {
@@ -17,7 +17,7 @@ body {
     body .popover-content table, body .popover-title table {
       width: 100%; }
     body .popover-content tr, body .popover-title tr {
-      border-bottom: dotted 1px #ccc; }
+      border-bottom: dotted 1px #cccccc; }
     body .popover-content td, body .popover-title td {
       padding: 0 2px;
       white-space: nowrap; }
@@ -70,17 +70,20 @@ body {
 #teamboard .container-fluid > .row > div:last-of-type {
   padding-right: 0; }
 #teamboard .loader {
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.75);
   display: table;
   position: absolute;
   height: 100%;
   width: 100%;
   z-index: 99999; }
   #teamboard .loader > div {
+    color: #cccccc;
     display: table-cell;
     font-size: x-large;
     text-align: center;
     vertical-align: middle; }
+    #teamboard .loader > div strong {
+      color: white; }
 
 #help-timer > div:first-of-type > div:first-of-type, #timer > div:first-of-type > div:first-of-type {
   font-size: 128px;
@@ -109,7 +112,7 @@ body {
     #help-builds .build > div:before, #help-builds .build > div > div, #builds .build > div:before, #builds .build > div > div {
       background-color: #999; }
     #help-builds .build > div:before, #builds .build > div:before {
-      border: 5px solid #000000;
+      border: 5px solid black;
       border-radius: 32px;
       content: "?";
       font-size: 32px;
@@ -182,14 +185,14 @@ body {
   #dashboard .emoticon.sad:before, #chartboard .emoticon.sad:before {
     content: ':('; }
 #dashboard .google-visualization-tooltip .task-tooltip, #chartboard .google-visualization-tooltip .task-tooltip {
-  color: #000;
+  color: black;
   font-size: 100%;
   padding: 4px;
   white-space: nowrap; }
   #dashboard .google-visualization-tooltip .task-tooltip hr, #chartboard .google-visualization-tooltip .task-tooltip hr {
     margin: 2px 0; }
   #dashboard .google-visualization-tooltip .task-tooltip tr, #chartboard .google-visualization-tooltip .task-tooltip tr {
-    border-bottom: dotted 1px #ccc; }
+    border-bottom: dotted 1px #cccccc; }
   #dashboard .google-visualization-tooltip .task-tooltip td, #chartboard .google-visualization-tooltip .task-tooltip td {
     padding-right: 4px;
     vertical-align: top; }
@@ -309,8 +312,8 @@ body {
     -o-transform: rotate(-5deg);
     -webkit-transform: rotate(-5deg);
     transform: rotate(-5deg);
-    background-color: #fff;
-    border: 1px solid #999;
+    background-color: white;
+    border: 1px solid #cccccc;
     bottom: -8px;
     box-shadow: 1px -1px 1px rgba(0, 0, 0, 0.25);
     cursor: pointer;
@@ -318,7 +321,7 @@ body {
     padding: 3px 3px 0 3px;
     position: absolute; }
     .subtask .polaroid img {
-      border: 1px solid #ccc;
+      border: 1px solid #cccccc;
       height: 40px;
       width: 40px; }
     .subtask .polaroid span {
