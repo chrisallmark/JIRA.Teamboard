@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('JIRA.Teamboard')
     .factory('apiService', ['$resource', function ($resource) {
         return {

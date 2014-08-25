@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('JIRA.Teamboard')
     .controller('taskboardController', ['$scope', 'apiService', function ($scope, apiService) {
         function classification(flagged, labels, state, type) {

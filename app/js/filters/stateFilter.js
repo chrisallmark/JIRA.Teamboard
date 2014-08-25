@@ -1,4 +1,3 @@
-'use strict';
 angular.module('JIRA.Teamboard')
     .filter('stateFilter', [function () {
         return function (items, states) {

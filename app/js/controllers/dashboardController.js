@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('JIRA.Teamboard')
     .controller('dashboardController', ['$scope', 'chartService', function ($scope, chartService) {
         $scope.$watch('teamboard.view', function() {

@@ -12,7 +12,13 @@
     "q": "latest",
     "request": "latest"
   },
-  "devDependencies": {},
+  "devDependencies": {
+      "grunt": "latest",
+      "grunt-contrib-concat": "latest",
+      "grunt-contrib-sass": "latest",
+      "grunt-contrib-uglify": "latest",
+      "grunt-contrib-watch": "latest"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"

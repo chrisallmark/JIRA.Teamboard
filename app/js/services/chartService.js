@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('JIRA.Teamboard')
     .factory('chartService', ['$q', 'apiService', function ($q, apiService) {
         function defaultOptions() {

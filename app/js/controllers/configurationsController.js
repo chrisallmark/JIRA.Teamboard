@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('JIRA.Teamboard')
     .controller('configurationsController', ['$scope', '$location', 'apiService', function ($scope, $location, apiService) {
         $scope.add = function () {

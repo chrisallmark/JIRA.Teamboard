@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('JIRA.Teamboard')
     .controller('teamboardController', ['$scope', '$location', '$timeout', 'apiService', function ($scope, $location, $timeout, apiService) {
         var timeout;

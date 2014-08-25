@@ -1,4 +1,3 @@
-'use strict';
 angular.module('JIRA.Teamboard')
     .directive('issue', function () {
         return {

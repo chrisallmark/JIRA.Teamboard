@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('JIRA.Teamboard')
     .controller('timerController', ['$scope', '$interval', '$route', '$timeout', 'apiService', function ($scope, $interval, $route, $timeout, apiService) {
         var interval, timeout;

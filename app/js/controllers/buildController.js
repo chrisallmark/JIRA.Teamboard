@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('JIRA.Teamboard')
     .controller('buildController', ['$scope', '$timeout', 'apiService', function ($scope, $timeout, apiService) {
         function classification(status) {

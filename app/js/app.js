@@ -1,4 +1,3 @@
-'use strict';
 angular.module('JIRA.Teamboard', ['ngResource', 'ngRoute'])
     .config(['$locationProvider', '$routeProvider', function ($locationProvider, $routeProvider) {
         $locationProvider.html5Mode(true);
