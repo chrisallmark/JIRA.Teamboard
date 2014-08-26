@@ -23,7 +23,6 @@ module.exports = function(grunt) {
         uglify: {
             dist: {
                 options: {
-                    mangle: false,
                     sourceMap: true
                 },
                 files: {
@@ -33,7 +32,7 @@ module.exports = function(grunt) {
         },
         watch: {
             sass: {
-                files: ['app/css/*.sass'],
+                files: ['app/css/*.scss'],
                 tasks: ['sass']
             },
             uglify: {
