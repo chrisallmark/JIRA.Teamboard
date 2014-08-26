@@ -7,11 +7,11 @@ It's similar to a scoreboard at a sporting event - it's been designed to be high
 
 ##Requirements
 
-Install [Node](http://nodejs.org/) and the [Grunt](http://gruntjs.com/) command line interface tools with <code>$ npm install -g grunt-cli</code>. You'll also need to make sure you have [Ruby](https://www.ruby-lang.org/) on your system so you can install [Sass](http://sass-lang.com/) with <code>$ gem install sass</code>. Now fetch the required package dependencies with <code>npm install</code> and run <code>$ grunt</code> to compile the CSS & JS.
+First, install [Node](http://nodejs.org/) and then the [Grunt](http://gruntjs.com/) command line interface tools with <code>$ npm install -g grunt-cli</code>. You'll also need to make sure you have [Ruby](https://www.ruby-lang.org/) so you can install [Sass](http://sass-lang.com/) with <code>$ gem install sass</code>. Now fetch the required package dependencies with <code>$ npm install</code> and run <code>$ grunt</code> to compile the CSS & JS files.
 
 Finally you'll need to configure the server to point to your BAMBOO & JIRA servers by editing <code>server.json</code> before launching it with <code>$ node server.js</code>.
 
-> The server runs on port 1337 by default. Edit <code>server.js</code> to change this.
+> NOTE: The server runs on port 1337 by default. Edit <code>server.js</code> to change this.
 
 ##Basic Client Usage
 To load the JIRA Teamboard:
@@ -31,7 +31,7 @@ To view a specific board:
 To view a specific chartboard:
 <pre>http://[host:port]/[teamboard]?view=chartboard&chart=[releaseburn|sprintburn|taskburn|taskflow|taskwork]</pre>
 
-> The chartboard displays any of the dashboard charts in full screen and is provided as an alternative to the consolidated dashboard view.
+> NOTE: The chartboard displays any of the dashboard charts in full screen and is provided as an alternative to the consolidated dashboard view.
 
 ##HDTV Kiosk
 The JIRA Teamboard is designed to be run in full screen on a HDTV at 1920x1080 resolution. The recommended browser is Google Chrome, but it should work in most CSS3/HTML5 compliant browsers.
