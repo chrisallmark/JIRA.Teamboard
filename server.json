@@ -5,5 +5,7 @@
     "jiraFlagged": "customfield_10200",
     "jiraHost": "https://jira.host.com",
     "jiraPoints": "customfield_11700",
-    "jiraPointsDefault": 5
+    "jiraPointsDefault": 5,
+    "stateOpen": "Open,Reopened",
+    "stateClosed": "Closed"
 }

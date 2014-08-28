@@ -39,6 +39,18 @@ function cfgFile(name) {
     return './cfg/' + name.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.json';
 }
 
+function isClosed(cfg, state) {
+    return cfg.stateClosed.indexOf(state) !== -1;
+}
+
+function isInProgress(cfg, state) {
+    return !isOpen(cfg, state) && !isClosed(cfg, state);
+}
+
+function isOpen(cfg, state) {
+    return cfg.stateOpen.indexOf(state) !== -1;
+}
+
 function jira(cfg, endpoint) {
     return qRequest({
         auth: {
@@ -142,11 +154,11 @@ function sortBy(property, reverse) {
     };
 }
 
-function statusFilter(a) {
-    return a.field === 'status' &&
-        a.fromString !== a.toString &&
-        !(a.fromString === 'Open' && a.toString === 'Reopened') &&
-        !(a.fromString == 'Reopened' && a.toString === 'Open');
+function statusFilter(cfg) {
+    return function(a) {
+        return a.field === 'status' &&
+            a.fromString !== a.toString && !(isOpen(cfg, a.fromString) && isOpen(cfg, a.toString));
+    }
 }
 
 function timebox(cfg, board, sprint) {
@@ -160,6 +172,7 @@ function timebox(cfg, board, sprint) {
 }
 
 module.exports = function (app, cfg) {
+
     app.get('/api/configurations', function (req, res) {
         fs.readdir('./cfg', function(err, files) {
             if (err) {
@@ -411,13 +424,13 @@ module.exports = function (app, cfg) {
                                     var history = issue.changelog.histories[j];
                                     history.created = moment.max(moment.utc(history.created).endOf('day'), timebox.start.clone().add(-1, "millisecond"));
                                     if (history.created.isBefore(timebox.end) || history.created.isSame(timebox.end)) {
-                                        history.items = history.items.filter(statusFilter);
+                                        history.items = history.items.filter(statusFilter(cfg));
                                         for (var k = 0; k < history.items.length; k++) {
                                             var item = history.items[k];
-                                            if (item.toString === 'Closed') {
+                                            if (isClosed(cfg, item.toString)) {
                                                 burnStates[history.created].done++;
                                                 burnStates[history.created].toDo--;
-                                            } else if (item.fromString === 'Closed') {
+                                            } else if (isClosed(cfg, item.fromString)) {
                                                 burnStates[history.created].done--;
                                                 burnStates[history.created].toDo++;
                                             }
@@ -492,13 +505,13 @@ module.exports = function (app, cfg) {
                                     var history = issue.changelog.histories[j];
                                     history.created = moment.utc(history.created);
                                     if (history.created.isBefore(timebox.end) || history.created.isSame(timebox.end)) {
-                                        history.items = history.items.filter(statusFilter);
+                                        history.items = history.items.filter(statusFilter(cfg));
                                         for (var k = 0; k < history.items.length; k++) {
                                             var item = history.items[k];
-                                            if (item.fromString === 'Open') {
+                                            if (isOpen(cfg, item.fromString)) {
                                                 subtask.start = moment.max(history.created, subtask.start);
                                             }
-                                            if (item.toString === 'Closed') {
+                                            if (isClosed(cfg, item.toString)) {
                                                 subtask.end = moment.min(history.created, subtask.end);
                                             }
                                             subtask.transitions.push({
@@ -509,7 +522,7 @@ module.exports = function (app, cfg) {
                                         }
                                     }
                                 }
-                                if (subtask.state !== 'Open' && subtask.state !== 'Reopened') {
+                                if (!isOpen(cfg, subtask.state)) {
                                     issues[issue.fields.parent.key].start = issues[issue.fields.parent.key].start === null ? subtask.start : moment.min(subtask.start, issues[issue.fields.parent.key].start);
                                     issues[issue.fields.parent.key].end = issues[issue.fields.parent.key].end === null ? subtask.end : moment.max(subtask.end, issues[issue.fields.parent.key].end);
                                     issues[issue.fields.parent.key].subtasks.push(subtask);
@@ -563,8 +576,8 @@ module.exports = function (app, cfg) {
                                     subtasks: [],
                                     type: issue.fields.issuetype.name
                                 };
-                                taskboard.issuesDone += (issue.fields.status.name === 'Closed' ? issue.fields[cfg.jiraPoints] : 0);
-                                taskboard.issuesToDo += (issue.fields.status.name !== 'Closed' ? issue.fields[cfg.jiraPoints] : 0);
+                                taskboard.issuesDone += (isClosed(cfg, issue.fields.status.name) ? issue.fields[cfg.jiraPoints] : 0);
+                                taskboard.issuesToDo += (!isClosed(cfg, issue.fields.status.name) ? issue.fields[cfg.jiraPoints] : 0);
                             }
                         }
                         for (var i = 0; i < data.issues.length; i++) {
@@ -580,9 +593,9 @@ module.exports = function (app, cfg) {
                                     state: issue.fields.status.name,
                                     type: issue.fields.issuetype.name
                                 });
-                                taskboard.subtasksDone += (issue.fields.status.name === 'Closed' ? 1 : 0);
-                                taskboard.subtasksInProgress += (issue.fields.status.name !=='Open' && issue.fields.status.name !== 'Closed' ? 1 : 0);
-                                taskboard.subtasksToDo += (issue.fields.status.name === 'Open' ? 1 : 0);
+                                taskboard.subtasksDone += (isClosed(cfg, issue.fields.status.name) ? 1 : 0);
+                                taskboard.subtasksInProgress += (isInProgress(cfg, issue.fields.status.name) ? 1 : 0);
+                                taskboard.subtasksToDo += (isOpen(cfg, issue.fields.status.name) ? 1 : 0);
                             }
                         }
                         for (var key in issues) {
@@ -617,9 +630,10 @@ module.exports = function (app, cfg) {
                                     history.created = moment.utc(history.created);
                                     if ((history.created.isAfter(timebox.start) || history.created.isSame(timebox.start)) &&
                                         moment.max(moment.utc(history.created), timebox.start).isSame(date, 'day')) {
+                                        history.items = history.items.filter(statusFilter(cfg));
                                         for (var k = 0; k < history.items.length; k++) {
                                             var item = history.items[k];
-                                            if (item.field === 'status' && item.fromString !== 'Open' && item.fromString !== item.toString) {
+                                            if (!isOpen(cfg, item.fromString)) {
                                                 if (!pool[history.author.displayName]) {
                                                     pool[history.author.displayName] = [];
                                                 }
@@ -712,28 +726,28 @@ module.exports = function (app, cfg) {
                                     var history = issue.changelog.histories[j];
                                     history.created = moment.max(moment.utc(history.created).endOf('day'), timebox.start.clone().add(-1, "millisecond"));
                                     if (history.created.isBefore(timebox.end) || history.created.isSame(timebox.end)) {
-                                        history.items = history.items.filter(statusFilter);
+                                        history.items = history.items.filter(statusFilter(cfg));
                                         for (var k = 0; k < history.items.length; k++) {
                                             var item = history.items[k];
-                                            if (item.fromString === 'Open' || item.fromString === "Reopened") {
+                                            if (isOpen(cfg, item.fromString)) {
                                                 flowStates[history.created].toDo--;
-                                                if (item.toString === 'Closed') {
+                                                if (isClosed(cfg, item.toString)) {
                                                     flowStates[history.created].done++;
                                                 } else {
                                                     flowStates[history.created].inProgress++;
                                                 }
-                                            } else if (item.fromString === 'Closed') {
+                                            } else if (isClosed(cfg, item.fromString)) {
                                                 flowStates[history.created].done--;
-                                                if (item.toString === 'Open' || item.toString === 'Reopened') {
+                                                if (isOpen(cfg, item.toString)) {
                                                     flowStates[history.created].toDo++;
                                                 } else {
                                                     flowStates[history.created].inProgress++;
                                                 }
                                             } else {
-                                                if (item.toString === 'Open' || item.toString === 'Reopened') {
+                                                if (isOpen(cfg, item.toString)) {
                                                     flowStates[history.created].inProgress--;
                                                     flowStates[history.created].toDo++;
-                                                } else if (item.toString === 'Closed') {
+                                                } else if (isClosed(cfg, item.toString)) {
                                                     flowStates[history.created].inProgress--;
                                                     flowStates[history.created].done++;
                                                 }
@@ -764,7 +778,7 @@ module.exports = function (app, cfg) {
     app.get('/api/:board/:sprint/task/work', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
-                return jql(cfg, 'sprint=' + req.param('sprint') + ' AND type not in standardIssueTypes() AND status was not Closed ON \'' + moment.min(moment.utc(), timebox.end).format('YYYY-MM-DD') + '\'', ['issuetype','labels'])
+                return jql(cfg, 'sprint=' + req.param('sprint') + ' AND type not in standardIssueTypes() AND status was not in (' + cfg.stateClosed + ') ON \'' + moment.min(moment.utc(), timebox.end).format('YYYY-MM-DD') + '\'', ['issuetype','labels'])
                     .then(function (data) {
                         var count = [],
                             timestamp = moment.utc();
@@ -830,7 +844,7 @@ module.exports = function (app, cfg) {
     app.get('/api/:project/burn', function (req, res) {
         var start = moment.utc().add(-60, 'days').startOf('day'),
             end = moment.utc().endOf('day');
-        jql(cfg, 'project=' + req.param('project') + ' AND type in standardIssueTypes() AND status was not Closed BEFORE \'' + start.format('YYYY-MM-DD') + '\'', ['changelog', 'created'], ['changelog'])
+        jql(cfg, 'project=' + req.param('project') + ' AND type in standardIssueTypes() AND status was not in (' + cfg.stateClosed + ') BEFORE \'' + start.format('YYYY-MM-DD') + '\'', ['changelog', 'created'], ['changelog'])
             .then(function (data) {
                 var burn = [],
                     burnState = {
@@ -852,14 +866,14 @@ module.exports = function (app, cfg) {
                     for (var j = 0; j < issue.changelog.histories.length; j++) {
                         var history = issue.changelog.histories[j];
                         history.created = moment.max(moment.utc(history.created), start.add(-1, "millisecond"));
-                        history.items = history.items.filter(statusFilter);
+                        history.items = history.items.filter(statusFilter(cfg));
                         for (var k = 0; k < history.items.length; k++) {
                             var item = history.items[k];
-                            if (item.toString === 'Closed') {
+                            if (isClosed(cfg, item.toString)) {
                                 burnStates[history.created.endOf('day')].done++;
                                 burnStates[history.created.endOf('day')].toDo--;
                             }
-                            if (item.fromString === 'Closed' && item.toString === 'Reopened') {
+                            if (isClosed(cfg, item.fromString) && isOpen(cfg, item.toString)) {
                                 burnStates[history.created.endOf('day')].done--;
                                 burnStates[history.created.endOf('day')].toDo++;
                             }
@@ -885,7 +899,7 @@ module.exports = function (app, cfg) {
     app.get('/api/:backlog/:board/:sprint/release/board/:velocity', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
-                return jql(cfg, 'project=' + req.param('backlog') + ' AND type in standardIssueTypes() AND status = \'Open\' AND (sprint not in openSprints() OR sprint is EMPTY) ORDER BY Rank', [cfg.jiraFlagged, 'issuetype', cfg.jiraPoints, 'labels', 'summary', 'status'], [], 999)
+                return jql(cfg, 'project=' + req.param('backlog') + ' AND type in standardIssueTypes() AND status IN (' + cfg.stateOpen + ') AND (sprint not in openSprints() OR sprint is EMPTY) ORDER BY Rank', [cfg.jiraFlagged, 'issuetype', cfg.jiraPoints, 'labels', 'summary', 'status'], [], 999)
                     .then(function (data) {
                         var releaseboard =  [],
                             timestamp = moment.utc(),
