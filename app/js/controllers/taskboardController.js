@@ -62,14 +62,4 @@ angular.module('JIRA.Teamboard')
                 }
             }
         });
-        $scope.toggleState = function(state) {
-            if ($scope.taskboard.state) {
-                $('#taskboard .subtask').not('.' + $scope.taskboard.state).removeClass('mute');
-                $scope.taskboard.state = null;
-            } else {
-                state = angular.lowercase(state.replace(/[^a-z0-9]/gi, '-'));
-                $('#taskboard .subtask').not('.' + state).addClass('mute');
-                $scope.taskboard.state = state;
-            }
-        };
     }]);

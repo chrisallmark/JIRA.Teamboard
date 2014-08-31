@@ -3,7 +3,7 @@
         <small><strong>{{subtask.key}}</strong><br/>{{subtask.name}}</small>
     </div>
     <div>
-        <span class="badge pull-right" data-ng-click="toggleState(subtask.state)">{{subtask.state}}</span>
+        <span class="badge pull-right">{{subtask.status}}</span>
         <div class="polaroid" title="{{subtask.owner}}" data-ng-if="subtask.assignee">
             <img data-ng-src="/api/avatar/{{subtask.avatar}}"/>
             <span>{{subtask.tag}}</span>

@@ -1,11 +1,18 @@
 {
-    "bambooHost": "https://bamboo.host.com",
-    "crowdUser": "username",
-    "crowdPass": "password",
-    "jiraFlagged": "customfield_10200",
-    "jiraHost": "https://jira.host.com",
-    "jiraPoints": "customfield_11700",
-    "jiraPointsDefault": 5,
-    "stateOpen": "Open,Reopened",
-    "stateClosed": "Closed"
+    "bamboo": {
+        "host": null
+    },
+    "crowd": {
+        "username": "chrisallmark",
+        "password": "MrA11m4rk"
+    },
+    "jira": {
+        "flagged": "customfield_10000",
+        "host": "http://localhost:8080",
+        "points": "customfield_10002"
+    },
+    "status" : {
+        "open":  ["Open","Reopened","To Do"],
+        "closed": ["Closed", "Done"]
+    }
 }

@@ -477,19 +477,17 @@ body {
 .issue {
   background-color: $issue-card-color;
   color: $issue-text-color;
-  height: 108px;
-  position: relative;
   word-wrap: break-word;
   > div:first-of-type {
-    line-height: 16px;
+    height: 90px;
+    line-height: 15px;
+    overflow: hidden;
   }
   > div:last-of-type {
     border-top: dotted 1px;
-    bottom: 0;
-    left: 0;
+    height: 15px;
+    font-weight: bold;
     padding: 0 5px;
-    position: absolute;
-    width: 100%;
   }
 }
 

@@ -85,7 +85,9 @@ angular.module('JIRA.Teamboard')
             }
         });
         apiService.builds.query().$promise.then(function (builds) {
-            $scope.form.builds = builds;
+            if (builds.length > 0) {
+                $scope.form.builds = builds;
+            }
         });
         if ($routeParams.configurationName) {
             apiService.configurations.get({'configurationName': $routeParams.configurationName}).$promise.then(function (configuration) {
@@ -96,7 +98,9 @@ angular.module('JIRA.Teamboard')
                             $scope.form.backlog = project;
                         }
                     });
-                    $scope.form.backlogs = backlogs;
+                    if (backlogs.length > 0) {
+                        $scope.form.backlogs = backlogs;
+                    }
                 });
                 apiService.boards.query().$promise.then(function (boards) {
                     angular.forEach(boards, function(board) {
@@ -104,16 +108,22 @@ angular.module('JIRA.Teamboard')
                             $scope.form.board = board;
                         }
                     });
-                    $scope.form.boards = boards;
+                    if (boards.length > 0) {
+                        $scope.form.boards = boards;
+                    }
                 });
             });
         }
         else {
             apiService.backlogs.query().$promise.then(function (backlogs) {
-                $scope.form.backlogs = backlogs;
+                if (backlogs.length > 0) {
+                    $scope.form.backlogs = backlogs;
+                }
             });
             apiService.boards.query().$promise.then(function (boards) {
-                $scope.form.boards = boards;
+                if (boards.length > 0) {
+                    $scope.form.boards = boards;
+                }
             });
         }
     }]);

@@ -43,14 +43,14 @@ angular.module('JIRA.Teamboard')
                 $scope.builds = builds;
             }).finally(function () {
                 var now = moment();
-                if (now.isAfter(moment(8, 'hh')) && now.isBefore(moment(18, 'hh')) && now.isoWeekday() !== 6 && now.isoWeekday() !== 7) {
+                if (now.isAfter(moment(8, 'hh')) && now.isBefore(moment(18, 'HH')) && now.isoWeekday() !== 6 && now.isoWeekday() !== 7) {
                     timeout = $timeout(load, 1000 * 30);
                 } else {
-                    console.log('Now is ' + now.format('DD/MM/YYYY hh:mm:ss:SSS'));
-                    console.log('Adding ' + (now.isBefore(moment(8, 'hh')) ? 0 : 1) + ' days');
-                    console.log('Waking at  ' + moment.add(now.isBefore(moment(8, 'hh')) ? 0 : 1, 'day').hour(8).startOf('hour').format('DD/MM/YYYY hh:mm:ss:SSS'));
-                    console.log('Sleeping for ' + moment.add(now.isBefore(moment(8, 'hh')) ? 0 : 1, 'day').hour(8).startOf('hour').diff(now) + 'ms');
-                    timeout = $timeout(load, moment.add(now.isBefore(moment(8, 'hh')) ? 0 : 1, 'day').hour(8).startOf('hour').diff(now));
+                    console.log('Now is ' + now.format('DD/MM/YYYY HH:mm:ss:SSS'));
+                    console.log('Adding ' + (now.isBefore(moment(8, 'HH')) ? 0 : 1) + ' days');
+                    console.log('Waking at  ' + moment().add(now.isBefore(moment(8, 'HH')) ? 0 : 1, 'day').hour(8).startOf('hour').format('DD/MM/YYYY hh:mm:ss:SSS'));
+                    console.log('Sleeping for ' + moment().add(now.isBefore(moment(8, 'HH')) ? 0 : 1, 'day').hour(8).startOf('hour').diff(now) + 'ms');
+                    timeout = $timeout(load, moment().add(now.isBefore(moment(8, 'HH')) ? 0 : 1, 'day').hour(8).startOf('hour').diff(now));
                 }
             });
         })();

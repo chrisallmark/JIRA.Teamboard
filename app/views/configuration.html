@@ -85,7 +85,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="col-sm-6">
                     <div class="form-group">
                         <label class="control-label" for="available-builds">Available Builds:</label>
-                        <select id="available-builds" class="form-control" multiple data-ng-disabled="!form.builds || builds.length === 0" data-ng-model="form.build" data-ng-options="build.name for build in form.builds"></select>
+                        <select id="available-builds" class="form-control" multiple data-ng-disabled="!form.builds" data-ng-model="form.build" data-ng-options="build.name for build in form.builds"></select>
                     </div>
                 </div>
                 <div class="col-sm-6">

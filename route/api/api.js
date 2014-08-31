@@ -23,56 +23,52 @@ var extend = require('extend'),
     request = require('request');
 
 function bambooAPI(cfg, endpoint) {
-    return qRequest({
+    return q.when(cfg.bamboo.host ? qRequest({
         auth: {
-            user: cfg.crowdUser,
-            pass: cfg.crowdPass
+            user: cfg.crowd.username,
+            pass: cfg.crowd.password
         },
         headers: {
             'Accept': 'application/json'
         },
-        uri: cfg.bambooHost + endpoint
-    });
+        uri: cfg.bamboo.host + endpoint
+    }) : null);
 }
 
 function cfgFile(name) {
     return './cfg/' + name.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.json';
 }
 
-function isClosed(cfg, state) {
-    return cfg.stateClosed.indexOf(state) !== -1;
+function isClosed(cfg, status) {
+    return cfg.status.closed.indexOf(status) !== -1;
 }
 
-function isInProgress(cfg, state) {
-    return !isOpen(cfg, state) && !isClosed(cfg, state);
-}
-
-function isOpen(cfg, state) {
-    return cfg.stateOpen.indexOf(state) !== -1;
+function isOpen(cfg, status) {
+    return cfg.status.open.indexOf(status) !== -1;
 }
 
 function jira(cfg, endpoint) {
-    return qRequest({
+    return q.when(cfg.jira.host ? qRequest({
         auth: {
-            user: cfg.crowdUser,
-            pass: cfg.crowdPass
+            user: cfg.crowd.username,
+            pass: cfg.crowd.password
         },
         encoding: null,
-        uri: cfg.jiraHost + endpoint
-    });
+        uri: cfg.jira.host + endpoint
+    }) : null);
 }
 
 function jiraAPI(cfg, endpoint) {
-    return qRequest({
+    return q.when(cfg.jira.host ? qRequest({
         auth: {
-            user: cfg.crowdUser,
-            pass: cfg.crowdPass
+            user: cfg.crowd.username,
+            pass: cfg.crowd.password
         },
         headers: {
             'Accept': 'application/json'
         },
-        uri: cfg.jiraHost + endpoint
-    });
+        uri: cfg.jira.host + endpoint
+    }) : null);
 }
 
 function jql(cfg, query, fields, expand, maxResults) {
@@ -154,6 +150,10 @@ function sortBy(property, reverse) {
     };
 }
 
+function state(cfg, status) {
+    return isOpen(cfg, status) ? "Open" : isClosed(cfg, status) ? "Closed" : "In Progress";
+}
+
 function statusFilter(cfg) {
     return function(a) {
         return a.field === 'status' &&
@@ -165,8 +165,8 @@ function timebox(cfg, board, sprint) {
     return jiraAPI(cfg, '/rest/greenhopper/latest/rapid/charts/sprintreport?rapidViewId=' + board + '&sprintId=' + sprint)
         .then(function (data) {
              return {
-                start: moment.utc(data.sprint.startDate.substring(0, 10) + '12:00').startOf('day'),
-                end: moment.utc(data.sprint.endDate.substring(0, 10) + '12:00').endOf('day')
+                start: data.sprint.startDate === 'None' ? moment.utc() : moment.utc(data.sprint.startDate.substring(0, 10) + '12:00').startOf('day'),
+                end: data.sprint.startDate === 'None' ? moment.utc() : moment.utc(data.sprint.endDate.substring(0, 10) + '12:00').endOf('day')
             };
         });
 }
@@ -289,11 +289,13 @@ module.exports = function (app, cfg) {
         bambooAPI(cfg, '/bamboo/rest/api/latest/project')
             .then(function (data) {
                 var builds = [];
-                for (var i = 0; i < data.projects.project.length; i++) {
-                    var project = data.projects.project[i];
-                    builds.push({
-                        name: project.name
-                    });
+                if (data) {
+                    for (var i = 0; i < data.projects.project.length; i++) {
+                        var project = data.projects.project[i];
+                        builds.push({
+                            name: project.name
+                        });
+                    }
                 }
                 return builds.sort(sortBy("name"));
             })
@@ -334,12 +336,14 @@ module.exports = function (app, cfg) {
         bambooAPI(cfg, '/bamboo/rest/api/latest/result?expand=results.result.plan.branches.branch.latestResult.plan')
             .then(function (data) {
                 var builds = [];
-                for (var i = 0; i < data.results.result.length; i++) {
-                    if (!req.param('builds') || req.param('builds').indexOf(data.results.result[i].plan.projectName) !== -1) {
-                        builds.push(build(data.results.result[i]));
-                        for (var j = 0; j < data.results.result[i].plan.branches.branch.length; j++) {
-                            if (data.results.result[i].plan.branches.branch[j].latestResult) {
-                                builds.push(build(data.results.result[i].plan.branches.branch[j].latestResult));
+                if (data) {
+                    for (var i = 0; i < data.results.result.length; i++) {
+                        if (!req.param('builds') || req.param('builds').indexOf(data.results.result[i].plan.projectName) !== -1) {
+                            builds.push(build(data.results.result[i]));
+                            for (var j = 0; j < data.results.result[i].plan.branches.branch.length; j++) {
+                                if (data.results.result[i].plan.branches.branch[j].latestResult) {
+                                    builds.push(build(data.results.result[i].plan.branches.branch[j].latestResult));
+                                }
                             }
                         }
                     }
@@ -383,8 +387,7 @@ module.exports = function (app, cfg) {
                     var sprint = data.sprints[i];
                     sprints.push({
                         id: sprint.id,
-                        name: sprint.name,
-                        state: sprint.state
+                        name: sprint.name
                     });
                 }
                 return sprints.sort(sortBy("name"));
@@ -459,7 +462,7 @@ module.exports = function (app, cfg) {
     app.get('/api/:board/:sprint/cycle/board', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
-                return jql(cfg, 'sprint=' + req.param('sprint') + ' ORDER BY Rank', ['assignee', 'changelog', 'issuetype', cfg.jiraFlagged, 'labels', 'parent', cfg.jiraPoints, 'status', 'summary'], ['changelog'])
+                return jql(cfg, 'sprint=' + req.param('sprint') + ' ORDER BY Rank', ['assignee', 'changelog', 'issuetype', cfg.jira.flagged, 'labels', 'parent', cfg.jira.points, 'status', 'summary'], ['changelog'])
                     .then(function (data) {
                         var taskboard = {
                             start: timebox.start,
@@ -473,13 +476,14 @@ module.exports = function (app, cfg) {
                             if (!issue.fields.issuetype.subtask) {
                                 issues[issue.key] = {
                                     end: null,
-                                    flagged: (issue.fields[cfg.jiraFlagged] && issue.fields[cfg.jiraFlagged][0].value) === 'Yes',
+                                    flagged: issue.fields[cfg.jira.flagged] !== null,
                                     key: issue.key,
                                     labels: issue.fields.labels.sort(),
                                     name: issue.fields.summary,
-                                    points: issue.fields[cfg.jiraPoints],
+                                    points: issue.fields[cfg.jira.points],
                                     start: null,
-                                    state: issue.fields.status.name,
+                                    state: state(cfg, issue.fields.status.name),
+                                    status: issue.fields.status.name,
                                     subtasks: [],
                                     type: issue.fields.issuetype.name
                                 };
@@ -492,12 +496,13 @@ module.exports = function (app, cfg) {
                                     assignee: issue.fields.assignee ? issue.fields.assignee.displayName : null,
                                     avatar: issue.fields.assignee ? issue.fields.assignee.name : null,
                                     end: moment.min(moment.max(moment.utc(), timebox.start.clone().endOf('day')), timebox.end),
-                                    flagged: issue.fields[cfg.jiraFlagged] && issue.fields[cfg.jiraFlagged][0].value === 'Yes',
+                                    flagged: issue.fields[cfg.jira.flagged] !== null,
                                     key: issue.key,
                                     labels: issue.fields.labels.sort(),
                                     name: issue.fields.summary,
                                     start: timebox.start,
-                                    state: issue.fields.status.name,
+                                    state: state(cfg, issue.fields.status.name),
+                                    status: issue.fields.status.name,
                                     transitions: [],
                                     type: issue.fields.issuetype.name
                                 };
@@ -522,7 +527,7 @@ module.exports = function (app, cfg) {
                                         }
                                     }
                                 }
-                                if (!isOpen(cfg, subtask.state)) {
+                                if (subtask.state !== "Open") {
                                     issues[issue.fields.parent.key].start = issues[issue.fields.parent.key].start === null ? subtask.start : moment.min(subtask.start, issues[issue.fields.parent.key].start);
                                     issues[issue.fields.parent.key].end = issues[issue.fields.parent.key].end === null ? subtask.end : moment.max(subtask.end, issues[issue.fields.parent.key].end);
                                     issues[issue.fields.parent.key].subtasks.push(subtask);
@@ -549,7 +554,7 @@ module.exports = function (app, cfg) {
     app.get('/api/:board/:sprint/task/board', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
-                return jql(cfg, 'sprint=' + req.param('sprint') + ' ORDER BY Rank', ['assignee', 'issuetype', cfg.jiraFlagged, 'labels', 'parent', cfg.jiraPoints, 'status', 'summary'])
+                return jql(cfg, 'sprint=' + req.param('sprint') + ' ORDER BY Rank', ['assignee', 'issuetype', cfg.jira.flagged, 'labels', 'parent', cfg.jira.points, 'status', 'summary'])
                     .then(function (data) {
                         var issues = [],
                             taskboard = {
@@ -566,36 +571,40 @@ module.exports = function (app, cfg) {
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
                             if (!issue.fields.issuetype.subtask) {
-                                issues[issue.key] = {
-                                    flagged: (issue.fields[cfg.jiraFlagged] && issue.fields[cfg.jiraFlagged][0].value) === 'Yes',
+                                var subtask = {
+                                    flagged: issue.fields[cfg.jira.flagged] !== null,
                                     key: issue.key,
                                     labels: issue.fields.labels.sort(),
                                     name: issue.fields.summary,
-                                    points: issue.fields[cfg.jiraPoints],
-                                    state: issue.fields.status.name,
+                                    points: issue.fields[cfg.jira.points],
+                                    state: state(cfg, issue.fields.status.name),
+                                    status: issue.fields.status.name,
                                     subtasks: [],
                                     type: issue.fields.issuetype.name
                                 };
-                                taskboard.issuesDone += (isClosed(cfg, issue.fields.status.name) ? issue.fields[cfg.jiraPoints] : 0);
-                                taskboard.issuesToDo += (!isClosed(cfg, issue.fields.status.name) ? issue.fields[cfg.jiraPoints] : 0);
+                                issues[issue.key] = subtask;
+                                taskboard.issuesDone += (subtask.state === 'Closed' ? issue.fields[cfg.jira.points] : 0);
+                                taskboard.issuesToDo += (subtask.state !== 'Closed' ? issue.fields[cfg.jira.points] : 0);
                             }
                         }
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
                             if (issue.fields.issuetype.subtask) {
-                                issues[issue.fields.parent.key].subtasks.push({
+                                var subtask = {
                                     assignee: issue.fields.assignee ? issue.fields.assignee.displayName : null,
                                     avatar: issue.fields.assignee ? issue.fields.assignee.name : null,
-                                    flagged: issue.fields[cfg.jiraFlagged] && issue.fields[cfg.jiraFlagged][0].value === 'Yes',
+                                    flagged: issue.fields[cfg.jira.flagged] !== null,
                                     key: issue.key,
                                     labels: issue.fields.labels.sort(),
                                     name: issue.fields.summary,
-                                    state: issue.fields.status.name,
+                                    state: state(cfg, issue.fields.status.name),
+                                    status: issue.fields.status.name,
                                     type: issue.fields.issuetype.name
-                                });
-                                taskboard.subtasksDone += (isClosed(cfg, issue.fields.status.name) ? 1 : 0);
-                                taskboard.subtasksInProgress += (isInProgress(cfg, issue.fields.status.name) ? 1 : 0);
-                                taskboard.subtasksToDo += (isOpen(cfg, issue.fields.status.name) ? 1 : 0);
+                                };
+                                issues[issue.fields.parent.key].subtasks.push(subtask);
+                                taskboard.subtasksDone += (subtask.state === "Closed" ? 1 : 0);
+                                taskboard.subtasksInProgress += (subtask.state === "In Progress" ? 1 : 0);
+                                taskboard.subtasksToDo += (subtask.state === "Open" ? 1 : 0);
                             }
                         }
                         for (var key in issues) {
@@ -778,7 +787,7 @@ module.exports = function (app, cfg) {
     app.get('/api/:board/:sprint/task/work', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
-                return jql(cfg, 'sprint=' + req.param('sprint') + ' AND type not in standardIssueTypes() AND status was not in (' + cfg.stateClosed + ') ON \'' + moment.min(moment.utc(), timebox.end).format('YYYY-MM-DD') + '\'', ['issuetype','labels'])
+                return jql(cfg, 'sprint=' + req.param('sprint') + ' AND type not in standardIssueTypes() AND status was not in (' + cfg.status.closed + ') ON \'' + moment.min(moment.utc(), timebox.end).format('YYYY-MM-DD') + '\'', ['issuetype','labels'])
                     .then(function (data) {
                         var count = [],
                             timestamp = moment.utc();
@@ -844,7 +853,7 @@ module.exports = function (app, cfg) {
     app.get('/api/:project/burn', function (req, res) {
         var start = moment.utc().add(-60, 'days').startOf('day'),
             end = moment.utc().endOf('day');
-        jql(cfg, 'project=' + req.param('project') + ' AND type in standardIssueTypes() AND status was not in (' + cfg.stateClosed + ') BEFORE \'' + start.format('YYYY-MM-DD') + '\'', ['changelog', 'created'], ['changelog'])
+        jql(cfg, 'project=' + req.param('project') + ' AND type in standardIssueTypes() AND status was not in (' + cfg.status.closed + ') BEFORE \'' + start.format('YYYY-MM-DD') + '\'', ['changelog', 'created'], ['changelog'])
             .then(function (data) {
                 var burn = [],
                     burnState = {
@@ -899,7 +908,7 @@ module.exports = function (app, cfg) {
     app.get('/api/:backlog/:board/:sprint/release/board/:velocity', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
-                return jql(cfg, 'project=' + req.param('backlog') + ' AND type in standardIssueTypes() AND status IN (' + cfg.stateOpen + ') AND (sprint not in openSprints() OR sprint is EMPTY) ORDER BY Rank', [cfg.jiraFlagged, 'issuetype', cfg.jiraPoints, 'labels', 'summary', 'status'], [], 999)
+                return jql(cfg, 'project=' + req.param('backlog') + ' AND type in standardIssueTypes() AND status IN (' + cfg.status.open + ') AND (sprint not in openSprints() OR sprint is EMPTY) ORDER BY Rank', [cfg.jira.flagged, 'issuetype', cfg.jira.points, 'labels', 'summary', 'status'], [], 999)
                     .then(function (data) {
                         var releaseboard =  [],
                             timestamp = moment.utc(),
@@ -910,7 +919,7 @@ module.exports = function (app, cfg) {
                         }
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
-                            if (releaseboard.length === 0 || (releaseboard[releaseboard.length - 1].points + (issue.fields[cfg.jiraPoints] || cfg.jiraPointsDefault) > Number(req.param('velocity')) * 1.10 && i > 0 && i < data.issues.length - 1)) {
+                            if (releaseboard.length === 0 || (releaseboard[releaseboard.length - 1].points + (issue.fields[cfg.jira.points] || 0) > Number(req.param('velocity')) * 1.10 && i > 0 && i < data.issues.length - 1)) {
                                 releaseboard.push({
                                     start: timebox.start.clone().add(releaseboard.length * totalDays, 'days'),
                                     end: timebox.end.clone().add(releaseboard.length * totalDays, 'days'),
@@ -919,15 +928,16 @@ module.exports = function (app, cfg) {
                                 });
                             }
                             releaseboard[releaseboard.length -1].issues.push({
-                                flagged: (issue.fields[cfg.jiraFlagged] && issue.fields[cfg.jiraFlagged][0].value) === 'Yes',
+                                flagged: issue.fields[cfg.jira.flagged] !== null,
                                 key: issue.key,
                                 labels: issue.fields.labels.sort(),
                                 name: issue.fields.summary,
-                                points: issue.fields[cfg.jiraPoints],
-                                state: issue.fields.status.name,
+                                points: issue.fields[cfg.jira.points],
+                                state: state(cfg, issue.fields.status.name),
+                                status: issue.fields.status.name,
                                 type: issue.fields.issuetype.name
                             });
-                            releaseboard[releaseboard.length-1].points += issue.fields[cfg.jiraPoints] || cfg.jiraPointsDefault;
+                            releaseboard[releaseboard.length-1].points += issue.fields[cfg.jira.points] || 0;
                         }
                         perfLog('Releaseboard', timestamp, req.url);
                         return releaseboard;

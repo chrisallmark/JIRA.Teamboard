@@ -1,7 +1,7 @@
 <div id="{{issue.id}}" class="issue" title="{{issue.key}}" data-ng-class="issue.classification">
     <div><strong>{{issue.key}}</strong><br/>{{issue.name}}</div>
     <div>
-        <span class="pull-left">{{issue.state}}</span>
-        <span class="pull-right" data-ng-if="issue.points"><strong>{{issue.points}}sp</strong></span>
+        <span class="pull-left">{{issue.status}}</span>
+        <span class="pull-right" data-ng-if="issue.points">{{issue.points}}sp</span>
     </div>
 </div>
