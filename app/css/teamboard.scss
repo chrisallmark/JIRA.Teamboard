@@ -224,8 +224,8 @@ body {
         background-color: #999;
       }
       &:before {
+        @include border-radius(32px);
         border: 5px solid $background-color;
-        border-radius: 32px;
         content: "?";
         font-size: 32px;
         height: 56px;
@@ -395,10 +395,11 @@ body {
     width: 100%;
   }
   .subtask {
-    line-height: 21px;
-    margin-bottom: 1px;
+    border: solid 1px rgba(0, 0, 0, 0.25);
+    line-height: 15px;
     overflow: hidden;
     text-overflow: ellipsis;
+    width: 100%;
     white-space: nowrap;
   }
 }
