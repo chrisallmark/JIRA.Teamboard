@@ -55,9 +55,19 @@ angular.module('JIRA.Teamboard')
                 angular.forEach(subtask.transitions, function(transition, index) {
                     popover += '<tr><td>' + moment.utc(transition.date).format('YYYY-MM-DD @ HH:mm') + '</td><td>' + transition.fromState + ' &rarr; ' + transition.toState + '</td></tr>';
                 });
-                popover += '</table><small>' + subtask.assignee + '</small>';
+                popover += '</table>' + (subtask.assignee ? '<small>' + subtask.assignee + '</small>' : '');
             }
             return popover;
+        }
+        function tag(assignee) {
+            if (assignee) {
+                var names = assignee.split(/[\s-]+/);
+                var initials = '';
+                angular.forEach(names, function (name, i) {
+                    initials += name.charAt(0) + (i < names.length - 1 ? '.' : '');
+                });
+                return names[0].length > 8 ? initials : names[0];
+            }
         }
         $scope.$watch('teamboard.view', function() {
             if (angular.isDefined($scope.teamboard)) {
@@ -92,6 +102,7 @@ angular.module('JIRA.Teamboard')
                                     'margin-left': (cycleTime(issue.start, subtask.start) - 1) * (100 / issueCycleTime) + '%',
                                     'width': subtaskCycleTime * (100 / issueCycleTime) + '%'
                                 };
+                                subtask.tag = tag(subtask.assignee);
                                 issueCycleTotal += subtaskCycleTime;
                             });
                             issue.cycleTimeAverage = days(issue.subtasks.length === 0 ? 0 : (issueCycleTotal / issue.subtasks.length).toFixed(2), 'task');
@@ -124,15 +135,5 @@ angular.module('JIRA.Teamboard')
                 'toggle': 'popover',
                 'trigger': 'hover'
             });
-        };
-        $scope.toggleState = function(state) {
-            if ($scope.cycleboard.state) {
-                $('#cycleboard .subtask').not('.' + $scope.cycleboard.state).removeClass('mute');
-                $scope.cycleboard.state = null;
-            } else {
-                state = angular.lowercase(state.replace(/[^a-z0-9]/gi, '-'));
-                $('#cycleboard .subtask').not('.' + state).addClass('mute');
-                $scope.cycleboard.state = state;
-            }
         };
     }]);

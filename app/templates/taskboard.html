@@ -52,10 +52,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <issue></issue>
                 </td>
                 <td>
-                    <subtask data-ng-repeat="subtask in issue.subtasks | stateFilter:{'include': ['Open', 'Reopened']}"></subtask>
+                    <subtask data-ng-repeat="subtask in issue.subtasks | stateFilter:{'include': ['Open']}"></subtask>
                 </td>
                 <td data-ng-class="{'wip-exceeded':taskboard.wipExceeded}">
-                    <subtask data-ng-repeat="subtask in issue.subtasks | stateFilter:{'exclude': ['Open', 'Reopened', 'Closed']}"></subtask>
+                    <subtask data-ng-repeat="subtask in issue.subtasks | stateFilter:{'include': ['In Progress']}"></subtask>
                 </td>
                 <td>
                     <subtask data-ng-repeat="subtask in issue.subtasks | stateFilter:{'include': ['Closed']}"></subtask>
@@ -66,10 +66,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <issue></issue>
                 </td>
                 <td>
-                    <subtask data-ng-repeat="subtask in issue.subtasks | stateFilter:{'include': ['Open', 'Reopened']}"></subtask>
+                    <subtask data-ng-repeat="subtask in issue.subtasks | stateFilter:{'include': ['Open']}"></subtask>
                 </td>
                 <td data-ng-class="{'wip-exceeded':taskboard.wipExceeded}">
-                    <subtask data-ng-repeat="subtask in issue.subtasks | stateFilter:{'exclude': ['Open', 'Reopened', 'Closed']}"></subtask>
+                    <subtask data-ng-repeat="subtask in issue.subtasks | stateFilter:{'include': ['In Progress']}"></subtask>
                 </td>
                 <td>
                     <subtask data-ng-repeat="subtask in issue.subtasks | stateFilter:{'include': ['Closed']}"></subtask>
