@@ -395,7 +395,8 @@ body {
     width: 100%;
   }
   .subtask {
-    margin: 0 0 1px 0;
+    line-height: 21px;
+    margin-bottom: 1px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
