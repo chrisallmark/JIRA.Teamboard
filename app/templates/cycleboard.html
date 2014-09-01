@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <td>
                     <div data-ng-class="issue.classification" data-ng-style="issue.style">
                         <div class="subtask text-center" data-content="{{subtask.popover}}" data-ng-class="subtask.classification" data-ng-repeat="subtask in issue.subtasks" data-ng-style="subtask.style">
-                            <small><strong>{{subtask.key}}</strong><span data-ng-if="subtask.cycleTime > 1">&nbsp;{{subtask.name}}</span><br/><span class="badge">{{subtask.state}}</span><br/>{{subtask.tag}}</small>
+                            <small><strong>{{subtask.key}}</strong><span data-ng-if="subtask.cycleTime > 1">&nbsp;{{subtask.name}}</span><br/><span class="badge">{{subtask.state}}</span><br/>{{subtask.assignee}}</small>
                        </div>
                     </div>
                 </td>
@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <td>
                     <div data-ng-style="issue.style">
                         <div class="subtask text-center" data-content="{{subtask.popover}}" data-ng-class="subtask.classification" data-ng-repeat="subtask in issue.subtasks" data-ng-style="subtask.style">
-                            <small><strong>{{subtask.key}}</strong><span data-ng-if="subtask.cycleTime > 1">&nbsp;{{subtask.name}}</span><br/><span class="badge">{{subtask.state}}</span><br/>{{subtask.tag}}</small>
+                            <small><strong>{{subtask.key}}</strong><span data-ng-if="subtask.cycleTime > 1">&nbsp;{{subtask.name}}</span><br/><span class="badge">{{subtask.state}}</span><br/>{{subtask.assignee}}</small>
                         </div>
                     </div>
                 </td>

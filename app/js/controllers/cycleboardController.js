@@ -59,16 +59,6 @@ angular.module('JIRA.Teamboard')
             }
             return popover;
         }
-        function tag(assignee) {
-            if (assignee) {
-                var names = assignee.split(/[\s-]+/);
-                var initials = '';
-                angular.forEach(names, function (name, i) {
-                    initials += name.charAt(0) + (i < names.length - 1 ? '.' : '');
-                });
-                return names[0].length > 8 ? initials : names[0];
-            }
-        }
         $scope.$watch('teamboard.view', function() {
             if (angular.isDefined($scope.teamboard)) {
                 if ($scope.teamboard.view === 'cycleboard') {
@@ -102,7 +92,6 @@ angular.module('JIRA.Teamboard')
                                     'margin-left': (cycleTime(issue.start, subtask.start) - 1) * (100 / issueCycleTime) + '%',
                                     'width': subtaskCycleTime * (100 / issueCycleTime) + '%'
                                 };
-                                subtask.tag = tag(subtask.assignee);
                                 issueCycleTotal += subtaskCycleTime;
                             });
                             issue.cycleTimeAverage = days(issue.subtasks.length === 0 ? 0 : (issueCycleTotal / issue.subtasks.length).toFixed(2), 'task');
