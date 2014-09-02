@@ -35,6 +35,32 @@ function bambooAPI(cfg, endpoint) {
     }) : null);
 }
 
+function build(result) {
+    if (result.plan.isBuilding) {
+        return {
+            branch: result.plan.type === 'chain_branch',
+            end: moment.utc(),
+            name: result.planName,
+            start: moment.utc(),
+            status: "In Progress"
+        };
+    } else {
+        return {
+            branch: result.plan.type === 'chain_branch',
+            end: moment.utc(result.buildCompletedTime || result.buildStartedTime ),
+            key: result.key,
+            name: result.planName,
+            reason: result.buildReason,
+            start: moment.utc(result.buildStartedTime),
+            status: result.state,
+            tests: {
+                passed: result.successfulTestCount,
+                failed: result.failedTestCount
+            }
+        };
+    }
+}
+
 function cfgFile(name) {
     return './cfg/' + name.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.json';
 }
@@ -80,7 +106,7 @@ function jql(cfg, query, fields, expand, maxResults) {
 }
 
 function perfLog(process, timestamp, operation) {
-    console.log(process + ' took ' + moment.utc().diff(timestamp) + 'ms' + (operation ? ' for ' + operation : ''));
+    console.log(process + ' took ' + moment().diff(timestamp) + 'ms' + (operation ? ' for ' + operation : ''));
 }
 
 function labelFilter(labels) {
@@ -111,7 +137,7 @@ function qReadFile(file) {
 
 function qRequest(options) {
     var deferred = q.defer();
-    var timestamp = moment.utc();
+    var timestamp = moment();
     request(options, function (err, res, body) {
         if (err) {
             console.log(err);
@@ -141,7 +167,7 @@ function sortBy(property, reverse) {
                 return a[property] > b[property] ? -1 : (a[property] < b[property] ? 1 : 0);
             }
         } else {
-            if (moment.isMoment(a[property]) && moment.isMoment(b[poperty])) {
+            if (moment.isMoment(a[property]) && moment.isMoment(b[property])) {
                 return a[property].isBefore(b[property]) ? -1 : (a[property].isAfter(b[property]) ? 1 : 0);
             } else {
                 return a[property] < b[property] ? -1 : (a[property] > b[property] ? 1 : 0);
@@ -308,41 +334,20 @@ module.exports = function (app, cfg) {
     });
 
     app.get('/api/builds/results', function (req, res) {
-        function build(result) {
-            if (result.plan.isBuilding) {
-                return {
-                    branch: result.plan.type === 'chain_branch',
-                    end: moment.utc(),
-                    name: result.planName,
-                    start: moment.utc(),
-                    status: "In Progress"
-                };
-            } else {
-                return {
-                    branch: result.plan.type === 'chain_branch',
-                    end: moment.utc(result.buildCompletedTime || result.buildStartedTime ),
-                    key: result.key,
-                    name: result.planName,
-                    reason: result.buildReason,
-                    start: moment.utc(result.buildStartedTime),
-                    status: result.state,
-                    tests: {
-                        passed: result.successfulTestCount,
-                        failed: result.failedTestCount
-                    }
-                };
-            }
-        }
         bambooAPI(cfg, '/bamboo/rest/api/latest/result?expand=results.result.plan.branches.branch.latestResult.plan')
             .then(function (data) {
                 var builds = [];
                 if (data) {
                     for (var i = 0; i < data.results.result.length; i++) {
                         if (!req.param('builds') || req.param('builds').indexOf(data.results.result[i].plan.projectName) !== -1) {
-                            builds.push(build(data.results.result[i]));
-                            for (var j = 0; j < data.results.result[i].plan.branches.branch.length; j++) {
-                                if (data.results.result[i].plan.branches.branch[j].latestResult) {
-                                    builds.push(build(data.results.result[i].plan.branches.branch[j].latestResult));
+                            if (data.results.result[i].plan.enabled) {
+                                builds.push(build(data.results.result[i]));
+                                for (var j = 0; j < data.results.result[i].plan.branches.branch.length; j++) {
+                                    if (data.results.result[i].plan.branches.branch[j].enabled) {
+                                        if (data.results.result[i].plan.branches.branch[j].latestResult) {
+                                            builds.push(build(data.results.result[i].plan.branches.branch[j].latestResult));
+                                        }
+                                    }
                                 }
                             }
                         }
