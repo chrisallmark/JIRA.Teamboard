@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 angular.module('JIRA.Teamboard')
     .controller('releaseboardController', ['$scope', 'apiService', function ($scope, apiService) {
         function classification(flagged, labels, state, type) {
-            return angular.lowercase((flagged ? 'block ' : '') + (labels ? labels.join('-') + ' ' : '') + state.replace(/[^a-z0-9]/gi, '-') + ' ' + type.replace(/[^a-z0-9]/gi, '-'));
+            return angular.lowercase((flagged ? 'jira-flagged ' : '') + (labels.length > 0 ? 'jira-label-' + labels.join('-') + ' ' : '') + ' jira-state-' + state.replace(/[^a-z0-9]/gi, '-') + ' jira-type-' + type.replace(/[^a-z0-9]/gi, '-'));
         }
         $scope.$watch('teamboard.view', function() {
             if (angular.isDefined($scope.teamboard)) {

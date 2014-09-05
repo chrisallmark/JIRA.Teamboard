@@ -1,0 +1,62 @@
+/*
+JIRA Teamboard - an electronic information radiator
+Copyright (C) 2014 Chris Allmark
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/*
+  appUser.scss maps user configurable jira elements to their visual
+  representation and applied to either an issue or a subtask class
+
+  the auto-generated classes are:
+
+  jira-flagged
+  jira-label-[dash concatenated labels]
+  jira-state-[simplified state, either 'open', 'in-progress' or 'closed]
+  jira-type-[underlying issue or sub-task type]
+
+  note that jira-flagged should use !important to override other styles
+*/
+
+.issue
+{
+  background-color: #fff;
+  color: #000;
+  &.jira-flagged {
+    background-color: #666 !important;
+    color: #ccc !important;
+  }
+  &.jira-type-bug {
+    background-color: #fcc;
+  }
+  &.jira-type-story {
+    background-color: #fff;
+  }
+}
+
+.subtask {
+  background-color: #fff;
+  color: #000;
+  &.jira-flagged {
+    background-color: #999 !important;
+    color: #ccc !important;
+  }
+  &.jira-type-sub-task {
+    background-color: #fed;
+  }
+  &.jira-type-technical-task {
+    background-color: #def;
+  }
+}

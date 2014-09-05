@@ -28,14 +28,6 @@ $blue-color: #0088cc;
 $dark-grey-color: #111;
 $mid-grey-color: #222;
 $light-grey-color: #333;
-$issue-card-color: #fff;
-$issue-text-color: #000;
-$task-be-color: #fc9;
-$task-bug-color: #f99;
-$task-card-color: #fff;
-$task-fe-color :#ffc;
-$task-text-color: #000;
-$task-qa-color: #cfc;
 $overallocated-color: #003;
 $underallocated-color: #030;
 $wip-exceeded-color: #300;
@@ -454,31 +446,12 @@ body {
 
 .issue, .subtask {
   padding: 3px 5px;
-  &.block {
-    background-color: $black-color !important;
-    border: solid 1px $white-color !important;;
-    color: $white-color !important;;
-  }
-  &.be {
-    background-color: $task-be-color;
-  }
-  &.bug, &.defect {
-    background-color: $task-bug-color !important;
-  }
-  &.fe {
-    background-color: $task-fe-color;
-  }
   &.mute {
     opacity: 0.5;
-  }
-  &.qa {
-    background-color: $task-qa-color;
   }
 }
 
 .issue {
-  background-color: $issue-card-color;
-  color: $issue-text-color;
   word-wrap: break-word;
   > div:first-of-type {
     height: 90px;
@@ -494,9 +467,7 @@ body {
 }
 
 .subtask {
-  background-color: $task-card-color;
   box-shadow: rgba(0, 0, 0, 0.75) 1px 1px 2px;
-  color: $task-text-color;
   .badge {
     background-color: rgba(0, 0, 0, 0.25);
     margin: 0 1px;

@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 angular.module('JIRA.Teamboard')
     .controller('buildController', ['$scope', '$timeout', 'apiService', function ($scope, $timeout, apiService) {
         function classification(status) {
-            return angular.lowercase(status.replace(/[^a-z0-9]/gi, '-'));
+            return angular.lowercase('bamboo-status-' + status.replace(/[^a-z0-9]/gi, '-'));
         }
         var timeout;
         (function load() {

@@ -16,7 +16,8 @@ module.exports = function(grunt) {
                     style: 'compressed'
                 },
                 files: {
-                    'app/css/teamboard.css': 'app/css/teamboard.scss'
+                    'app/css/appCore.css': 'app/css/appCore.scss',
+                    'app/css/appUser.css': 'app/css/appUser.scss'
                 }
             }
         },
