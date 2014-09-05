@@ -1,6 +1,6 @@
 <div id="{{issue.id}}" class="issue" title="{{issue.key}}" data-ng-class="issue.classification">
     <div>
-        <img src="/img/flag.png" class="pull-right" data-ng-disabled="!subtask.flagged"/>
+        <img src="/img/flag.png" class="pull-right" data-ng-if="issue.flagged"/>
         <strong>{{issue.key}}</strong><br/>{{issue.name}}
     </div>
     <div>

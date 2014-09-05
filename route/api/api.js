@@ -792,7 +792,7 @@ module.exports = function (app, cfg) {
     app.get('/api/:board/:sprint/task/work', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
-                return jql(cfg, 'sprint=' + req.param('sprint') + ' AND type not in standardIssueTypes() AND status was not in (' + cfg.status.closed + ') ON \'' + moment.min(moment.utc(), timebox.end).format('YYYY-MM-DD') + '\'', ['issuetype','labels'])
+                return jql(cfg, 'sprint=' + req.param('sprint') + ' AND type not in standardIssueTypes() AND status was not in (\'' + cfg.status.closed.join('\',\'') + '\') ON \'' + moment.min(moment.utc(), timebox.end).format('YYYY-MM-DD') + '\'', ['issuetype','labels'])
                     .then(function (data) {
                         var count = [],
                             timestamp = moment.utc();
@@ -858,7 +858,7 @@ module.exports = function (app, cfg) {
     app.get('/api/:project/burn', function (req, res) {
         var start = moment.utc().add(-60, 'days').startOf('day'),
             end = moment.utc().endOf('day');
-        jql(cfg, 'project=' + req.param('project') + ' AND type in standardIssueTypes() AND status was not in (' + cfg.status.closed + ') BEFORE \'' + start.format('YYYY-MM-DD') + '\'', ['changelog', 'created'], ['changelog'])
+        jql(cfg, 'project=' + req.param('project') + ' AND type in standardIssueTypes() AND status was not in (\'' + cfg.status.closed.join('\',\'') + '\') BEFORE \'' + start.format('YYYY-MM-DD') + '\'', ['changelog', 'created'], ['changelog'])
             .then(function (data) {
                 var burn = [],
                     burnState = {
@@ -913,7 +913,7 @@ module.exports = function (app, cfg) {
     app.get('/api/:backlog/:board/:sprint/release/board/:velocity', function (req, res) {
         timebox(cfg, req.param('board'), req.param('sprint'))
             .then(function (timebox) {
-                return jql(cfg, 'project=' + req.param('backlog') + ' AND type in standardIssueTypes() AND status IN (' + cfg.status.open + ') AND (sprint not in openSprints() OR sprint is EMPTY) ORDER BY Rank', [cfg.jira.flagged, 'issuetype', cfg.jira.points, 'labels', 'summary', 'status'], [], 999)
+                return jql(cfg, 'project=' + req.param('backlog') + ' AND type in standardIssueTypes() AND status IN (\'' + cfg.status.open.join('\',\'') + '\') AND (sprint not in openSprints() OR sprint is EMPTY) ORDER BY Rank', [cfg.jira.flagged, 'issuetype', cfg.jira.points, 'labels', 'summary', 'status'], [], 999)
                     .then(function (data) {
                         var releaseboard =  [],
                             timestamp = moment.utc(),

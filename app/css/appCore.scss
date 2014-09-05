@@ -227,7 +227,7 @@ body {
         top: 0;
         width: 56px;
       }
-      &.failed {
+      &.bamboo-status-failed {
         &:before, > div {
           background-color: $red-color;
         }
@@ -235,7 +235,7 @@ body {
           content: "\2716";
         }
       }
-      &.in-progress {
+      &.bamboo-status-in-progress {
         &:before, > div {
           background-color: $amber-color;
         }
@@ -243,7 +243,7 @@ body {
           content: "\2708";
         }
       }
-      &.successful {
+      &.bamboo-status-successful {
         &:before, > div {
           background-color: $green-color;
         }
@@ -251,7 +251,7 @@ body {
           content: "\2714";
         }
       }
-      &.unknown {
+      &.bamboo-status-unknown {
         &:before {
           content: "?";
           font-weight: bold;
@@ -378,7 +378,7 @@ body {
         width: 13%;
     }
     td:last-of-type {
-      .in-progress .closed {
+      .jira-state-in-progress .jira-state-closed {
         opacity: 0.5;
       }
     }
