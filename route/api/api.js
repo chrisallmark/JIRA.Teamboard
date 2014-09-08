@@ -191,6 +191,7 @@ function timebox(cfg, board, sprint) {
     return jiraAPI(cfg, '/rest/greenhopper/latest/rapid/charts/sprintreport?rapidViewId=' + board + '&sprintId=' + sprint)
         .then(function (data) {
              return {
+                sprint: data.sprint.name,
                 start: data.sprint.startDate === 'None' ? moment.utc() : moment.utc(data.sprint.startDate.substring(0, 10) + '12:00').startOf('day'),
                 end: data.sprint.startDate === 'None' ? moment.utc() : moment.utc(data.sprint.endDate.substring(0, 10) + '12:00').endOf('day')
             };
