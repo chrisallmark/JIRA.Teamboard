@@ -52,7 +52,7 @@ body {
   color: $foreground-color;
   cursor: default;
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 1.1em;
+  font-size: 1.2em;
   min-width: 1680px;
   overflow: hidden;
   .popover {
@@ -365,7 +365,7 @@ body {
 
 #dashboard {
   .backlog-burn, .sprint-burn, .task-burn, .task-flow, .task-work {
-    height: 500px;
+    height: 510px;
     .emoticon {
       top: 175px;
     }
@@ -399,6 +399,7 @@ body {
   }
   .subtask {
     border: solid 1px rgba(0, 0, 0, 0.25);
+    height: 55px
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
@@ -437,7 +438,7 @@ body {
     width: 100%;
   }
   .subtask {
-    height: 101px;
+    height: 111px;
     position: relative;
     width: 33.33%;
     word-wrap: break-word;
@@ -462,15 +463,16 @@ body {
 }
 
 .issue {
-  line-height: 13px;
+  line-height: 15px;
   word-wrap: break-word;
   > div:first-of-type {
-    height: 80px;
+    height: 90px;
     overflow: hidden;
   }
   > div:last-of-type {
     border-top: dotted 1px;
     font-weight: bold;
+    height: 15px;
     padding-top: 2px;
   }
 }
