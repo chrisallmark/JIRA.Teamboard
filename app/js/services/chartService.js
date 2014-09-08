@@ -152,7 +152,7 @@ angular.module('JIRA.Teamboard')
                     var data = new google.visualization.DataTable();
                     data.addColumn('string', 'Day');
                     angular.forEach(taskburn.burners, function(burner, index) {
-                        data.addColumn('number', burner.name === '' ? '?' : burner.name.split(' ')[0]);
+                        data.addColumn('number', burner.name.split(' ')[0]);
                         data.addColumn({'type': 'string', 'role': 'tooltip', p: {'html': true}});
                         var row = 0;
                         var date = moment.utc(taskburn.start.endOf('day'));

@@ -646,21 +646,22 @@ module.exports = function (app, cfg) {
                                         moment.max(moment.utc(history.created), timebox.start).isSame(date, 'day')) {
                                         history.items = history.items.filter(statusFilter(cfg));
                                         for (var k = 0; k < history.items.length; k++) {
-                                            var item = history.items[k];
+                                            var item = history.items[k],
+                                                name = history.author.displayName === '' ? '_' : history.author.displayName;
                                             if (!isOpen(cfg, item.fromString)) {
-                                                if (!pool[history.author.displayName]) {
-                                                    pool[history.author.displayName] = [];
+                                                if (!pool[name]) {
+                                                    pool[name] = [];
                                                 }
-                                                if (!pool[history.author.displayName][date]) {
-                                                    pool[history.author.displayName][date] = [];
+                                                if (!pool[name][date]) {
+                                                    pool[name][date] = [];
                                                 }
-                                                if (!pool[history.author.displayName][date][issue.key]) {
-                                                    pool[history.author.displayName][date][issue.key] = {
+                                                if (!pool[name][date][issue.key]) {
+                                                    pool[name][date][issue.key] = {
                                                         name: issue.fields.summary,
                                                         transitions: []
                                                     }
                                                 }
-                                                pool[history.author.displayName][date][issue.key].transitions.push({
+                                                pool[name][date][issue.key].transitions.push({
                                                     fromState: item.fromString,
                                                     toState: item.toString
                                                 });
@@ -696,10 +697,14 @@ module.exports = function (app, cfg) {
                             }
                         }
                         perfLog('Task Burn', timestamp, req.url);
+                        burners = burners.sort(sortBy("name"));
+                        if (burners.length > 0 && burners[burners.length - 1].category === '_') {
+                            burners[burners.length - 1].category = 'Anonymous';
+                        }
                         return {
                             start: timebox.start,
                             end: timebox.end,
-                            burners: burners.sort(sortBy("name"))
+                            burners: burners
                         };
                     });
             })
@@ -799,7 +804,7 @@ module.exports = function (app, cfg) {
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
                             issue.fields.labels = issue.fields.labels.filter(labelFilter(req.param('labels')));
-                            var labels = issue.fields.labels.length === 0 ? '?' : issue.fields.labels.sort().join('/');
+                            var labels = issue.fields.labels.length === 0 ? '_' : issue.fields.labels.sort().join('/');
                             if (!count[labels]) {
                                 count[labels] = 0;
                             }
@@ -815,7 +820,11 @@ module.exports = function (app, cfg) {
                             }
                         }
                         perfLog('Task Work', timestamp, req.url);
-                        return work.sort(sortBy("category"));
+                        work = work.sort(sortBy("category"));
+                        if (work.length > 0 && work[work.length - 1].category === '_') {
+                            work[work.length - 1].category = 'Other';
+                        }
+                        return work;
                     });
             })
             .done(function (work) {
