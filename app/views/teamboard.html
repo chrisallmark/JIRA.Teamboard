@@ -19,7 +19,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <div id="teamboard" class="container-fluid" data-ng-controller="teamboardController">
     <div data-ng-if="teamboard.view === teamboard.loaded">
         <script>
-            $(window).resize(function () {
+            $(window)
+                    .keydown(function(e) {
+                        switch (e.keyCode) {
+                            case 48:
+                                angular.element('#teamboard').scope().configure();
+                                return false;;
+                            case 49:
+                                angular.element('#teamboard').scope().load('dashboard');
+                                return false;;
+                            case 50:
+                                angular.element('#teamboard').scope().load('taskboard');
+                                return false;;
+                            case 51:
+                                angular.element('#teamboard').scope().load('cycleboard');
+                                return false;;
+                            case 52:
+                                angular.element('#teamboard').scope().load('releaseboard');
+                                return false;;
+                            case 53:
+                                angular.element('#teamboard').scope().toggleSlideshow();
+                                return false;;
+                            default:
+                                return;
+                        }
+                    })
+                    .resize(function () {
                 $('section > div > div').height(window.innerHeight);
             }).trigger('resize');
         </script>
@@ -39,26 +64,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </header>
             <nav>
                 <ul class="nav nav-pills">
-                    <li accesskey="1" data-ng-class="{active:teamboard.view === 'dashboard'}" data-ng-click="load('dashboard');">
-                        <a title="Dashboard (Alt-1)"><i class="glyphicon glyphicon-fire"></i></a>
+                    <li data-ng-class="{active:teamboard.view === 'dashboard'}" data-ng-click="load('dashboard');">
+                        <a title="Dashboard (1)"><i class="glyphicon glyphicon-fire"></i></a>
                     </li>
-                    <li accesskey="2" data-ng-class="{active:teamboard.view === 'taskboard'}" data-ng-click="load('taskboard')">
-                        <a title="Taskboard (Alt-2)"><i class="glyphicon glyphicon-th"></i></a>
+                    <li data-ng-class="{active:teamboard.view === 'taskboard'}" data-ng-click="load('taskboard')">
+                        <a title="Taskboard (2)"><i class="glyphicon glyphicon-th"></i></a>
                     </li>
-                    <li accesskey="3" data-ng-class="{active:teamboard.view === 'cycleboard'}" data-ng-click="load('cycleboard')">
-                        <a title="Cycleboard (Alt-3)"><i class="glyphicon glyphicon-tasks"></i></a>
+                    <li data-ng-class="{active:teamboard.view === 'cycleboard'}" data-ng-click="load('cycleboard')">
+                        <a title="Cycleboard (3)"><i class="glyphicon glyphicon-tasks"></i></a>
                     </li>
-                    <li accesskey="4" data-ng-class="{active:teamboard.view === 'releaseboard'}" data-ng-click="load('releaseboard')" data-ng-show="teamboard.velocity">
-                        <a title="Releaseboard (Alt-4)"><i class="glyphicon glyphicon-road"></i></a>
+                    <li data-ng-class="{active:teamboard.view === 'releaseboard'}" data-ng-click="load('releaseboard')" data-ng-show="teamboard.velocity">
+                        <a title="Releaseboard (4)"><i class="glyphicon glyphicon-road"></i></a>
                     </li>
-                    <li accesskey="8" data-ng-class="{active:teamboard.slideshow}" data-ng-click="toggleSlideshow()"><s></s>
-                        <a title="Slideshow (Alt-8)"><i class="glyphicon" data-ng-class="teamboard.slideshow ? 'glyphicon-pause' : 'glyphicon-play'"></i></a>
+                    <li data-ng-class="{active:teamboard.slideshow}" data-ng-click="toggleSlideshow()"><s></s>
+                        <a title="Slideshow (8)"><i class="glyphicon" data-ng-class="teamboard.slideshow ? 'glyphicon-pause' : 'glyphicon-play'"></i></a>
                     </li>
-                    <li accesskey="0" data-ng-click="configure()">
-                        <a title="Configure (Alt-0)"><i class="glyphicon glyphicon-wrench"></i></a>
+                    <li data-ng-click="configure()">
+                        <a title="Configure (0)"><i class="glyphicon glyphicon-wrench"></i></a>
                     </li>
-                    <li accesskey="?" data-toggle="modal" data-target="#modal-help">
-                        <a title="Help (Alt-?)"><i class="glyphicon glyphicon-book"></i></a>
+                    <li data-toggle="modal" data-target="#modal-help">
+                        <a title="Help"><i class="glyphicon glyphicon-book"></i></a>
                     </li>
                 </ul>
             </nav>
