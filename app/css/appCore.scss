@@ -440,7 +440,8 @@ body {
     width: 33.33%;
     word-wrap: break-word;
     > div:first-of-type {
-      line-height: 12px;
+      font-size: 11px;
+      line-height: 13px;
     }
     > div:last-of-type {
       bottom: 0;
@@ -460,7 +461,6 @@ body {
 }
 
 .issue {
-  line-height: 15px;
   word-wrap: break-word;
   > div:first-of-type {
     height: 90px;
