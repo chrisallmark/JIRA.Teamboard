@@ -24,25 +24,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         switch (e.keyCode) {
                             case 48:
                                 angular.element('#teamboard').scope().configure();
-                                return false;;
+                                break;;
                             case 49:
                                 angular.element('#teamboard').scope().load('dashboard');
-                                return false;;
+                                break;;
                             case 50:
                                 angular.element('#teamboard').scope().load('taskboard');
-                                return false;;
+                                break;;
                             case 51:
                                 angular.element('#teamboard').scope().load('cycleboard');
-                                return false;;
+                                break;;
                             case 52:
                                 angular.element('#teamboard').scope().load('releaseboard');
-                                return false;;
-                            case 53:
+                                break;;
+                            case 56:
                                 angular.element('#teamboard').scope().toggleSlideshow();
-                                return false;;
-                            default:
-                                return;
+                                break;;
                         }
+                        return;
                     })
                     .resize(function () {
                 $('section > div > div').height(window.innerHeight);
