@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </tr>
         </thead>
         <tbody>
-            <tr data-ng-repeat="issue in cycleboard.issues | stateFilter:{'exclude': ['Closed']}" data-ng-repeat-done="popover()">
+            <tr data-ng-repeat="issue in cycleboard.issues | stateFilter:{'include': ['In Progress']}" data-ng-repeat-done="popover()">
                 <td>
                     <issue data-content="{{issue.cycleTime}} ({{issue.cycleTimeAverage}})"></issue>
                 </td>
@@ -38,6 +38,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <div class="subtask text-center" data-content="{{subtask.popover}}" data-ng-class="subtask.classification" data-ng-repeat="subtask in issue.subtasks" data-ng-style="subtask.style">
                             <span class="badge">{{subtask.state}}</span>
                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr data-ng-repeat="issue in cycleboard.issues | stateFilter:{'include': ['Open']}" data-ng-repeat-done="popover()">
+                <td>
+                    <issue data-content="{{issue.cycleTime}} ({{issue.cycleTimeAverage}})"></issue>
+                </td>
+                <td>
+                    <div data-ng-class="issue.classification" data-ng-style="issue.style">
+                        <div class="subtask text-center" data-content="{{subtask.popover}}" data-ng-class="subtask.classification" data-ng-repeat="subtask in issue.subtasks" data-ng-style="subtask.style">
+                            <span class="badge">{{subtask.state}}</span>
+                        </div>
                     </div>
                 </td>
             </tr>
