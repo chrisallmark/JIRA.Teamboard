@@ -19,29 +19,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <div id="teamboard" class="container-fluid" data-ng-controller="teamboardController">
     <div data-ng-if="teamboard.view === teamboard.loaded">
         <script>
+            var keyCode;
             $(window)
                     .keydown(function(e) {
-                        switch (e.keyCode) {
-                            case 48:
-                                angular.element('#teamboard').scope().configure();
-                                break;;
-                            case 49:
-                                angular.element('#teamboard').scope().load('dashboard');
-                                break;;
-                            case 50:
-                                angular.element('#teamboard').scope().load('taskboard');
-                                break;;
-                            case 51:
-                                angular.element('#teamboard').scope().load('cycleboard');
-                                break;;
-                            case 52:
-                                angular.element('#teamboard').scope().load('releaseboard');
-                                break;;
-                            case 56:
-                                angular.element('#teamboard').scope().toggleSlideshow();
-                                break;;
+                        keyCode = e.keyCode;
+                    })
+                    .keyup(function(e) {
+                        if (e.keyCode === keyCode) {
+                            switch (e.keyCode) {
+                                case 48:
+                                    angular.element('#teamboard').scope().configure();
+                                    break;
+                                case 49:
+                                    angular.element('#teamboard').scope().load('dashboard');
+                                    break;
+                                case 50:
+                                    angular.element('#teamboard').scope().load('taskboard');
+                                    break;
+                                case 51:
+                                    angular.element('#teamboard').scope().load('cycleboard');
+                                    break;
+                                case 52:
+                                    angular.element('#teamboard').scope().load('releaseboard');
+                                    break;
+                                case 56:
+                                    angular.element('#teamboard').scope().toggleSlideshow();
+                                    break;
+                            }
+                            keyCode = null;
                         }
-                        return;
                     })
                     .resize(function () {
                 $('section > div > div').height(window.innerHeight);
