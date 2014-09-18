@@ -52,6 +52,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     .resize(function () {
                 $('section > div > div').height(window.innerHeight);
             }).trigger('resize');
+            if (angular.element('#teamboard').scope().teamboard) {
+                setTimeout(function() { $('#' + angular.element('#teamboard').scope().teamboard.view).focus(); }, 1000);
+            }
         </script>
     </div>
     <div class="loader row" data-ng-show="teamboard.view !== teamboard.loaded">

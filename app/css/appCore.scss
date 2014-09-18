@@ -54,6 +54,9 @@ body {
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
   overflow: hidden;
+  *:focus {
+    outline: 0;
+  }
   .popover {
     color: $black-color;
     max-width: 300px;
