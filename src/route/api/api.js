@@ -18,6 +18,7 @@
 
 var extend = require('extend'),
     fs = require('fs'),
+    heapdump = require('heapdump'),
     moment = require('moment'),
     q = require('q'),
     request = require('request');
@@ -199,6 +200,13 @@ function timebox(cfg, board, sprint) {
 }
 
 module.exports = function (app, cfg) {
+
+    app.get('/api/heapdump', function (req, res) {
+        heapdump.writeSnapshot(function() {
+            console.log('Heapdumped!');
+            res.send(200).end();
+        });
+    });
 
     app.get('/api/configurations', function (req, res) {
         fs.readdir('./cfg', function(err, files) {
@@ -476,9 +484,9 @@ module.exports = function (app, cfg) {
                             issues: []
                         },
                         timestamp = moment.utc();
-                        var issues = [];
-                        for (var i = 0; i < data.issues.length; i++) {
-                            var issue = data.issues[i];
+                        var i, issue, issues = [];
+                        for (i = 0; i < data.issues.length; i++) {
+                            issue = data.issues[i];
                             if (!issue.fields.issuetype.subtask) {
                                 issues[issue.key] = {
                                     end: null,
@@ -495,8 +503,8 @@ module.exports = function (app, cfg) {
                                 };
                             }
                         }
-                        for (var i = 0; i < data.issues.length; i++) {
-                            var issue = data.issues[i];
+                        for (i = 0; i < data.issues.length; i++) {
+                            issue = data.issues[i];
                             if (issue.fields.issuetype.subtask) {
                                 var subtask = {
                                     assignee: issue.fields.assignee ? issue.fields.assignee.displayName : null,
@@ -562,22 +570,25 @@ module.exports = function (app, cfg) {
             .then(function (timebox) {
                 return jql(cfg, 'sprint=' + req.param('sprint') + ' ORDER BY Rank', ['assignee', 'issuetype', cfg.jira.flagged, 'labels', 'parent', cfg.jira.points, 'status', 'summary'])
                     .then(function (data) {
-                        var issues = [],
+                        var i,
+                            issue,
+                            issues = [],
+                            subtask,
                             taskboard = {
-                            start: timebox.start,
-                            end: timebox.end,
-                            issues: [],
-                            issuesDone: 0,
-                            issuesToDo: 0,
-                            subtasksDone: 0,
-                            subtasksInProgress: 0,
-                            subtasksToDo: 0
-                        },
-                        timestamp = moment.utc();
-                        for (var i = 0; i < data.issues.length; i++) {
-                            var issue = data.issues[i];
+                                start: timebox.start,
+                                end: timebox.end,
+                                issues: [],
+                                issuesDone: 0,
+                                issuesToDo: 0,
+                                subtasksDone: 0,
+                                subtasksInProgress: 0,
+                                subtasksToDo: 0
+                            },
+                            timestamp = moment.utc();
+                        for (i = 0; i < data.issues.length; i++) {
+                            issue = data.issues[i];
                             if (!issue.fields.issuetype.subtask) {
-                                var subtask = {
+                                subtask = {
                                     flagged: issue.fields[cfg.jira.flagged] !== null,
                                     key: issue.key,
                                     labels: issue.fields.labels.sort(),
@@ -593,10 +604,10 @@ module.exports = function (app, cfg) {
                                 taskboard.issuesToDo += (subtask.state !== 'Closed' ? issue.fields[cfg.jira.points] : 0);
                             }
                         }
-                        for (var i = 0; i < data.issues.length; i++) {
-                            var issue = data.issues[i];
+                        for (i = 0; i < data.issues.length; i++) {
+                            issue = data.issues[i];
                             if (issue.fields.issuetype.subtask) {
-                                var subtask = {
+                                subtask = {
                                     assignee: issue.fields.assignee ? issue.fields.assignee.displayName : null,
                                     avatar: issue.fields.assignee ? issue.fields.assignee.name : null,
                                     flagged: issue.fields[cfg.jira.flagged] !== null,
@@ -636,8 +647,8 @@ module.exports = function (app, cfg) {
                 var pool = [];
                 return jql(cfg, 'sprint=' + req.param('sprint'), ['changelog', 'created', 'issuetype', 'summary'], ['changelog'])
                     .then(function (data) {
-                        var timestamp = moment.utc();
-                        for (var date = timebox.start.clone().endOf('day'); date.isBefore(timebox.end) || date.isSame(timebox.end); date.add(1, 'day')) {
+                        var date, name, timestamp = moment.utc();
+                        for (date = timebox.start.clone().endOf('day'); date.isBefore(timebox.end) || date.isSame(timebox.end); date.add(1, 'day')) {
                             for (var i = 0; i < data.issues.length; i++) {
                                 var issue = data.issues[i];
                                 for (var j = 0; j < issue.changelog.histories.length; j++) {
@@ -647,8 +658,8 @@ module.exports = function (app, cfg) {
                                         moment.max(moment.utc(history.created), timebox.start).isSame(date, 'day')) {
                                         history.items = history.items.filter(statusFilter(cfg));
                                         for (var k = 0; k < history.items.length; k++) {
-                                            var item = history.items[k],
-                                                name = history.author.displayName === '' ? '_' : history.author.displayName;
+                                            var item = history.items[k];
+                                            name = history.author.displayName === '' ? '_' : history.author.displayName;
                                             if (!isOpen(cfg, item.fromString)) {
                                                 if (!pool[name]) {
                                                     pool[name] = [];
@@ -673,10 +684,10 @@ module.exports = function (app, cfg) {
                             }
                         }
                         var burners = [];
-                        for (var name in pool) {
+                        for (name in pool) {
                             if (pool.hasOwnProperty(name)) {
                                 var days = [];
-                                for (var date in pool[name]) {
+                                for (date in pool[name]) {
                                     var subtasks = [];
                                     for (var key in pool[name][date]) {
                                         if (pool[name][date].hasOwnProperty(key)) {
@@ -877,7 +888,8 @@ module.exports = function (app, cfg) {
                     },
                     burnStates = [],
                     timestamp = moment.utc();
-                for (var date = start.clone().add(-1, 'millisecond'); date.isBefore(end) || date.isSame(end); date.add(1, 'day')) {
+                var date;
+                for (date = start.clone().add(-1, 'millisecond'); date.isBefore(end) || date.isSame(end); date.add(1, 'day')) {
                     burnStates[date] = {
                         done: 0,
                         toDo: 0
@@ -904,7 +916,7 @@ module.exports = function (app, cfg) {
                         }
                     }
                 }
-                for (var date = start.clone().add(-1, 'millisecond'); date.isBefore(end) || date.isSame(end); date.add(1, 'day')) {
+                for (date = start.clone().add(-1, 'millisecond'); date.isBefore(end) || date.isSame(end); date.add(1, 'day')) {
                     burnState.done += burnStates[date].done;
                     burnState.toDo += burnStates[date].toDo;
                     burn.push(extend({ date: date.clone() }, burnState));

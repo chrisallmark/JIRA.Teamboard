@@ -167,8 +167,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </div>
     <script>
         $(window).resize(function () {
-            $('#help').height(window.innerHeight - 110);
-            $('#help-nav,#help-content').height($('#help').height());
+            var help = $('#help');
+            help.height(window.innerHeight - 110);
+            $('#help-nav,#help-content').height(help.height());
         }).trigger('resize');
     </script>
 </div>

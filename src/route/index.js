@@ -17,8 +17,8 @@
  */
 
 module.exports = function(app, cfg) {
-    var auth = require('./api'),
+    var auth = require('./api/index'),
         main = require('./main');
     auth(app, cfg);
     main(app);
-}
+};

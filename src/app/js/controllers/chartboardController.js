@@ -25,31 +25,31 @@ angular.module('JIRA.Teamboard')
                     switch($scope.chart) {
                         case 'sprintburn':
                             chartService.sprintburn($scope.teamboard).then(function(chart) {
-                                var lineChart= new google.visualization.LineChart($('#chartboard .sprint-burn')[0]);
+                                var lineChart= new google.visualization.LineChart($('#chartboard').find('.sprint-burn')[0]);
                                 lineChart.draw(chart.data, chart.options);
                             });
                             break;
                         case 'backlogburn':
                             chartService.releaseburn($scope.teamboard).then(function(chart) {
-                                var lineChart = new google.visualization.LineChart($('#chartboard .backlog-burn')[0]);
+                                var lineChart = new google.visualization.LineChart($('#chartboard').find('.backlog-burn')[0]);
                                 lineChart.draw(chart.data, chart.options);
                             });
                             break;
                         case 'taskburn':
                             chartService.taskburn($scope.teamboard).then(function(chart) {
-                                var columnChart = new google.visualization.ColumnChart($('#chartboard .task-burn')[0]);
+                                var columnChart = new google.visualization.ColumnChart($('#chartboard').find('.task-burn')[0]);
                                 columnChart.draw(chart.data, chart.options);
                             });
                             break;
                         case 'taskflow':
                             chartService.taskflow($scope.teamboard).then(function(chart) {
-                                var areaChart = new google.visualization.AreaChart($('#chartboard .task-flow')[0]);
+                                var areaChart = new google.visualization.AreaChart($('#chartboard').find('.task-flow')[0]);
                                 areaChart.draw(chart.data, chart.options);
                             });
                             break;
                         case 'taskwork':
                             chartService.taskwork($scope.teamboard).then(function(chart) {
-                                var pieChart = new google.visualization.PieChart($('#chartboard .task-work')[0]);
+                                var pieChart = new google.visualization.PieChart($('#chartboard').find('.task-work')[0]);
                                 pieChart.draw(chart.datachart, chart.options);
                             });
                             break;

@@ -18,7 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 angular.module('JIRA.Teamboard', ['ngResource', 'ngRoute'])
     .config(['$locationProvider', '$routeProvider', function ($locationProvider, $routeProvider) {
-        $locationProvider.html5Mode(true);
+        $locationProvider.html5Mode({
+            enabled: true,
+            requireBase: false
+        });
         $routeProvider.when('/configurations', {
             'templateUrl':'/views/configurations.html'
         });

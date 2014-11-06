@@ -1,12 +1,9 @@
 {
-  "name": "JIRA.Teamboard",
-  "version": "0.0.0",
-  "description": "JIRA.Teamboard ==============",
-  "main": "server.js",
   "dependencies": {
     "body-parser": "latest",
     "express": "latest",
     "extend": "latest",
+    "heapdump": "latest",
     "moment": "latest",
     "morgan": "latest",
     "q": "latest",
@@ -15,22 +12,13 @@
   "devDependencies": {
       "grunt": "latest",
       "grunt-contrib-clean": "latest",
+      "grunt-contrib-copy": "latest",
       "grunt-contrib-sass": "latest",
       "grunt-contrib-uglify": "latest",
       "grunt-contrib-watch": "latest"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
-  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/chrisallmark/JIRA.Teamboard.git"
-  },
-  "author": "Chris Allmark",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/chrisallmark/JIRA.Teamboard/issues"
-  },
-  "homepage": "https://github.com/chrisallmark/JIRA.Teamboard"
+    "url": "git://github.com/chrisallmark/JIRA.Teamboard.git"
+  }
 }

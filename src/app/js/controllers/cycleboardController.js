@@ -51,7 +51,7 @@ angular.module('JIRA.Teamboard')
         function popover(subtask) {
             var popover = '';
             if (subtask) {
-                popover += '<small>' + subtask.key + '</small><br><strong>' + subtask.name + '</strong><hr/><table>';
+                popover += '<small>' + subtask.key + '</small><br><strong>' + (subtask.labels.length === 0 ? '' : subtask.labels.join('-') + ':&nbsp;') + subtask.name + '</strong><hr/><table>';
                 angular.forEach(subtask.transitions, function(transition, index) {
                     popover += '<tr><td>' + moment.utc(transition.date).format('YYYY-MM-DD @ HH:mm') + '</td><td>' + transition.fromState + ' &rarr; ' + transition.toState + '</td></tr>';
                 });
@@ -104,7 +104,7 @@ angular.module('JIRA.Teamboard')
                             'width': (100 / cycleboardTime) + '%'
                         };
                         cycleboard.state = null;
-                        $('#cycleboard .popover').remove();
+                        $('#cycleboard').find('.popover').remove();
                         $scope.cycleboard = cycleboard;
                     }).finally(function () {
                         $scope.teamboard.loaded = $scope.teamboard.view;
@@ -112,13 +112,12 @@ angular.module('JIRA.Teamboard')
                 } else if ($scope.teamboard.loaded === 'cycleboard' && $scope.teamboard.view === 'reload') {
                     $scope.teamboard.view = $scope.teamboard.loaded;
                 } else {
-                    $('#cycleboard').scrollTop(0);
-                    $('#cycleboard .popover').remove();
+                    $('#cycleboard').scrollTop(0).find('.popover').remove();
                 }
             }
         });
         $scope.popover = function () {
-            $('#cycleboard .issue, #cycleboard .subtask').popover({
+            $('#cycleboard').find('.issue, .subtask').popover({
                 'container': 'section',
                 'html': true,
                 'toggle': 'popover',

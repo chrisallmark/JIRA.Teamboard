@@ -1,5 +1,5 @@
 <div id="{{subtask.id}}" class="pull-left subtask" title="{{subtask.key}}" data-ng-class="subtask.classification" data-ng-style="{'z-index':999-$index}">
-    <div><img src="/img/flag.png" class="pull-right" data-ng-if="subtask.flagged"/><strong>{{subtask.key}}</strong><br/><span data-ng-if="subtask.labels">{{subtask.labels.join('-')}}:&nbsp;</span>{{subtask.name}}</div>
+    <div><img src="/img/flag.png" class="pull-right" data-ng-if="subtask.flagged"/><strong>{{subtask.key}}</strong><br/><span data-ng-if="subtask.labels.length > 0">{{subtask.labels.join('-')}}:&nbsp;</span>{{subtask.name}}</div>
     <div>
         <span class="badge pull-right" data-ng-click="toggleState(subtask.status)">{{subtask.status}}</span>
         <div class="polaroid" title="{{subtask.owner}}" data-ng-if="subtask.assignee">

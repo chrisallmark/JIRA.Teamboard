@@ -24,7 +24,7 @@ var bodyParser = require('body-parser'),
     route = require('./route');
 
 var app = express();
-app.use(bodyParser.json());
+app.use(bodyParser.json({}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('./app'));
 app.use(morgan('combined'));

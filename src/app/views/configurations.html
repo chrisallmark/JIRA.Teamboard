@@ -29,27 +29,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <section>
         <table class="table table-hover">
             <thead>
-                <td width="66%">Name</td>
-                <td>Velocity</td>
-                <td>WIP</td>
-                <td>&nbsp;</td>
+                <tr>
+                    <td width="66%">Name</td>
+                    <td>Velocity</td>
+                    <td>WIP</td>
+                    <td>&nbsp;</td>
+                </tr>
             </thead>
             <tbody>
-            <tr data-ng-click="add()">
-                <td colspan="3">Click to add a new configuration...</td>
-                <td class="text-right">
-                    <button class="btn btn-default btn-xs" title="Add" ><i class="glyphicon glyphicon-plus"></i></button>
-                </td>
-            </tr>
-            <tr data-ng-click="view(configuration.name)" data-ng-repeat="configuration in configurations">
-                <td>{{configuration.name}}</td>
-                <td>{{configuration.velocity}}</td>
-                <td>{{configuration.wip}}</td>
-                <td class="text-right">
-                    <button class="btn btn-default btn-xs" title="Edit" data-ng-click="edit(configuration.name);$event.stopPropagation();"><i class="glyphicon glyphicon-edit"></i></button>
-                    <button class="btn btn-default btn-xs" title="Delete" data-ng-click="delete(configuration.name);$event.stopPropagation();"><i class="glyphicon glyphicon-remove"></i></button>
-                </td>
-            </tr>
+                <tr data-ng-click="add()">
+                    <td colspan="3">Click to add a new configuration...</td>
+                    <td class="text-right">
+                        <button class="btn btn-default btn-xs" title="Add" ><i class="glyphicon glyphicon-plus"></i></button>
+                    </td>
+                </tr>
+                <tr data-ng-click="view(configuration.name)" data-ng-repeat="configuration in configurations">
+                    <td>{{configuration.name}}</td>
+                    <td>{{configuration.velocity}}</td>
+                    <td>{{configuration.wip}}</td>
+                    <td class="text-right">
+                        <button class="btn btn-default btn-xs" title="Edit" data-ng-click="edit(configuration.name);$event.stopPropagation();"><i class="glyphicon glyphicon-edit"></i></button>
+                        <button class="btn btn-default btn-xs" title="Delete" data-ng-click="delete(configuration.name);$event.stopPropagation();"><i class="glyphicon glyphicon-remove"></i></button>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </section>

@@ -1,0 +1,40 @@
+<!--
+JIRA Teamboard - an electronic information radiator
+Copyright (C) 2014 Chris Allmark
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<!DOCTYPE html>
+<html data-ng-app="JIRA.Teamboard">
+    <head>
+        <title>JIRA Teamboard</title>
+        <link href='//fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>
+        <link href="/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/css/bootstrap-theme.min.css" rel="stylesheet">
+        <link href="/css/appCore.css" rel="stylesheet">
+        <link href="/css/appUser.css" rel="stylesheet">
+    </head>
+    <body>
+        <div data-ng-view></div>
+        <script src="//www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1','packages':['corechart']}]}"></script>
+        <script src="/js/jquery.min.js"></script>
+        <script src="/js/angular.min.js"></script>
+        <script src="/js/angular-resource.min.js"></script>
+        <script src="/js/angular-route.min.js"></script>
+        <script src="/js/bootstrap.min.js"></script>
+        <script src="/js/moment.min.js"></script>
+        <script src="/js/app.min.js"></script>
+    </body>
+</html>

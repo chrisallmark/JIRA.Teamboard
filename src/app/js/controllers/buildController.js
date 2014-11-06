@@ -39,7 +39,7 @@ angular.module('JIRA.Teamboard')
                         build.rating = '???';
                     }
                 });
-                $('#builds .popover').remove();
+                $('#builds').find('.popover').remove();
                 $scope.builds = builds;
             }).finally(function () {
                 var now = moment();
@@ -56,13 +56,13 @@ angular.module('JIRA.Teamboard')
             }
         });
         $scope.popover = function () {
-            $('#builds .build > div').popover({
+            $('#builds').find(' .build > div').popover({
                 'container': '#builds',
                 'html': true,
                 'placement': 'left',
                 'toggle': 'popover'
-            }).on('click', function (e) {
-                $('#builds .build > div').not(this).popover('hide');
+            }).on('click', function (event) {
+                $('#builds').find(' .build > div').not(this).popover('hide');
             });
         };
     }]);

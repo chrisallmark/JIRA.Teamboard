@@ -54,6 +54,7 @@ angular.module('JIRA.Teamboard')
             }
         ];
         $scope.scrollTo = function(id) {
-            $('#help-content').animate({'scrollTop': $('#help-content').scrollTop() + $(id).position().top - 20}, 1000);
+            var helpContent = $('#help-content');
+            helpContent.animate({'scrollTop': helpContent.scrollTop() + $(id).position().top - 20}, 1000);
         };
     }]);

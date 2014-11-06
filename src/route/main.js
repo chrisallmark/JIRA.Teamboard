@@ -26,4 +26,4 @@ module.exports = function(app) {
     app.get('/:id', function(req, res) {
         res.sendFile('/index.html', {'root': './app'});
     });
-}
+};
