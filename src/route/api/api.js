@@ -18,7 +18,6 @@
 
 var extend = require('extend'),
     fs = require('fs'),
-    heapdump = require('heapdump'),
     moment = require('moment'),
     q = require('q'),
     request = require('request');

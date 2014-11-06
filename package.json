@@ -3,7 +3,6 @@
     "body-parser": "latest",
     "express": "latest",
     "extend": "latest",
-    "heapdump": "latest",
     "moment": "latest",
     "morgan": "latest",
     "q": "latest",
