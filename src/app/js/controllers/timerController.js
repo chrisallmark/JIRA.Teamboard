@@ -42,6 +42,8 @@ angular.module('JIRA.Teamboard')
             }, 1000);
             $scope.timer = timer;
         });
+        timeout = $timeout($route.reload, moment().add(1, 'day').startOf('day').diff(moment()));
+/*
         (function load() {
             timeout = $timeout(function() {
                 var now = moment();
@@ -51,6 +53,7 @@ angular.module('JIRA.Teamboard')
                 load();
             }, moment().add(1, 'day').startOf('day').diff(moment()));
         })();
+*/
         $scope.$on('$destroy', function (event) {
             if (angular.isDefined(interval)) {
                 $interval.cancel(interval);

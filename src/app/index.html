@@ -36,5 +36,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <script src="/js/bootstrap.min.js"></script>
         <script src="/js/moment.min.js"></script>
         <script src="/js/app.min.js"></script>
+<!--    download jqSnow from https://cloud.github.com/downloads/kopipejst/jqSnow/jquery.snow.min.js
+        <script src="/js/jquery.snow.min.js"></script>
+        <script>
+            $(document).ready( function(){
+                var now = moment(),
+                    factor = (now.date() / now.daysInMonth());
+                if (now.month() === 11) {
+                    $.fn.snow({
+                        maxSize: Math.floor(2 + (20 * factor)) ,
+                        minSize: 2,
+                        newOn: Math.floor(2100 - (2000 * factor))
+                    });
+                }
+            });
+        </script>
+-->
     </body>
 </html>
