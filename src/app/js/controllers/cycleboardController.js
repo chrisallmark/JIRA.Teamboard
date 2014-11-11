@@ -104,15 +104,15 @@ angular.module('JIRA.Teamboard')
                             'width': (100 / cycleboardTime) + '%'
                         };
                         cycleboard.state = null;
-                        $('#cycleboard').find('.popover').remove();
                         $scope.cycleboard = cycleboard;
                     }).finally(function () {
                         $scope.teamboard.loaded = $scope.teamboard.view;
                     });
                 } else if ($scope.teamboard.loaded === 'cycleboard' && $scope.teamboard.view === 'reload') {
+                    $('section').find('.popover').remove();
                     $scope.teamboard.view = $scope.teamboard.loaded;
                 } else {
-                    $('#cycleboard').scrollTop(0).find('.popover').remove();
+                    $('#cycleboard').scrollTop(0);
                 }
             }
         });
