@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 angular.module('JIRA.Teamboard')
-    .controller('timerController', ['$scope', '$interval', '$timeout', 'apiService', function ($scope, $interval, $timeout, apiService) {
+    .controller('timerController', ['$scope', '$interval', '$route', '$timeout', 'apiService', function ($scope, $interval, $route, $timeout, apiService) {
         var interval, timeout;
         apiService.timer.get({
             board: $scope.teamboard.board,
