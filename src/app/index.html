@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <script>
             $(document).ready( function(){
                 var now = moment(),
-                    factor = (now.date() / now.daysInMonth());
+                    factor = Math.min(1, now.date() / 25);
                 if (now.month() === 11) {
                     $.fn.snow({
                         maxSize: Math.floor(2 + (20 * factor)) ,
