@@ -177,6 +177,9 @@ body {
       font-size: x-large;
       text-align: center;
       vertical-align: middle;
+      > p {
+        margin: 16px 0;
+      }
       strong {
         color: $white-color;
       }
