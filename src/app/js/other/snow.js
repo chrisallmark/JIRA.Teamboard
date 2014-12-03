@@ -26,7 +26,8 @@
 				$(this)
 					.css({
 						'color': colours[size],
-						'font-size': 10 + ((5 - size) * 5),
+						'transform': 'rotate(' + Math.floor(Math.random() * 360) + 'deg)',
+						'font-size': 5 + ((5 - size) * 5),
 						'left': left,
 						'opacity': 1,
 						'top': 0
@@ -49,7 +50,8 @@
 				.appendTo('body')
 				.css({
 					'color': colours[size],
-					'font-size': 10 + ((5 - size) * 5),
+					'transform': 'rotate(' + Math.floor(Math.random() * 360) + 'deg)',
+					'font-size': 5 + ((5 - size) * 5),
 					'left': left,
 					'position': 'absolute',
 					'top': top
@@ -57,7 +59,7 @@
 				.html(flakes[Math.floor(Math.random() * 3)])
 				.animate({
 					'left': left + drift,
-					'opacity': 0.2,
+					'opacity': 0,
 					'top': window.innerHeight
 				},
 				(size * 5000) + Math.floor(Math.random() * (size * 1000)),
