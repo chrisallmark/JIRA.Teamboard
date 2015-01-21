@@ -47,21 +47,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </tr>
         </thead>
         <tbody>
-            <tr data-ng-repeat="issue in taskboard.issues | stateFilter:{'include': ['In Progress']}">
-                <td>
-                    <issue></issue>
-                </td>
-                <td>
-                    <subtask data-ng-repeat="subtask in issue.subtasks | stateFilter:{'include': ['Open']}"></subtask>
-                </td>
-                <td data-ng-class="{'wip-exceeded':taskboard.wipExceeded}">
-                    <subtask data-ng-repeat="subtask in issue.subtasks | stateFilter:{'include': ['In Progress']}"></subtask>
-                </td>
-                <td>
-                    <subtask data-ng-repeat="subtask in issue.subtasks | stateFilter:{'include': ['Closed']}"></subtask>
-                </td>
-            </tr>
-            <tr data-ng-repeat="issue in taskboard.issues | stateFilter:{'include': ['Open']}">
+            <tr data-ng-repeat="issue in taskboard.issues | stateFilter:{'exclude': ['Closed']}">
                 <td>
                     <issue></issue>
                 </td>
