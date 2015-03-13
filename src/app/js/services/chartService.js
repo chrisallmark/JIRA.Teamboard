@@ -53,6 +53,7 @@ angular.module('JIRA.Teamboard')
             'sprintburn': function(configuration) {
                 var deferred = $q.defer();
                 var sprintburn = apiService.sprintburn.query({
+                    backlog: configuration.backlog,
                     board: configuration.board,
                     sprint: configuration.sprint
                 });
@@ -143,6 +144,7 @@ angular.module('JIRA.Teamboard')
             'taskburn': function(configuration) {
                 var deferred = $q.defer();
                 var taskburn = apiService.taskburn.get({
+                    backlog: configuration.backlog,
                     board: configuration.board,
                     sprint: configuration.sprint
                 });
@@ -217,6 +219,7 @@ angular.module('JIRA.Teamboard')
             'taskflow': function(configuration) {
                 var deferred = $q.defer();
                 var taskflow = apiService.taskflow.query({
+                    backlog: configuration.backlog,
                     board: configuration.board,
                     sprint: configuration.sprint
                 });
@@ -250,6 +253,7 @@ angular.module('JIRA.Teamboard')
             'taskwork': function(configuration) {
                 var deferred = $q.defer();
                 var taskwork = apiService.taskwork.query({
+                    backlog: configuration.backlog,
                     board: configuration.board,
                     sprint: configuration.sprint,
                     labels: configuration.labels

@@ -35,6 +35,7 @@ angular.module('JIRA.Teamboard')
             if (angular.isDefined($scope.teamboard)) {
                 if ($scope.teamboard.view === 'taskboard') {
                     apiService.taskboard.get({
+                        backlog: $scope.teamboard.backlog,
                         board: $scope.teamboard.board,
                         sprint: $scope.teamboard.sprint
                     }).$promise.then(function (taskboard) {

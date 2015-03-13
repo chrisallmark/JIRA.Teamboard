@@ -25,10 +25,10 @@ angular.module('JIRA.Teamboard')
             if (angular.isDefined($scope.teamboard)) {
                 if ($scope.teamboard.view === 'releaseboard') {
                     apiService.releaseboard.query({
-                        'backlog': $scope.teamboard.backlog,
-                        'board': $scope.teamboard.board,
-                        'sprint': $scope.teamboard.sprint,
-                        'velocity': $scope.teamboard.velocity
+                        backlog: $scope.teamboard.backlog,
+                        board: $scope.teamboard.board,
+                        sprint: $scope.teamboard.sprint,
+                        velocity: $scope.teamboard.velocity
                     }).$promise.then(function (releaseboard) {
                         angular.forEach(releaseboard, function(sprint) {
                             sprint.start = moment.utc(sprint.start).format("MMM Do");

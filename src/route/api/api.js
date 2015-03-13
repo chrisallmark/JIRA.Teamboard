@@ -200,13 +200,6 @@ function timebox(cfg, board, sprint) {
 
 module.exports = function (app, cfg) {
 
-    app.get('/api/heapdump', function (req, res) {
-        heapdump.writeSnapshot(function() {
-            console.log('Heapdumped!');
-            res.send(200).end();
-        });
-    });
-
     app.get('/api/configurations', function (req, res) {
         fs.readdir('./cfg', function(err, files) {
             if (err) {
@@ -347,7 +340,7 @@ module.exports = function (app, cfg) {
                 var builds = [];
                 if (data) {
                     for (var i = 0; i < data.results.result.length; i++) {
-                        if (!req.param('builds') || req.param('builds').indexOf(data.results.result[i].plan.projectName) !== -1) {
+                        if (!req.params.builds || req.params.builds.indexOf(data.results.result[i].plan.projectName) !== -1) {
                             if (data.results.result[i].plan.enabled) {
                                 builds.push(build(data.results.result[i]));
                                 for (var j = 0; j < data.results.result[i].plan.branches.branch.length; j++) {
@@ -393,7 +386,7 @@ module.exports = function (app, cfg) {
     });
 
     app.get('/api/:board/sprints', function (req, res) {
-        jiraAPI(cfg, '/rest/greenhopper/latest/sprintquery/' + req.param('board') + '?includeFutureSprints=true')
+        jiraAPI(cfg, '/rest/greenhopper/latest/sprintquery/' + req.params.board + '?includeFutureSprints=true')
             .then(function (data) {
                 var sprints = [];
                 for (var i = 0; i < data.sprints.length; i++) {
@@ -413,8 +406,8 @@ module.exports = function (app, cfg) {
             });
     });
 
-    app.get('/api/:board/:sprint/burn', function (req, res) {
-        timebox(cfg, req.param('board'), req.param('sprint'))
+    app.get('/api/:backlog/:board/:sprint/burn', function (req, res) {
+        timebox(cfg, req.params.board, req.params.sprint)
             .then(function (timebox) {
                 var burn = [],
                     burnState = {
@@ -428,7 +421,7 @@ module.exports = function (app, cfg) {
                         toDo: 0
                     };
                 }
-                return jql(cfg, 'sprint=' + req.param('sprint'), ['changelog', 'created', 'issuetype'], ['changelog'])
+                return jql(cfg, 'sprint=' + req.params.sprint, ['changelog', 'created', 'issuetype'], ['changelog'])
                     .then(function (data) {
                         var timestamp = moment.utc();
                         for (var i = 0; i < data.issues.length; i++) {
@@ -472,10 +465,10 @@ module.exports = function (app, cfg) {
             });
     });
 
-    app.get('/api/:board/:sprint/cycle/board', function (req, res) {
-        timebox(cfg, req.param('board'), req.param('sprint'))
+    app.get('/api/:backlog/:board/:sprint/cycle/board', function (req, res) {
+        timebox(cfg, req.params.board, req.params.sprint)
             .then(function (timebox) {
-                return jql(cfg, 'sprint=' + req.param('sprint') + ' ORDER BY Rank', ['assignee', 'changelog', 'issuetype', cfg.jira.flagged, 'labels', 'parent', cfg.jira.points, 'status', 'summary'], ['changelog'])
+                return jql(cfg, 'project=' + req.params.backlog + ' AND sprint=' + req.params.sprint + ' ORDER BY Rank', ['assignee', 'changelog', 'issuetype', cfg.jira.flagged, 'labels', 'parent', cfg.jira.points, 'status', 'summary'], ['changelog'])
                     .then(function (data) {
                         var taskboard = {
                             start: timebox.start,
@@ -564,10 +557,10 @@ module.exports = function (app, cfg) {
             });
     });
 
-    app.get('/api/:board/:sprint/task/board', function (req, res) {
-        timebox(cfg, req.param('board'), req.param('sprint'))
+    app.get('/api/:backlog/:board/:sprint/task/board', function (req, res) {
+        timebox(cfg, req.params.board, req.params.sprint)
             .then(function (timebox) {
-                return jql(cfg, 'sprint=' + req.param('sprint') + ' ORDER BY Rank', ['assignee', 'issuetype', cfg.jira.flagged, 'labels', 'parent', cfg.jira.points, 'status', 'summary'])
+                return jql(cfg, 'project=' + req.params.backlog + ' AND sprint=' + req.params.sprint + ' ORDER BY Rank', ['assignee', 'issuetype', cfg.jira.flagged, 'labels', 'parent', cfg.jira.points, 'status', 'summary'])
                     .then(function (data) {
                         var i,
                             issue,
@@ -640,11 +633,11 @@ module.exports = function (app, cfg) {
             });
     });
 
-    app.get('/api/:board/:sprint/task/burn', function (req, res) {
-        timebox(cfg, req.param('board'), req.param('sprint'))
+    app.get('/api/:backlog/:board/:sprint/task/burn', function (req, res) {
+        timebox(cfg, req.params.board, req.params.sprint)
             .then(function (timebox) {
                 var pool = [];
-                return jql(cfg, 'sprint=' + req.param('sprint'), ['changelog', 'created', 'issuetype', 'summary'], ['changelog'])
+                return jql(cfg, 'project=' + req.params.backlog + ' AND sprint=' + req.params.sprint, ['changelog', 'created', 'issuetype', 'summary'], ['changelog'])
                     .then(function (data) {
                         var date, name, timestamp = moment.utc();
                         for (date = timebox.start.clone().endOf('day'); date.isBefore(timebox.end) || date.isSame(timebox.end); date.add(1, 'day')) {
@@ -727,8 +720,8 @@ module.exports = function (app, cfg) {
             });
     });
 
-    app.get('/api/:board/:sprint/task/flow', function (req, res) {
-        timebox(cfg, req.param('board'), req.param('sprint'))
+    app.get('/api/:backlog/:board/:sprint/task/flow', function (req, res) {
+        timebox(cfg, req.params.board, req.params.sprint)
             .then(function (timebox) {
                 var flow = [],
                     flowState = {
@@ -744,7 +737,7 @@ module.exports = function (app, cfg) {
                         toDo: 0
                     };
                 }
-                return jql(cfg, 'sprint=' + req.param('sprint'), ['changelog', 'created', 'issuetype'], ['changelog'])
+                return jql(cfg, 'project=' + req.params.backlog + ' AND sprint=' + req.params.sprint, ['changelog', 'created', 'issuetype'], ['changelog'])
                     .then(function (data) {
                         var timestamp = moment.utc();
                         for (var i = 0; i < data.issues.length; i++) {
@@ -805,16 +798,16 @@ module.exports = function (app, cfg) {
             });
     });
 
-    app.get('/api/:board/:sprint/task/work', function (req, res) {
-        timebox(cfg, req.param('board'), req.param('sprint'))
+    app.get('/api/:backlog/:board/:sprint/task/work', function (req, res) {
+        timebox(cfg, req.params.board, req.params.sprint)
             .then(function (timebox) {
-                return jql(cfg, 'sprint=' + req.param('sprint') + ' AND type not in standardIssueTypes() AND status was not in (\'' + cfg.status.closed.join('\',\'') + '\') ON \'' + moment.min(moment.utc(), timebox.end).format('YYYY-MM-DD') + '\'', ['issuetype','labels'])
+                return jql(cfg, 'project=' + req.params.backlog + ' AND sprint=' + req.params.sprint + ' AND type not in standardIssueTypes() AND status was not in (\'' + cfg.status.closed.join('\',\'') + '\') ON \'' + moment.min(moment.utc(), timebox.end).format('YYYY-MM-DD') + '\'', ['issuetype','labels'])
                     .then(function (data) {
                         var count = [],
                             timestamp = moment.utc();
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
-                            issue.fields.labels = issue.fields.labels.filter(labelFilter(req.param('labels')));
+                            issue.fields.labels = issue.fields.labels.filter(labelFilter(req.params.labels));
                             var labels = issue.fields.labels.length === 0 ? '_' : issue.fields.labels.sort().join('/');
                             if (!count[labels]) {
                                 count[labels] = 0;
@@ -848,7 +841,7 @@ module.exports = function (app, cfg) {
     });
 
     app.get('/api/:board/:sprint/timer', function (req, res) {
-        timebox(cfg, req.param('board'), req.param('sprint'))
+        timebox(cfg, req.params.board, req.params.sprint)
             .then(function (timebox) {
                 var remainingDays = 0,
                     totalDays = timebox.end.diff(timebox.start, 'days') + 1,
@@ -875,10 +868,10 @@ module.exports = function (app, cfg) {
             });
     });
 
-    app.get('/api/:project/burn', function (req, res) {
+    app.get('/api/:backlog/burn', function (req, res) {
         var start = moment.utc().add(-60, 'days').startOf('day'),
             end = moment.utc().endOf('day');
-        jql(cfg, 'project=' + req.param('project') + ' AND type in standardIssueTypes() AND status was not in (\'' + cfg.status.closed.join('\',\'') + '\') BEFORE \'' + start.format('YYYY-MM-DD') + '\'', ['changelog', 'created'], ['changelog'])
+        jql(cfg, 'project=' + req.params.backlog + ' AND type in standardIssueTypes() AND status was not in (\'' + cfg.status.closed.join('\',\'') + '\') BEFORE \'' + start.format('YYYY-MM-DD') + '\'', ['changelog', 'created'], ['changelog'])
             .then(function (data) {
                 var burn = [],
                     burnState = {
@@ -932,9 +925,9 @@ module.exports = function (app, cfg) {
     });
 
     app.get('/api/:backlog/:board/:sprint/release/board/:velocity', function (req, res) {
-        timebox(cfg, req.param('board'), req.param('sprint'))
+        timebox(cfg, req.params.board, req.params.sprint)
             .then(function (timebox) {
-                return jql(cfg, 'project=' + req.param('backlog') + ' AND type in standardIssueTypes() AND status IN (\'' + cfg.status.open.join('\',\'') + '\') AND (sprint not in openSprints() OR sprint is EMPTY) ORDER BY Rank', [cfg.jira.flagged, 'issuetype', cfg.jira.points, 'labels', 'summary', 'status'], [], 999)
+                return jql(cfg, 'project=' + req.params.backlog + ' AND type in standardIssueTypes() AND status IN (\'' + cfg.status.open.join('\',\'') + '\') AND (sprint not in openSprints() OR sprint is EMPTY) ORDER BY Rank', [cfg.jira.flagged, 'issuetype', cfg.jira.points, 'labels', 'summary', 'status'], [], 999)
                     .then(function (data) {
                         var releaseboard =  [],
                             timestamp = moment.utc(),
@@ -945,7 +938,7 @@ module.exports = function (app, cfg) {
                         }
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
-                            if (releaseboard.length === 0 || (releaseboard[releaseboard.length - 1].points + (issue.fields[cfg.jira.points] || 0) > Number(req.param('velocity')) * 1.10 && i > 0 && i < data.issues.length - 1)) {
+                            if (releaseboard.length === 0 || (releaseboard[releaseboard.length - 1].points + (issue.fields[cfg.jira.points] || 0) > Number(req.params.velocity) * 1.10 && i > 0 && i < data.issues.length - 1)) {
                                 releaseboard.push({
                                     start: timebox.start.clone().add(releaseboard.length * totalDays, 'days'),
                                     end: timebox.end.clone().add(releaseboard.length * totalDays, 'days'),

@@ -63,8 +63,9 @@ angular.module('JIRA.Teamboard')
             if (angular.isDefined($scope.teamboard)) {
                 if ($scope.teamboard.view === 'cycleboard') {
                     apiService.cycleboard.get({
-                        'board': $scope.teamboard.board,
-                        'sprint': $scope.teamboard.sprint
+                        backlog: $scope.teamboard.backlog,
+                        board: $scope.teamboard.board,
+                        sprint: $scope.teamboard.sprint
                     }).$promise.then(function (cycleboard) {
                         cycleboard.start = moment.utc(cycleboard.start);
                         cycleboard.end = moment.utc(cycleboard.end);
