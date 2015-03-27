@@ -29,7 +29,7 @@ By passing query parameters to the teamboard you can jump to specific boards whe
 To view a specific board:
 <pre>http://[host:port]/[teamboard]?view=[chartboard|cycleboard|dashboard|releaseboard|taskboard]</pre>
 To view a specific chartboard:
-<pre>http://[host:port]/[teamboard]?view=chartboard&chart=[releaseburn|sprintburn|taskburn|taskflow|taskwork]</pre>
+<pre>http://[host:port]/[teamboard]?view=chartboard&chart=[sprintburn|backlogburn|taskburn|taskflow|taskwork]</pre>
 
 > NOTE: The chartboard displays any of the dashboard charts in full screen and is provided as an alternative to the consolidated dashboard view.
 

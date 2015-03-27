@@ -27,7 +27,7 @@ angular.module('JIRA.Teamboard')
             'cycleboard': $resource('/api/:backlog/:board/:sprint/cycle/board'),
             'releaseboard': $resource('/api/:backlog/:board/:sprint/release/board/:velocity'),
             'results': $resource('/api/builds/results'),
-            'sprintburn': $resource('/api/:backlog/:board/:sprint/burn'),
+            'sprintburn': $resource('/api/:backlog/:board/:sprint/burn/:timetrack'),
             'sprints': $resource('/api/:board/sprints'),
             'taskboard': $resource('/api/:backlog/:board/:sprint/task/board'),
             'taskburn': $resource('/api/:backlog/:board/:sprint/task/burn'),

@@ -55,7 +55,8 @@ angular.module('JIRA.Teamboard')
                 var sprintburn = apiService.sprintburn.query({
                     backlog: configuration.backlog,
                     board: configuration.board,
-                    sprint: configuration.sprint
+                    sprint: configuration.sprint,
+                    timetrack: configuration.timetrack
                 });
                 sprintburn.$promise.then(function (sprintburn) {
                     var data = new google.visualization.DataTable();

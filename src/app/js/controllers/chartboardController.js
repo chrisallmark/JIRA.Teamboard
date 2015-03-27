@@ -30,7 +30,7 @@ angular.module('JIRA.Teamboard')
                             });
                             break;
                         case 'backlogburn':
-                            chartService.releaseburn($scope.teamboard).then(function(chart) {
+                            chartService.backlogburn($scope.teamboard).then(function(chart) {
                                 var lineChart = new google.visualization.LineChart($('#chartboard').find('.backlog-burn')[0]);
                                 lineChart.draw(chart.data, chart.options);
                             });
@@ -50,7 +50,7 @@ angular.module('JIRA.Teamboard')
                         case 'taskwork':
                             chartService.taskwork($scope.teamboard).then(function(chart) {
                                 var pieChart = new google.visualization.PieChart($('#chartboard').find('.task-work')[0]);
-                                pieChart.draw(chart.datachart, chart.options);
+                                pieChart.draw(chart.data, chart.options);
                             });
                             break;
                     }

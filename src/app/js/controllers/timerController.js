@@ -32,7 +32,7 @@ angular.module('JIRA.Teamboard')
                 if (timer.end.isBefore(moment.utc())) {
                     timer.countdown = '00:00:00:00';
                 } else {
-                    var now = moment.utc().add(moment().zone() * -1, 'minutes');
+                    var now = moment.utc().add(moment().utcOffset() * -1, 'minutes');
                     var days = ('00' + timer.end.diff(now, 'days')).substr(-2);
                     var hours = ('00' + timer.end.diff(now, 'hours') % 24).substr(-2);
                     var minutes = ('00' + timer.end.diff(now, 'minutes') % 60).substr(-2);

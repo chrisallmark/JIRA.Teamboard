@@ -182,8 +182,7 @@ function state(cfg, status) {
 
 function statusFilter(cfg) {
     return function(a) {
-        return a.field === 'status' &&
-            a.fromString !== a.toString && !(isOpen(cfg, a.fromString) && isOpen(cfg, a.toString));
+        return a.field === 'status' && a.fromString !== a.toString && !(isOpen(cfg, a.fromString) && isOpen(cfg, a.toString));
     }
 }
 
@@ -196,6 +195,12 @@ function timebox(cfg, board, sprint) {
                 end: data.sprint.startDate === 'None' ? moment.utc() : moment.utc(data.sprint.endDate.substring(0, 10) + '12:00').endOf('day')
             };
         });
+}
+
+function timetrackFilter(cfg) {
+    return function(a) {
+        return (a.field === 'status' && a.fromString !== a.toString && !(isOpen(cfg, a.fromString) && isOpen(cfg, a.toString))) || a.field === 'timeestimate';
+    }
 }
 
 module.exports = function (app, cfg) {
@@ -240,6 +245,7 @@ module.exports = function (app, cfg) {
             slideshow: req.body.slideshow || false,
             sprint: req.body.sprint,
             target: req.body.target,
+            timetrack: req.body.timetrack || false,
             velocity: req.body.velocity,
             wip: req.body.wip
         };
@@ -406,7 +412,7 @@ module.exports = function (app, cfg) {
             });
     });
 
-    app.get('/api/:backlog/:board/:sprint/burn', function (req, res) {
+    app.get('/api/:backlog/:board/:sprint/burn/:timetrack', function (req, res) {
         timebox(cfg, req.params.board, req.params.sprint)
             .then(function (timebox) {
                 var burn = [],
@@ -421,27 +427,49 @@ module.exports = function (app, cfg) {
                         toDo: 0
                     };
                 }
-                return jql(cfg, 'sprint=' + req.params.sprint, ['changelog', 'created', 'issuetype'], ['changelog'])
+                return jql(cfg, 'project=' + req.params.backlog + ' AND sprint=' + req.params.sprint, ['changelog', 'created', 'issuetype', 'timeestimate', 'timeoriginalestimate'], ['changelog'])
                     .then(function (data) {
                         var timestamp = moment.utc();
                         for (var i = 0; i < data.issues.length; i++) {
                             var issue = data.issues[i];
                             issue.fields.created = moment.max(moment.utc(issue.fields.created).endOf('day'), timebox.start.clone().add(-1, "millisecond"));
                             if (issue.fields.created.isBefore(timebox.end) || issue.fields.created.isSame(timebox.end)) {
-                                burnStates[issue.fields.created].toDo++;
+                                if (req.params.timetrack === "true") {
+                                    burnStates[issue.fields.created].toDo += parseInt(issue.fields.timeestimate || 0) / 3600;
+                                } else {
+                                    burnStates[issue.fields.created].toDo++;
+                                }
                                 for (var j = 0; j < issue.changelog.histories.length; j++) {
                                     var history = issue.changelog.histories[j];
                                     history.created = moment.max(moment.utc(history.created).endOf('day'), timebox.start.clone().add(-1, "millisecond"));
                                     if (history.created.isBefore(timebox.end) || history.created.isSame(timebox.end)) {
-                                        history.items = history.items.filter(statusFilter(cfg));
+                                        if (req.params.timetrack === "true") {
+                                            history.items = history.items.filter(timetrackFilter(cfg));
+                                        } else {
+                                            history.items = history.items.filter(statusFilter(cfg));
+                                        }
                                         for (var k = 0; k < history.items.length; k++) {
                                             var item = history.items[k];
-                                            if (isClosed(cfg, item.toString)) {
-                                                burnStates[history.created].done++;
-                                                burnStates[history.created].toDo--;
-                                            } else if (isClosed(cfg, item.fromString)) {
-                                                burnStates[history.created].done--;
-                                                burnStates[history.created].toDo++;
+                                            if (req.params.timetrack === "true") {
+                                                if (item.field === 'status') {
+                                                    if (isClosed(cfg, item.toString)) {
+                                                        burnStates[history.created].done += parseInt(issue.fields.timeestimate || 0) / 3600;
+                                                        burnStates[history.created].toDo -= parseInt(issue.fields.timeestimate || 0) / 3600;
+                                                    } else if (isClosed(cfg, item.fromString)) {
+                                                        burnStates[history.created].done -= parseInt(issue.fields.timeestimate || 0) / 3600;
+                                                        burnStates[history.created].toDo += parseInt(issue.fields.timeestimate || 0) / 3600;
+                                                    }
+                                                } else if (item.field === 'timeestimate') {
+                                                    burnStates[history.created].done += (parseInt(item.to || 0) - parseInt(item.from || 0)) / 3600;
+                                                }
+                                            } else {
+                                                if (isClosed(cfg, item.toString)) {
+                                                    burnStates[history.created].done++;
+                                                    burnStates[history.created].toDo--;
+                                                } else if (isClosed(cfg, item.fromString)) {
+                                                    burnStates[history.created].done--;
+                                                    burnStates[history.created].toDo++;
+                                                }
                                             }
                                         }
                                     }
