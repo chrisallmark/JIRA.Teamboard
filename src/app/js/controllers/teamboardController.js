@@ -60,7 +60,9 @@ angular.module('JIRA.Teamboard')
             }
         });
         $scope.$watch('teamboard.loaded', function(newValue, oldValue) {
-            if (newValue !== oldValue && $scope.teamboard.view === $scope.teamboard.loaded && $scope.teamboard.slideshow && $scope.teamboard.animate) {
+            if (newValue === 'reload') {
+                $scope.teamboard.loaded = oldValue;
+            } else if (newValue !== oldValue && $scope.teamboard.view === $scope.teamboard.loaded && $scope.teamboard.animate) {
                 $timeout(startAnimation, 100);
             }
         });

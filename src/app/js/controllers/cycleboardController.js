@@ -59,9 +59,9 @@ angular.module('JIRA.Teamboard')
             }
             return popover;
         }
-        $scope.$watch('teamboard.view', function() {
+        $scope.$watch('teamboard.view', function(newValue, oldValue) {
             if (angular.isDefined($scope.teamboard)) {
-                if ($scope.teamboard.view === 'cycleboard') {
+                if (newValue === 'cycleboard') {
                     apiService.cycleboard.get({
                         backlog: $scope.teamboard.backlog,
                         board: $scope.teamboard.board,
@@ -107,9 +107,9 @@ angular.module('JIRA.Teamboard')
                         cycleboard.state = null;
                         $scope.cycleboard = cycleboard;
                     }).finally(function () {
-                        $scope.teamboard.loaded = $scope.teamboard.view;
+                        $scope.teamboard.loaded = oldValue === 'reload' ? oldValue : newValue;
                     });
-                } else if ($scope.teamboard.loaded === 'cycleboard' && $scope.teamboard.view === 'reload') {
+                } else if ($scope.teamboard.loaded === 'cycleboard' && newValue === 'reload') {
                     $('section').find('.popover').remove();
                     $scope.teamboard.view = $scope.teamboard.loaded;
                 } else {

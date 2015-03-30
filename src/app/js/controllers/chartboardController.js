@@ -18,9 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 angular.module('JIRA.Teamboard')
     .controller('chartboardController', ['$scope', '$location', 'chartService', function ($scope, $location, chartService) {
-        $scope.$watch('teamboard.view', function() {
+        $scope.$watch('teamboard.view', function(newValue, oldValue) {
             if (angular.isDefined($scope.teamboard)) {
-                if ($scope.teamboard.view === 'chartboard') {
+                if (newValue === 'chartboard') {
                     $scope.chart = angular.lowercase($location.search().chart || 'sprintburn');
                     switch($scope.chart) {
                         case 'sprintburn':
@@ -54,8 +54,8 @@ angular.module('JIRA.Teamboard')
                             });
                             break;
                     }
-                    $scope.teamboard.loaded = $scope.teamboard.view;
-                } else if ($scope.teamboard.loaded === 'chartboard' && $scope.teamboard.view === 'reload') {
+                    $scope.teamboard.loaded = oldValue === 'reload' ? oldValue : newValue;
+                } else if ($scope.teamboard.loaded === 'chartboard' && newValue === 'reload') {
                     $scope.teamboard.view = $scope.teamboard.loaded;
                 }
             }

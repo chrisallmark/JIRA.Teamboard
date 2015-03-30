@@ -18,9 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 angular.module('JIRA.Teamboard')
     .controller('dashboardController', ['$scope', 'chartService', function ($scope, chartService) {
-        $scope.$watch('teamboard.view', function() {
+        $scope.$watch('teamboard.view', function(newValue, oldValue) {
             if (angular.isDefined($scope.teamboard)) {
-                if ($scope.teamboard.view === 'dashboard') {
+                if (newValue === 'dashboard') {
                     chartService.sprintburn($scope.teamboard).then(function(chart) {
                         var lineChart= new google.visualization.LineChart($('#dashboard').find('.sprint-burn')[0]);
                         lineChart.draw(chart.data, chart.options);
@@ -41,8 +41,8 @@ angular.module('JIRA.Teamboard')
                         var pieChart = new google.visualization.PieChart($('#dashboard').find('.task-work')[0]);
                         pieChart.draw(chart.data, chart.options);
                     });
-                    $scope.teamboard.loaded = $scope.teamboard.view;
-                } else if ($scope.teamboard.loaded === 'dashboard' && $scope.teamboard.view === 'reload') {
+                    $scope.teamboard.loaded = oldValue === 'reload' ? oldValue : newValue;
+                } else if ($scope.teamboard.loaded === 'dashboard' && newValue === 'reload') {
                     $scope.teamboard.view = $scope.teamboard.loaded;
                 }
             }

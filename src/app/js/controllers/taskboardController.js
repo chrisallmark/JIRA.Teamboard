@@ -31,9 +31,9 @@ angular.module('JIRA.Teamboard')
                 return names[0].length > 8 ? initials : names[0];
             }
         }
-        $scope.$watch('teamboard.view', function() {
+        $scope.$watch('teamboard.view', function(newValue, oldValue) {
             if (angular.isDefined($scope.teamboard)) {
-                if ($scope.teamboard.view === 'taskboard') {
+                if (newValue === 'taskboard') {
                     apiService.taskboard.get({
                         backlog: $scope.teamboard.backlog,
                         board: $scope.teamboard.board,
@@ -54,9 +54,9 @@ angular.module('JIRA.Teamboard')
                             taskboard.wipExceeded = Number($scope.teamboard.wip) > 0 ? wip > Number($scope.teamboard.wip) : false;
                             $scope.taskboard = taskboard;
                         }).finally(function () {
-                            $scope.teamboard.loaded = $scope.teamboard.view;
+                            $scope.teamboard.loaded = oldValue === 'reload' ? oldValue : newValue;
                         });
-                } else if ($scope.teamboard.loaded === 'taskboard' && $scope.teamboard.view === 'reload') {
+                } else if ($scope.teamboard.loaded === 'taskboard' && newValue === 'reload') {
                     $scope.teamboard.view = $scope.teamboard.loaded;
                 } else {
                     $('#taskboard').scrollTop(0);

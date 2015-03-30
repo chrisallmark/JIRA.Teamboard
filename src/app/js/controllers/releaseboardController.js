@@ -21,9 +21,9 @@ angular.module('JIRA.Teamboard')
         function classification(flagged, labels, state, type) {
             return angular.lowercase((flagged ? 'jira-flagged ' : '') + (labels.length > 0 ? 'jira-label-' + labels.join('-') + ' ' : '') + ' jira-state-' + state.replace(/[^a-z0-9]/gi, '-') + ' jira-type-' + type.replace(/[^a-z0-9]/gi, '-'));
         }
-        $scope.$watch('teamboard.view', function() {
+        $scope.$watch('teamboard.view', function(newValue, oldValue) {
             if (angular.isDefined($scope.teamboard)) {
-                if ($scope.teamboard.view === 'releaseboard') {
+                if (newValue === 'releaseboard') {
                     apiService.releaseboard.query({
                         backlog: $scope.teamboard.backlog,
                         board: $scope.teamboard.board,
@@ -41,9 +41,9 @@ angular.module('JIRA.Teamboard')
                         });
                         $scope.releaseboard = releaseboard;
                     }).finally(function () {
-                        $scope.teamboard.loaded = $scope.teamboard.view;
+                        $scope.teamboard.loaded = oldValue === 'reload' ? oldValue : newValue;
                     });
-                } else if ($scope.teamboard.loaded === 'releaseboard' && $scope.teamboard.view === 'reload') {
+                } else if ($scope.teamboard.loaded === 'releaseboard' && newValue === 'reload') {
                     $scope.teamboard.view = $scope.teamboard.loaded;
                 } else {
                     $('#releaseboard').scrollLeft(0).scrollTop(0);
