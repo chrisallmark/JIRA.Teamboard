@@ -90,7 +90,8 @@ angular.module('JIRA.Teamboard')
                         trendlines: {
                             1: {
                                 labelInLegend: 'Forecast',
-                                pointSize: 1
+                                pointSize: 1,
+                                tooltip: false
                                 }
                         },
                         vAxis: {
@@ -128,11 +129,13 @@ angular.module('JIRA.Teamboard')
                         trendlines: {
                             0: {
                                 labelInLegend: 'To Do Forecast',
-                                pointSize: 1
+                                pointSize: 1,
+                                tooltip: false
                             },
                             1: {
                                 labelInLegend: 'Done Forecast',
-                                pointSize: 1
+                                pointSize: 1,
+                                tooltip: false
                             }
                         }
                     });
