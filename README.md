@@ -5,7 +5,7 @@ The JIRA Teamboard is an electronic information radiator that displays vital dat
 
 It's similar to a scoreboard at a sporting event - it's been designed to be highly visible and easy to understand for anyone walking and it can complement or entirely replace a traditional agile wallboard. To continue with the sports analogy it's also a useful tool for "post-match analysis" during team retrospectives to identify areas for improvement.
 
-##Requirements
+## Requirements
 
 First, install [Node](http://nodejs.org/) and then the [Grunt](http://gruntjs.com/) command line interface tools with <code>$ npm install -g grunt-cli</code>. You'll also need to make sure you have [Ruby](https://www.ruby-lang.org/) so you can install [Sass](http://sass-lang.com/) with <code>$ gem install sass</code>. Now fetch the required package dependencies with <code>$ npm install</code> and run <code>$ grunt</code> to compile the CSS & JS files.
 
@@ -13,7 +13,7 @@ Finally you'll need to configure the server to point to your BAMBOO & JIRA serve
 
 > NOTE: The server runs on port 1337 by default. Edit <code>server.js</code> to change this.
 
-##Basic Client Usage
+## Basic Client Usage
 To load the JIRA Teamboard:
 <pre>http://[host:port]</pre>
 To add, edit, delete or view teamboards:
@@ -23,7 +23,7 @@ To configure a teamboard:
 To view a teamboard:
 <pre>http://[host:port]/[teamboard]</pre>
 
-##Extended Client Usage
+## Extended Client Usage
 By passing query parameters to the teamboard you can jump to specific boards when the application loads. Used in conjunction with a browser tab rotation plug-in (such as Revolver-Tabs for Chrome) you can customise the sequence and timing of the JIRA Teamboard to suit the needs of your environment and team.
 
 To view a specific board:
@@ -33,7 +33,7 @@ To view a specific chartboard:
 
 > NOTE: The chartboard displays any of the dashboard charts in full screen and is provided as an alternative to the consolidated dashboard view.
 
-##HDTV Kiosk
+## HDTV Kiosk
 The JIRA Teamboard is designed to be run in full screen on a HDTV at 1920x1080 resolution. The recommended browser is Google Chrome, but it should work in most CSS3/HTML5 compliant browsers.
 
 To automatically launch the JIRA Teamboard in full screen mode at system start up use:
